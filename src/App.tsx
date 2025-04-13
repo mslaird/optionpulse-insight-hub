@@ -10,6 +10,7 @@ import Education from "./pages/Education";
 import NotFound from "./pages/NotFound";
 import OptionsChain from "./pages/OptionsChain";
 import Community from "./pages/Community";
+import Challenges from "./pages/Challenges";
 
 const queryClient = new QueryClient();
 
@@ -25,6 +26,7 @@ const App = () => (
           <Route path="/education" element={<Education />} />
           <Route path="/options-chain" element={<OptionsChain />} />
           <Route path="/community" element={<Community />} />
+          <Route path="/challenges" element={<Challenges />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
