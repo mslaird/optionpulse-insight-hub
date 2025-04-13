@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import Layout from "@/components/layout/Layout";
 import { 
@@ -21,7 +20,6 @@ import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 
-// Types for our data
 interface Challenge {
   id: number;
   title: string;
@@ -161,7 +159,6 @@ const leaderboard: LeaderboardUser[] = [
   }
 ];
 
-// Get badge color based on rank
 const getBadgeColor = (badge: string) => {
   switch (badge) {
     case "Diamond":
@@ -175,7 +172,6 @@ const getBadgeColor = (badge: string) => {
   }
 };
 
-// Get difficulty color
 const getDifficultyColor = (difficulty: Challenge["difficulty"]) => {
   switch (difficulty) {
     case "beginner":
@@ -189,7 +185,6 @@ const getDifficultyColor = (difficulty: Challenge["difficulty"]) => {
   }
 };
 
-// Get status color
 const getStatusColor = (status: Challenge["status"]) => {
   switch (status) {
     case "active":
@@ -205,12 +200,12 @@ const getStatusColor = (status: Challenge["status"]) => {
 
 const ChallengeCard = ({ challenge }: { challenge: Challenge }) => {
   return (
-    <Card className="bg-sidebar transition-all duration-200 hover:shadow-md hover:shadow-primary/5 hover:border-primary/30">
-      <CardHeader className="pb-2">
+    <Card className="bg-sidebar transition-all duration-200 hover:shadow-md hover:shadow-primary/5 hover:border-primary/30 flex flex-col">
+      <CardHeader className="pb-2 flex-grow">
         <div className="flex justify-between items-start">
-          <div>
-            <CardTitle className="text-lg text-foreground">{challenge.title}</CardTitle>
-            <CardDescription className="text-muted-foreground mt-1">
+          <div className="flex-grow">
+            <CardTitle className="text-lg text-foreground mb-2">{challenge.title}</CardTitle>
+            <CardDescription className="text-muted-foreground text-justify leading-relaxed">
               {challenge.description}
             </CardDescription>
           </div>
