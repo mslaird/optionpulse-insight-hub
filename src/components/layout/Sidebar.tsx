@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import {
@@ -23,13 +23,29 @@ type SidebarItem = {
   active?: boolean;
 };
 
-export const Sidebar = () => {
+interface SidebarProps {
+  onToggle?: (collapsed: boolean) => void;
+}
+
+export const Sidebar = ({ onToggle }: SidebarProps) => {
   const location = useLocation();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   
   const toggleSidebar = () => {
-    setIsCollapsed(!isCollapsed);
+    const newCollapsedState = !isCollapsed;
+    setIsCollapsed(newCollapsedState);
+    
+    // Notify parent component
+    if (onToggle) {
+      onToggle(newCollapsedState);
+    }
+    
+    // Dispatch custom event for any listeners
+    const event = new CustomEvent('sidebar-toggle', { 
+      detail: { collapsed: newCollapsedState } 
+    });
+    window.dispatchEvent(event);
   };
   
   const toggleMobileSidebar = () => {
