@@ -200,12 +200,12 @@ const getStatusColor = (status: Challenge["status"]) => {
 
 const ChallengeCard = ({ challenge }: { challenge: Challenge }) => {
   return (
-    <Card className="bg-sidebar transition-all duration-200 hover:shadow-md hover:shadow-primary/5 hover:border-primary/30 flex flex-col">
-      <CardHeader className="pb-2 flex-grow">
+    <Card className="bg-sidebar transition-all duration-200 hover:shadow-md hover:shadow-primary/5 hover:border-primary/30">
+      <CardHeader className="pb-2">
         <div className="flex justify-between items-start">
-          <div className="flex-grow">
-            <CardTitle className="text-lg text-foreground mb-2">{challenge.title}</CardTitle>
-            <CardDescription className="text-muted-foreground text-justify leading-relaxed">
+          <div>
+            <CardTitle className="text-lg text-foreground">{challenge.title}</CardTitle>
+            <CardDescription className="text-muted-foreground mt-1">
               {challenge.description}
             </CardDescription>
           </div>
