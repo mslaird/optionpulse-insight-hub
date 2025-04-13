@@ -2,10 +2,9 @@
 import { useState } from "react";
 import Layout from "@/components/layout/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Sliders, BarChart3, Filter, Calendar, TrendingUp, TrendingDown } from "lucide-react";
+import { Sliders, BarChart3, TrendingUp, TrendingDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import OptionsFilter from "@/components/options/OptionsFilter";
 import StockSelector from "@/components/options/StockSelector";
@@ -15,6 +14,7 @@ const OptionsChain = () => {
   const [expirationDate, setExpirationDate] = useState("2025-05-16");
   const [optionType, setOptionType] = useState("all");
   const [showOpportunities, setShowOpportunities] = useState(true);
+  const [strategyFilter, setStrategyFilter] = useState("all");
 
   // Mock data for stock price and change
   const stockPrice = 178.39;
@@ -54,6 +54,8 @@ const OptionsChain = () => {
             setOptionType={setOptionType}
             showOpportunities={showOpportunities}
             setShowOpportunities={setShowOpportunities}
+            strategyFilter={strategyFilter}
+            setStrategyFilter={setStrategyFilter}
           />
         </div>
         
@@ -62,6 +64,7 @@ const OptionsChain = () => {
           expirationDate={expirationDate} 
           optionType={optionType}
           showOpportunities={showOpportunities}
+          strategyFilter={strategyFilter}
         />
       </div>
     </Layout>
@@ -73,28 +76,30 @@ const OptionsChainTable = ({
   stock, 
   expirationDate, 
   optionType,
-  showOpportunities
+  showOpportunities,
+  strategyFilter
 }: { 
   stock: string;
   expirationDate: string;
   optionType: string;
   showOpportunities: boolean;
+  strategyFilter: string;
 }) => {
   // Mock data for options chain
   const callOptions = [
-    { strike: 170, lastPrice: 12.85, bid: 12.70, ask: 12.95, change: 0.35, volume: 1243, openInterest: 5642, iv: 28.5, opportunity: "covered-call" },
-    { strike: 175, lastPrice: 8.65, bid: 8.50, ask: 8.75, change: 0.20, volume: 2154, openInterest: 8934, iv: 27.8, opportunity: null },
-    { strike: 180, lastPrice: 5.35, bid: 5.25, ask: 5.45, change: -0.15, volume: 3265, openInterest: 12456, iv: 26.4, opportunity: "covered-call" },
-    { strike: 185, lastPrice: 3.15, bid: 3.05, ask: 3.25, change: -0.25, volume: 1876, openInterest: 9876, iv: 25.9, opportunity: null },
-    { strike: 190, lastPrice: 1.75, bid: 1.65, ask: 1.80, change: -0.30, volume: 967, openInterest: 7653, iv: 24.7, opportunity: null },
+    { strike: 170, lastPrice: 12.85, bid: 12.70, ask: 12.95, change: 0.35, volume: 1243, openInterest: 5642, iv: 28.5, opportunity: "covered-call", premium: "high", moneyness: "itm" },
+    { strike: 175, lastPrice: 8.65, bid: 8.50, ask: 8.75, change: 0.20, volume: 2154, openInterest: 8934, iv: 27.8, opportunity: null, premium: "medium", moneyness: "itm" },
+    { strike: 180, lastPrice: 5.35, bid: 5.25, ask: 5.45, change: -0.15, volume: 3265, openInterest: 12456, iv: 26.4, opportunity: "covered-call", premium: "high", moneyness: "atm" },
+    { strike: 185, lastPrice: 3.15, bid: 3.05, ask: 3.25, change: -0.25, volume: 1876, openInterest: 9876, iv: 25.9, opportunity: "naked-call", premium: "medium", moneyness: "otm" },
+    { strike: 190, lastPrice: 1.75, bid: 1.65, ask: 1.80, change: -0.30, volume: 967, openInterest: 7653, iv: 24.7, opportunity: "naked-call", premium: "low", moneyness: "otm" },
   ];
   
   const putOptions = [
-    { strike: 170, lastPrice: 4.25, bid: 4.15, ask: 4.35, change: -0.20, volume: 876, openInterest: 4532, iv: 29.2, opportunity: "cash-secured-put" },
-    { strike: 175, lastPrice: 6.35, bid: 6.25, ask: 6.45, change: -0.15, volume: 1245, openInterest: 6543, iv: 28.5, opportunity: null },
-    { strike: 180, lastPrice: 9.15, bid: 9.05, ask: 9.25, change: -0.10, volume: 2134, openInterest: 8765, iv: 27.9, opportunity: "cash-secured-put" },
-    { strike: 185, lastPrice: 12.85, bid: 12.75, ask: 12.95, change: 0.25, volume: 1598, openInterest: 5432, iv: 29.5, opportunity: null },
-    { strike: 190, lastPrice: 17.45, bid: 17.35, ask: 17.55, change: 0.40, volume: 763, openInterest: 3421, iv: 31.2, opportunity: null },
+    { strike: 170, lastPrice: 4.25, bid: 4.15, ask: 4.35, change: -0.20, volume: 876, openInterest: 4532, iv: 29.2, opportunity: "cash-secured-put", premium: "medium", moneyness: "otm" },
+    { strike: 175, lastPrice: 6.35, bid: 6.25, ask: 6.45, change: -0.15, volume: 1245, openInterest: 6543, iv: 28.5, opportunity: "cash-secured-put", premium: "high", moneyness: "otm" },
+    { strike: 180, lastPrice: 9.15, bid: 9.05, ask: 9.25, change: -0.10, volume: 2134, openInterest: 8765, iv: 27.9, opportunity: "cash-secured-put", premium: "high", moneyness: "atm" },
+    { strike: 185, lastPrice: 12.85, bid: 12.75, ask: 12.95, change: 0.25, volume: 1598, openInterest: 5432, iv: 29.5, opportunity: null, premium: "high", moneyness: "itm" },
+    { strike: 190, lastPrice: 17.45, bid: 17.35, ask: 17.55, change: 0.40, volume: 763, openInterest: 3421, iv: 31.2, opportunity: null, premium: "high", moneyness: "itm" },
   ];
   
   // Filter options based on selected type
@@ -104,6 +109,21 @@ const OptionsChainTable = ({
   }
   if (optionType === "puts" || optionType === "all") {
     displayOptions.push(...putOptions.map(option => ({ ...option, type: "PUT" })));
+  }
+  
+  // Apply strategy filter
+  if (strategyFilter === "high-premium-calls") {
+    displayOptions = displayOptions.filter(option => 
+      option.type === "CALL" && option.premium === "high"
+    );
+  } else if (strategyFilter === "otm-puts") {
+    displayOptions = displayOptions.filter(option => 
+      option.type === "PUT" && option.moneyness === "otm"
+    );
+  } else if (strategyFilter === "naked-calls") {
+    displayOptions = displayOptions.filter(option => 
+      option.type === "CALL" && option.opportunity === "naked-call"
+    );
   }
   
   // Filter opportunities if selected
@@ -141,7 +161,8 @@ const OptionsChainTable = ({
                 <TableRow 
                   key={`${option.type}-${option.strike}-${index}`}
                   className={cn(
-                    option.opportunity && "bg-optionpulse-blue/5 hover:bg-optionpulse-blue/10"
+                    option.opportunity && "bg-optionpulse-blue/5 hover:bg-optionpulse-blue/10",
+                    option.opportunity === "naked-call" && "bg-optionpulse-red/5 hover:bg-optionpulse-red/10"
                   )}
                 >
                   <TableCell>
@@ -168,6 +189,11 @@ const OptionsChainTable = ({
                     {option.opportunity === "cash-secured-put" && (
                       <Badge variant="outline" className="border-optionpulse-blue text-optionpulse-blue">
                         Cash-Secured Put
+                      </Badge>
+                    )}
+                    {option.opportunity === "naked-call" && (
+                      <Badge variant="outline" className="border-optionpulse-red text-optionpulse-red">
+                        Naked Call
                       </Badge>
                     )}
                   </TableCell>

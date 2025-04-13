@@ -2,7 +2,8 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Filter, Calendar } from "lucide-react";
+import { Filter, Calendar, DollarSign, Target } from "lucide-react";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 interface OptionsFilterProps {
   expirationDate: string;
@@ -11,6 +12,8 @@ interface OptionsFilterProps {
   setOptionType: (value: string) => void;
   showOpportunities: boolean;
   setShowOpportunities: (value: boolean) => void;
+  strategyFilter: string;
+  setStrategyFilter: (value: string) => void;
 }
 
 const OptionsFilter = ({
@@ -19,7 +22,9 @@ const OptionsFilter = ({
   optionType,
   setOptionType,
   showOpportunities,
-  setShowOpportunities
+  setShowOpportunities,
+  strategyFilter,
+  setStrategyFilter
 }: OptionsFilterProps) => {
   // Mock data for expiration dates
   const expirationDates = [
@@ -61,6 +66,21 @@ const OptionsFilter = ({
             <SelectItem value="all">All Options</SelectItem>
             <SelectItem value="calls">Calls Only</SelectItem>
             <SelectItem value="puts">Puts Only</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      
+      <div className="flex items-center gap-2 w-full sm:w-auto">
+        <Target size={16} className="text-muted-foreground" />
+        <Select value={strategyFilter} onValueChange={setStrategyFilter}>
+          <SelectTrigger className="w-full sm:w-48">
+            <SelectValue placeholder="Strategy" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Strategies</SelectItem>
+            <SelectItem value="high-premium-calls">High-Premium Calls</SelectItem>
+            <SelectItem value="otm-puts">Out-of-the-Money Puts</SelectItem>
+            <SelectItem value="naked-calls">Naked Call Opportunities</SelectItem>
           </SelectContent>
         </Select>
       </div>
