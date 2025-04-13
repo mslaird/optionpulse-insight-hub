@@ -77,8 +77,17 @@ const GreeksChart = () => {
                   borderRadius: '6px'
                 }}
                 formatter={(value: any, name: any, props: any) => {
-                  const originalValue = greeksData[props.payload.index].value;
-                  return [`${originalValue.toFixed(2)}`, 'Value'];
+                  // Fix: Check if props and props.payload exist before accessing
+                  const index = props?.payload?.index;
+                  
+                  // Make sure we have a valid index and greeksData[index] exists
+                  if (index !== undefined && greeksData[index]) {
+                    const originalValue = greeksData[index].value;
+                    return [`${originalValue.toFixed(2)}`, 'Value'];
+                  }
+                  
+                  // Fallback if we can't find the original value
+                  return [`${value}`, name];
                 }}
                 labelFormatter={(label) => {
                   const item = greeksData.find(item => item.name === label);
