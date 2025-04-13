@@ -13,8 +13,39 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 
+// Define the types for our post data
+interface PostAuthor {
+  name: string;
+  avatar: string;
+  username: string;
+}
+
+interface PostReactions {
+  "👍": number;
+  "❤️"?: number;
+  "🔥"?: number;
+  "🚀"?: number;
+  "🧠": number;
+  "💰": number;
+  "🤔"?: number;
+  "👏"?: number;
+}
+
+interface Post {
+  id: number;
+  author: PostAuthor;
+  timestamp: string;
+  content: string;
+  likes: number;
+  comments: number;
+  activity: string;
+  tags: string[];
+  hasLiked: boolean;
+  reactions: PostReactions;
+}
+
 // Mock data for community posts
-const initialPosts = [
+const initialPosts: Post[] = [
   {
     id: 1,
     author: {
@@ -33,7 +64,9 @@ const initialPosts = [
       "👍": 14,
       "❤️": 8,
       "🔥": 6,
-      "🚀": 4
+      "🚀": 4,
+      "🧠": 0,
+      "💰": 0
     }
   },
   {
@@ -53,7 +86,8 @@ const initialPosts = [
     reactions: {
       "👍": 10,
       "🤔": 8,
-      "💰": 5
+      "💰": 5,
+      "🧠": 3
     }
   },
   {
@@ -79,7 +113,7 @@ const initialPosts = [
 ];
 
 const Community = () => {
-  const [posts, setPosts] = useState(initialPosts);
+  const [posts, setPosts] = useState<Post[]>(initialPosts);
   const [newPost, setNewPost] = useState("");
   const [activeTab, setActiveTab] = useState("feed");
   const { toast } = useToast();
@@ -89,8 +123,8 @@ const Community = () => {
     
     if (!newPost.trim()) return;
     
-    // Create new post
-    const newPostObj = {
+    // Create new post with properly initialized reactions object
+    const newPostObj: Post = {
       id: posts.length + 1,
       author: {
         name: "Current User",
@@ -104,7 +138,11 @@ const Community = () => {
       activity: "shared a new insight",
       tags: [],
       hasLiked: false,
-      reactions: {}
+      reactions: {
+        "👍": 0,
+        "🧠": 0,
+        "💰": 0
+      }
     };
     
     setPosts([newPostObj, ...posts]);
@@ -128,10 +166,10 @@ const Community = () => {
     setPosts(posts.map(post => {
       if (post.id === postId) {
         const updatedReactions = { ...post.reactions };
-        if (updatedReactions[emoji]) {
-          updatedReactions[emoji] += 1;
+        if (emoji in updatedReactions) {
+          updatedReactions[emoji as keyof PostReactions] = (updatedReactions[emoji as keyof PostReactions] as number) + 1;
         } else {
-          updatedReactions[emoji] = 1;
+          updatedReactions[emoji as keyof PostReactions] = 1;
         }
         return { ...post, reactions: updatedReactions };
       }
@@ -221,25 +259,6 @@ const Community = () => {
   );
 };
 
-interface Post {
-  id: number;
-  author: {
-    name: string;
-    avatar: string;
-    username: string;
-  };
-  timestamp: string;
-  content: string;
-  likes: number;
-  comments: number;
-  activity: string;
-  tags: string[];
-  hasLiked: boolean;
-  reactions: {
-    [key: string]: number;
-  };
-}
-
 interface CommunityPostProps {
   post: Post;
   onLike: (postId: number) => void;
@@ -291,9 +310,11 @@ const CommunityPost = ({ post, onLike, onReaction }: CommunityPostProps) => {
               {Object.keys(post.reactions).length > 0 && (
                 <div className="flex flex-wrap gap-2 p-2 bg-background/20 rounded-md">
                   {Object.entries(post.reactions).map(([emoji, count]) => (
-                    <Badge key={emoji} variant="outline" className="bg-background/30 border-background/30">
-                      {emoji} {count}
-                    </Badge>
+                    count > 0 && (
+                      <Badge key={emoji} variant="outline" className="bg-background/30 border-background/30">
+                        {emoji} {count}
+                      </Badge>
+                    )
                   ))}
                 </div>
               )}
