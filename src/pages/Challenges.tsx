@@ -202,16 +202,14 @@ const ChallengeCard = ({ challenge }: { challenge: Challenge }) => {
   return (
     <Card className="bg-sidebar transition-all duration-200 hover:shadow-md hover:shadow-primary/5 hover:border-primary/30">
       <CardHeader className="pb-2">
-        <div className="flex justify-between items-start">
-          <div className="w-full pr-3">
-            <CardTitle className="text-lg text-foreground">{challenge.title}</CardTitle>
-            <CardDescription className="text-muted-foreground mt-1 text-balance w-full">
-              {challenge.description}
-            </CardDescription>
-          </div>
-          <Badge className={cn("ml-2 flex-shrink-0", getDifficultyColor(challenge.difficulty))}>
+        <div className="flex flex-col">
+          <Badge className={cn("self-start mb-2", getDifficultyColor(challenge.difficulty))}>
             {challenge.difficulty}
           </Badge>
+          <CardTitle className="text-lg text-foreground">{challenge.title}</CardTitle>
+          <CardDescription className="text-muted-foreground mt-1 w-full">
+            {challenge.description}
+          </CardDescription>
         </div>
       </CardHeader>
       <CardContent className="pb-3">
