@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { SliderPlus, BarChart3, Filter, Calendar, TrendingUp, TrendingDown } from "lucide-react";
+import { Sliders, BarChart3, Filter, Calendar, TrendingUp, TrendingDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import OptionsFilter from "@/components/options/OptionsFilter";
 import StockSelector from "@/components/options/StockSelector";
@@ -115,7 +115,7 @@ const OptionsChainTable = ({
     <Card className="bg-card/30 backdrop-blur-sm border-border/50">
       <CardHeader className="pb-2">
         <CardTitle className="text-lg font-medium flex items-center gap-2">
-          <SliderPlus size={18} className="text-optionpulse-blue" />
+          <Sliders size={18} className="text-optionpulse-blue" />
           {stock} Options - {expirationDate}
         </CardTitle>
       </CardHeader>
