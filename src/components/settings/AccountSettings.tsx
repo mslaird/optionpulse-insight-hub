@@ -1,17 +1,44 @@
 
-import { useState } from "react";
+import { useState, useRef, ChangeEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
-import { User, Mail, Key, Edit2, Upload } from "lucide-react";
+import { User, Mail, Key, Upload } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const AccountSettings = () => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
+  const [profileImage, setProfileImage] = useState<string | null>(
+    localStorage.getItem("userProfileImage") || null
+  );
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  const handleProfileImageClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+  
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const imageDataUrl = event.target?.result as string;
+        setProfileImage(imageDataUrl);
+        localStorage.setItem("userProfileImage", imageDataUrl);
+        toast({
+          title: "Profile picture updated",
+          description: "Your profile picture has been updated successfully."
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
   
   const handleSaveProfile = () => {
     setLoading(true);
@@ -49,18 +76,29 @@ const AccountSettings = () => {
       <Card className="border-border/30">
         <CardHeader>
           <div className="flex items-center gap-4">
-            <Avatar className="h-16 w-16">
-              <AvatarImage src="https://avatars.githubusercontent.com/u/124599?v=4" />
-              <AvatarFallback className="bg-optionpulse-blue text-white text-lg">OP</AvatarFallback>
-            </Avatar>
+            <div 
+              className="relative cursor-pointer group" 
+              onClick={handleProfileImageClick}
+            >
+              <Avatar className="h-20 w-20 border-2 border-transparent group-hover:border-optionpulse-blue transition-all">
+                <AvatarImage src={profileImage || ""} />
+                <AvatarFallback className="bg-optionpulse-blue text-white text-lg">OP</AvatarFallback>
+              </Avatar>
+              <div className="absolute inset-0 bg-black/40 rounded-full opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                <Upload size={24} className="text-white" />
+              </div>
+              <input 
+                type="file" 
+                ref={fileInputRef} 
+                className="hidden" 
+                accept="image/*"
+                onChange={handleFileChange}
+              />
+            </div>
             <div className="flex-1">
               <CardTitle>Profile Picture</CardTitle>
-              <CardDescription>Update your profile picture</CardDescription>
+              <CardDescription>Click on the avatar to upload a new profile picture</CardDescription>
             </div>
-            <Button variant="outline" size="sm" className="gap-2">
-              <Upload size={16} />
-              Upload
-            </Button>
           </div>
         </CardHeader>
       </Card>
