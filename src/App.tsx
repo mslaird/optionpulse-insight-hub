@@ -13,6 +13,7 @@ import Community from "./pages/Community";
 import Challenges from "./pages/Challenges";
 import Alerts from "./pages/Alerts";
 import Watchlist from "./pages/Watchlist";
+import Settings from "./pages/Settings";
 
 const queryClient = new QueryClient();
 
@@ -31,6 +32,7 @@ const App = () => (
           <Route path="/challenges" element={<Challenges />} />
           <Route path="/alerts" element={<Alerts />} />
           <Route path="/watchlist" element={<Watchlist />} />
+          <Route path="/settings" element={<Settings />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
