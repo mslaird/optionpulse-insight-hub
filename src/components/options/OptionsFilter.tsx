@@ -73,7 +73,7 @@ const OptionsFilter = ({
       <div className="flex items-center gap-2 w-full sm:w-auto">
         <Target size={16} className="text-muted-foreground" />
         <Select value={strategyFilter} onValueChange={setStrategyFilter}>
-          <SelectTrigger className="w-full sm:w-48">
+          <SelectTrigger className="w-full sm:w-40 max-w-[200px]">
             <SelectValue placeholder="Strategy" />
           </SelectTrigger>
           <SelectContent>
@@ -98,3 +98,4 @@ const OptionsFilter = ({
 };
 
 export default OptionsFilter;
+
