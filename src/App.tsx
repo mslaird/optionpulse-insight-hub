@@ -9,6 +9,7 @@ import Dashboard from "./pages/Dashboard";
 import Education from "./pages/Education";
 import NotFound from "./pages/NotFound";
 import OptionsChain from "./pages/OptionsChain";
+import Community from "./pages/Community";
 
 const queryClient = new QueryClient();
 
@@ -23,6 +24,7 @@ const App = () => (
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/education" element={<Education />} />
           <Route path="/options-chain" element={<OptionsChain />} />
+          <Route path="/community" element={<Community />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
