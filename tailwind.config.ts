@@ -123,6 +123,15 @@ export default {
                 'slide-up': {
                     from: { transform: 'translateY(20px)', opacity: '0' },
                     to: { transform: 'translateY(0)', opacity: '1' }
+                },
+                'heartbeat': {
+                    '0%, 100%': { transform: 'scale(1)' },
+                    '50%': { transform: 'scale(1.05)' }
+                },
+                'ecg-pulse': {
+                    '0%': { strokeDashoffset: '200' },
+                    '40%': { strokeDashoffset: '0' },
+                    '100%': { strokeDashoffset: '0' }
                 }
 			},
 			animation: {
@@ -130,7 +139,9 @@ export default {
 				'accordion-up': 'accordion-up 0.2s ease-out',
                 'pulse-subtle': 'pulse-subtle 2s ease-in-out infinite',
                 'fade-in': 'fade-in 0.3s ease-out',
-                'slide-up': 'slide-up 0.3s ease-out'
+                'slide-up': 'slide-up 0.3s ease-out',
+                'heartbeat': 'heartbeat 1.5s ease-in-out infinite',
+                'ecg-pulse': 'ecg-pulse 2s ease-out forwards'
 			}
 		}
 	},

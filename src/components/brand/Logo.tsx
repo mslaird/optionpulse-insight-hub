@@ -32,12 +32,33 @@ const Logo = ({ collapsed = false }: LogoProps) => {
         <span className="text-[14px] font-bold text-[#00B7EB]">Option</span>
         <span className="text-[18px] font-bold text-[#00FF7F] leading-none ml-1">Pulse</span>
       </div>
-      <div 
-        className={cn(
-          "h-0.5 bg-[#00FF7F] transition-all duration-700 ease-in-out", 
-          animated ? "w-full opacity-100" : "w-0 opacity-0"
-        )}
-      />
+      <div className="w-full h-3 relative mt-0.5">
+        <div className="absolute inset-0 flex items-center">
+          <svg 
+            viewBox="0 0 120 10" 
+            width="100%" 
+            height="100%" 
+            preserveAspectRatio="none"
+            className={cn(
+              "transition-opacity duration-700",
+              animated ? "opacity-100" : "opacity-0"
+            )}
+          >
+            <path 
+              d="M 0,5 L 20,5 C 22,5 23,2 25,2 C 27,2 28,8 30,8 C 32,8 33,0 35,0 C 37,0 38,10 40,10 C 42,10 43,3 45,3 C 47,3 48,7 50,7 L 120,7" 
+              fill="none" 
+              stroke="#00FF7F" 
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeDasharray={animated ? "200" : "0"}
+              strokeDashoffset={animated ? "0" : "200"}
+              className={cn(
+                "transition-all duration-1500 ease-in-out",
+              )}
+            />
+          </svg>
+        </div>
+      </div>
     </div>
   );
 };
