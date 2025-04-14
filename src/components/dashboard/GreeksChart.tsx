@@ -1,48 +1,68 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { AreaChart, BarChart } from "lucide-react";
-import { BarChart as RechartsBarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import { AreaChart } from "lucide-react";
+import { 
+  LineChart, 
+  Line, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  ResponsiveContainer, 
+  Legend 
+} from 'recharts';
 import { cn } from "@/lib/utils";
 
 // Mock data
 const greeksData = [
   {
     name: 'Delta',
-    value: 0.65,
+    value: 0.6,
     description: 'How much option price changes when stock price moves $1',
     color: '#1EAEDB' // Blue
   },
   {
     name: 'Gamma',
-    value: 0.08,
+    value: 0.05,
     description: 'Rate of change in Delta for $1 stock price move',
     color: '#8E9196' // Gray
   },
   {
     name: 'Theta',
-    value: -0.45,
+    value: -0.03,
     description: 'Time decay: value lost per day as expiration approaches',
     color: '#F87171' // Red
   },
   {
     name: 'Vega',
-    value: 0.30,
+    value: 0.2,
     description: 'Sensitivity to volatility changes',
     color: '#34D399' // Green
   }
 ];
 
-// Helper function to normalize values for chart display
-const normalizeGreeks = (data: typeof greeksData) => {
-  return data.map(item => ({
-    ...item,
-    // Convert to absolute value and scale for better visual representation
-    displayValue: Math.abs(item.value) * 100
-  }));
+// Format the Greek data for a line chart
+const formatGreeksForLineChart = () => {
+  // Create data points for the line graph (we'll use dummy x-axis values)
+  // This simulates how these Greeks would change over a range of strike prices or dates
+  const ranges = [1, 2, 3, 4, 5, 6, 7];
+  
+  return ranges.map(range => {
+    // Create varied values based on the original values to simulate a line
+    const factor = range / 4; // Normalize around the middle point
+    
+    return {
+      x: range,
+      Delta: greeksData[0].value * factor,
+      Gamma: greeksData[1].value * factor,
+      Theta: greeksData[2].value * factor,
+      Vega: greeksData[3].value * factor,
+    };
+  });
 };
 
 const GreeksChart = () => {
-  const normalizedData = normalizeGreeks(greeksData);
+  const lineData = formatGreeksForLineChart();
 
   return (
     <Card className="bg-card/30 backdrop-blur-sm border-border/50">
@@ -55,20 +75,21 @@ const GreeksChart = () => {
       <CardContent>
         <div className="h-64 mt-4">
           <ResponsiveContainer width="100%" height="100%">
-            <RechartsBarChart
-              data={normalizedData}
+            <LineChart
+              data={lineData}
               margin={{ top: 10, right: 10, left: 0, bottom: 20 }}
-              barSize={40}
             >
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.1)" />
               <XAxis 
-                dataKey="name" 
+                dataKey="x" 
                 axisLine={false} 
-                tick={{ fill: '#8E9196' }}
+                tick={{ fill: '#FFFFFF' }}
+                label={{ value: 'Strike Price Distance', position: 'insideBottomRight', offset: -5, fill: '#8E9196' }}
               />
               <YAxis 
-                hide={true}
-                domain={[0, 'dataMax + 10']}
+                axisLine={false}
+                tick={{ fill: '#FFFFFF' }}
+                domain={[-0.1, 'auto']}
               />
               <Tooltip
                 contentStyle={{ 
@@ -76,35 +97,42 @@ const GreeksChart = () => {
                   border: '1px solid rgba(255,255,255,0.1)',
                   borderRadius: '6px'
                 }}
-                formatter={(value: any, name: any, props: any) => {
-                  // Fix: Check if props and props.payload exist before accessing
-                  const index = props?.payload?.index;
-                  
-                  // Make sure we have a valid index and greeksData[index] exists
-                  if (index !== undefined && greeksData[index]) {
-                    const originalValue = greeksData[index].value;
-                    return [`${originalValue.toFixed(2)}`, 'Value'];
-                  }
-                  
-                  // Fallback if we can't find the original value
-                  return [`${value}`, name];
-                }}
-                labelFormatter={(label) => {
-                  const item = greeksData.find(item => item.name === label);
-                  return (
-                    <>
-                      <div className="font-medium text-white">{label}</div>
-                      <div className="text-xs text-gray-400 mt-1">{item?.description}</div>
-                    </>
-                  );
-                }}
+                labelFormatter={() => 'Greeks Values'}
               />
-              <Bar dataKey="displayValue" radius={[4, 4, 0, 0]}>
-                {normalizedData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} />
-                ))}
-              </Bar>
-            </RechartsBarChart>
+              <Legend />
+              <Line 
+                type="monotone" 
+                dataKey="Delta" 
+                stroke={greeksData[0].color} 
+                strokeWidth={2}
+                dot={{ fill: greeksData[0].color, r: 4 }}
+                activeDot={{ r: 6 }}
+              />
+              <Line 
+                type="monotone" 
+                dataKey="Gamma" 
+                stroke={greeksData[1].color} 
+                strokeWidth={2}
+                dot={{ fill: greeksData[1].color, r: 4 }}
+                activeDot={{ r: 6 }}
+              />
+              <Line 
+                type="monotone" 
+                dataKey="Theta" 
+                stroke={greeksData[2].color} 
+                strokeWidth={2}
+                dot={{ fill: greeksData[2].color, r: 4 }}
+                activeDot={{ r: 6 }}
+              />
+              <Line 
+                type="monotone" 
+                dataKey="Vega" 
+                stroke={greeksData[3].color} 
+                strokeWidth={2}
+                dot={{ fill: greeksData[3].color, r: 4 }}
+                activeDot={{ r: 6 }}
+              />
+            </LineChart>
           </ResponsiveContainer>
         </div>
         
