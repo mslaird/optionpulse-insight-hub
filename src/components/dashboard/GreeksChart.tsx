@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AreaChart } from "lucide-react";
 import { 
@@ -7,8 +8,7 @@ import {
   YAxis, 
   CartesianGrid, 
   Tooltip, 
-  ResponsiveContainer, 
-  Legend 
+  ResponsiveContainer
 } from 'recharts';
 import { cn } from "@/lib/utils";
 
@@ -76,7 +76,7 @@ const GreeksChart = () => {
           <ResponsiveContainer width="100%" height="100%">
             <LineChart
               data={lineData}
-              margin={{ top: 10, right: 10, left: 0, bottom: 50 }} // Increased bottom margin
+              margin={{ top: 10, right: 10, left: 0, bottom: 20 }}
             >
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.1)" />
               <XAxis 
@@ -97,14 +97,6 @@ const GreeksChart = () => {
                   borderRadius: '6px'
                 }}
                 labelFormatter={() => 'Greeks Values'}
-              />
-              <Legend 
-                verticalAlign="bottom" 
-                height={36} 
-                wrapperStyle={{ 
-                  color: '#FFFFFF', 
-                  paddingTop: '20px' 
-                }} 
               />
               <Line 
                 type="monotone" 
@@ -148,10 +140,9 @@ const GreeksChart = () => {
               key={greek.name} 
               className="bg-card/40 p-3 rounded-lg border border-border/50 flex flex-col items-center justify-between"
             >
-              <div 
-                className="w-4 h-4 rounded-full mb-2" 
-                style={{ backgroundColor: greek.color }}
-              ></div>
+              <div className="flex items-center justify-center mb-2">
+                <div className="h-2 w-10 mr-1" style={{ backgroundColor: greek.color, borderRadius: "1px" }}></div>
+              </div>
               <span className="font-medium text-sm mb-2 text-center">{greek.name}</span>
               <div className={cn(
                 "text-lg font-semibold text-center",
