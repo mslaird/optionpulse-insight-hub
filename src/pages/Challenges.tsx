@@ -1,4 +1,6 @@
+
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import { 
   Trophy, 
@@ -9,7 +11,9 @@ import {
   TrendingUp, 
   Clock, 
   Flame,
-  ChevronRight
+  ChevronRight,
+  Layers,
+  HelpCircle
 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -19,6 +23,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
+import ExplanationTooltip from "@/components/tooltips/ExplanationTooltip";
+import explanations from "@/data/explanations";
 
 interface Challenge {
   id: number;
@@ -206,7 +212,21 @@ const ChallengeCard = ({ challenge }: { challenge: Challenge }) => {
           <Badge className={cn("self-start mb-2", getDifficultyColor(challenge.difficulty))}>
             {challenge.difficulty}
           </Badge>
-          <CardTitle className="text-lg text-foreground">{challenge.title}</CardTitle>
+          <div className="flex items-start justify-between">
+            <CardTitle className="text-lg text-foreground">{challenge.title}</CardTitle>
+            {challenge.title.includes("Covered Call") && (
+              <ExplanationTooltip 
+                title={explanations.coveredCall.title}
+                content={explanations.coveredCall.content}
+              />
+            )}
+            {challenge.title.includes("Iron Condor") && (
+              <ExplanationTooltip 
+                title={explanations.ironCondor.title}
+                content={explanations.ironCondor.content}
+              />
+            )}
+          </div>
           <CardDescription className="text-muted-foreground mt-1 w-full">
             {challenge.description}
           </CardDescription>
@@ -365,18 +385,22 @@ const Challenges = () => {
                       </div>
                       <div className="text-right">
                         <div className="font-bold text-primary">{user.points.toLocaleString()} pts</div>
-                        <Badge className={cn("mt-1", getBadgeColor(user.badge))}>
-                          {user.badge}
-                        </Badge>
+                        <Link to="/achievements">
+                          <Badge className={cn("mt-1 cursor-pointer hover:opacity-80", getBadgeColor(user.badge))}>
+                            {user.badge}
+                          </Badge>
+                        </Link>
                       </div>
                     </div>
                   ))}
                 </div>
               </CardContent>
               <CardFooter>
-                <Button variant="outline" className="w-full">
-                  View Full Leaderboard
-                  <ChevronRight size={16} />
+                <Button variant="outline" className="w-full" asChild>
+                  <Link to="/achievements">
+                    View Full Leaderboard
+                    <ChevronRight size={16} />
+                  </Link>
                 </Button>
               </CardFooter>
             </Card>
@@ -442,9 +466,11 @@ const Challenges = () => {
                         <div className="text-sm font-medium">Sarah Johnson</div>
                         <div className="text-xs text-muted-foreground">14 completed challenges</div>
                       </div>
-                      <Badge variant="outline" className="bg-blue-500/20 text-blue-400">
-                        14
-                      </Badge>
+                      <Link to="/achievements">
+                        <Badge variant="outline" className="bg-blue-500/20 text-blue-400 cursor-pointer hover:opacity-80">
+                          14
+                        </Badge>
+                      </Link>
                     </div>
                     <Separator />
                     <div className="flex items-center gap-3">
@@ -577,7 +603,9 @@ const Challenges = () => {
                 <CardContent className="space-y-4">
                   <div className="flex justify-between items-center">
                     <div className="flex items-center gap-3">
-                      <Badge className={getBadgeColor("Diamond")}>Diamond</Badge>
+                      <Link to="/achievements">
+                        <Badge className={cn("cursor-pointer hover:opacity-80", getBadgeColor("Diamond"))}>Diamond</Badge>
+                      </Link>
                       <div>
                         <div className="font-medium">Diamond Strategist</div>
                         <div className="text-sm text-muted-foreground">Earn 1,500+ points</div>
@@ -589,7 +617,9 @@ const Challenges = () => {
                   
                   <div className="flex justify-between items-center">
                     <div className="flex items-center gap-3">
-                      <Badge className={getBadgeColor("Platinum")}>Platinum</Badge>
+                      <Link to="/achievements">
+                        <Badge className={cn("cursor-pointer hover:opacity-80", getBadgeColor("Platinum"))}>Platinum</Badge>
+                      </Link>
                       <div>
                         <div className="font-medium">Platinum Trader</div>
                         <div className="text-sm text-muted-foreground">Earn 1,000+ points</div>
@@ -601,7 +631,9 @@ const Challenges = () => {
                   
                   <div className="flex justify-between items-center">
                     <div className="flex items-center gap-3">
-                      <Badge className={getBadgeColor("Gold")}>Gold</Badge>
+                      <Link to="/achievements">
+                        <Badge className={cn("cursor-pointer hover:opacity-80", getBadgeColor("Gold"))}>Gold</Badge>
+                      </Link>
                       <div>
                         <div className="font-medium">Gold Analyst</div>
                         <div className="text-sm text-muted-foreground">Earn 500+ points</div>
@@ -611,10 +643,54 @@ const Challenges = () => {
                   
                   <Separator />
                   
-                  <Button variant="outline" className="w-full mt-2">
-                    View All Achievements
-                    <ChevronRight size={16} />
-                  </Button>
+                  <div className="flex items-center gap-3 mt-4">
+                    <Link to="/achievements" className="w-full">
+                      <Button variant="outline" className="w-full">
+                        View All Achievements
+                        <ChevronRight size={16} />
+                      </Button>
+                    </Link>
+                  </div>
+                  
+                  <div className="mt-4 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Avatar className="h-8 w-8 bg-blue-500/20">
+                        <AvatarFallback className="text-blue-400">
+                          <Trophy size={16} />
+                        </AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <div className="text-sm font-medium">Top Call Seller</div>
+                        <div className="text-xs text-muted-foreground">3 challenges completed</div>
+                      </div>
+                    </div>
+                    <Link to="/achievements">
+                      <Badge className="cursor-pointer hover:opacity-80 bg-gradient-to-r from-blue-400 to-cyan-300 text-white">
+                        View
+                      </Badge>
+                    </Link>
+                  </div>
+                  
+                  <Separator />
+                  
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Avatar className="h-8 w-8 bg-purple-500/20">
+                        <AvatarFallback className="text-purple-400">
+                          <Layers size={16} />
+                        </AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <div className="text-sm font-medium">Layer 1 Starter</div>
+                        <div className="text-xs text-muted-foreground">Quiz passed</div>
+                      </div>
+                    </div>
+                    <Link to="/achievements">
+                      <Badge className="cursor-pointer hover:opacity-80 bg-gradient-to-r from-purple-400 to-indigo-300 text-white">
+                        View
+                      </Badge>
+                    </Link>
+                  </div>
                 </CardContent>
               </Card>
             </div>

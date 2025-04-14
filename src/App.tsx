@@ -14,6 +14,7 @@ import Challenges from "./pages/Challenges";
 import Alerts from "./pages/Alerts";
 import Watchlist from "./pages/Watchlist";
 import Settings from "./pages/Settings";
+import Achievements from "./pages/Achievements";
 
 const queryClient = new QueryClient();
 
@@ -33,6 +34,7 @@ const App = () => (
           <Route path="/alerts" element={<Alerts />} />
           <Route path="/watchlist" element={<Watchlist />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/achievements" element={<Achievements />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
