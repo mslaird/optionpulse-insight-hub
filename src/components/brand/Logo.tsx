@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 
@@ -9,7 +8,6 @@ interface LogoProps {
 const Logo = ({ collapsed = false }: LogoProps) => {
   const [animated, setAnimated] = useState(false);
   
-  // Trigger animation after component mounts
   useEffect(() => {
     const timer = setTimeout(() => {
       setAnimated(true);
@@ -31,7 +29,7 @@ const Logo = ({ collapsed = false }: LogoProps) => {
       <div className="flex items-end relative">
         <span className="text-[20px] font-bold relative">
           <span className="text-[#00B7EB]">Option</span>
-          <span className="text-[24px] font-bold text-[#00FF7F]">Pulse</span>
+          <span className="text-[22px] font-bold text-[#00FF7F]">Pulse</span>
           <div className="absolute -bottom-1 w-full left-0">
             <svg 
               viewBox="0 0 120 10" 
