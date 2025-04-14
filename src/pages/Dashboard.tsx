@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
@@ -63,7 +62,10 @@ const Dashboard = () => {
         
         <SimulatedTrading />
         
-        <DndProvider backend={isMobile ? TouchBackend : HTML5Backend} options={backendOptions}>
+        <DndProvider 
+          backend={isMobile ? TouchBackend : HTML5Backend}
+          options={backendOptions}
+        >
           <div className="space-y-6">
             {isMobileDevice && (
               <p className="text-xs text-muted-foreground italic">
