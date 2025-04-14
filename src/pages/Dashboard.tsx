@@ -6,17 +6,26 @@ import OptionsChainPreview from "@/components/dashboard/OptionsChainPreview";
 import GreeksChart from "@/components/dashboard/GreeksChart";
 import VolatilityAlerts from "@/components/dashboard/VolatilityAlerts";
 import VolatilityNotification from "@/components/notifications/VolatilityNotification";
+import SentimentNotification from "@/components/notifications/SentimentNotification";
 
 const Dashboard = () => {
-  const [showAlert, setShowAlert] = useState(false);
+  const [showVolatilityAlert, setShowVolatilityAlert] = useState(false);
+  const [showSentimentAlert, setShowSentimentAlert] = useState(false);
 
-  // Show the volatility alert after a short delay
+  // Show the alerts after short delays
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowAlert(true);
+    const volatilityTimer = setTimeout(() => {
+      setShowVolatilityAlert(true);
     }, 1000);
+    
+    const sentimentTimer = setTimeout(() => {
+      setShowSentimentAlert(true);
+    }, 3000);  // Show sentiment alert after volatility alert
 
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(volatilityTimer);
+      clearTimeout(sentimentTimer);
+    };
   }, []);
 
   return (
@@ -36,12 +45,21 @@ const Dashboard = () => {
         
         <VolatilityAlerts />
 
-        {showAlert && (
+        {showVolatilityAlert && (
           <VolatilityNotification
             symbol="SPY"
             currentVolatility={20}
             previousVolatility={15}
-            onClose={() => setShowAlert(false)}
+            onClose={() => setShowVolatilityAlert(false)}
+          />
+        )}
+        
+        {showSentimentAlert && (
+          <SentimentNotification
+            symbol="AAPL"
+            sentiment={75}
+            instrumentType="calls"
+            onClose={() => setShowSentimentAlert(false)}
           />
         )}
       </div>
