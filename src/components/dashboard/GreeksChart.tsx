@@ -146,15 +146,13 @@ const GreeksChart = () => {
           {greeksData.map((greek) => (
             <div 
               key={greek.name} 
-              className="bg-card/40 p-3 rounded-lg border border-border/50 flex flex-col justify-between"
+              className="bg-card/40 p-3 rounded-lg border border-border/50 flex flex-col items-center justify-between"
             >
-              <div className="flex justify-between items-center mb-2">
-                <span className="font-medium text-sm">{greek.name}</span>
-                <div 
-                  className="w-3 h-3 rounded-full" 
-                  style={{ backgroundColor: greek.color }}
-                ></div>
-              </div>
+              <div 
+                className="w-4 h-4 rounded-full mb-2" 
+                style={{ backgroundColor: greek.color }}
+              ></div>
+              <span className="font-medium text-sm mb-2 text-center">{greek.name}</span>
               <div className={cn(
                 "text-lg font-semibold text-center",
                 greek.value > 0 ? "text-white" : "text-optionpulse-red"
