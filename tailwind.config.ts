@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -62,33 +61,7 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
-				},
-                // Custom OptionPulse colors
-                optionpulse: {
-                    navy: "#1A1F2C",
-                    charcoal: "#222222",
-                    darkgray: "#333333",
-                    blue: {
-                        DEFAULT: "#1EAEDB",
-                        light: "#33C3F0",
-                        dark: "#0FA0CE"
-                    },
-                    green: {
-                        DEFAULT: "#34D399",
-                        light: "#6EE7B7",
-                        dark: "#10B981"
-                    },
-                    red: {
-                        DEFAULT: "#F87171",
-                        light: "#FCA5A5",
-                        dark: "#EF4444"
-                    },
-                    neutral: {
-                        DEFAULT: "#8E9196",
-                        light: "#F1F1F1",
-                        dark: "#403E43"
-                    }
-                }
+				}
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
@@ -111,26 +84,11 @@ export default {
 					to: {
 						height: '0'
 					}
-				},
-                'pulse-subtle': {
-                    '0%, 100%': { opacity: '1' },
-                    '50%': { opacity: '0.7' }
-                },
-                'fade-in': {
-                    from: { opacity: '0' },
-                    to: { opacity: '1' }
-                },
-                'slide-up': {
-                    from: { transform: 'translateY(10px)', opacity: '0' },
-                    to: { transform: 'translateY(0)', opacity: '1' }
-                }
+				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out',
-                'pulse-subtle': 'pulse-subtle 2s ease-in-out infinite',
-                'fade-in': 'fade-in 0.3s ease-out',
-                'slide-up': 'slide-up 0.3s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out'
 			}
 		}
 	},
