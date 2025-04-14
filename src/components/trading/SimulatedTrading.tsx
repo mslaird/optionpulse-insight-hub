@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { DollarSign, Wallet, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -91,28 +90,6 @@ const SimulatedTrading = () => {
         <CardTitle className="text-lg font-medium flex items-center gap-2">
           <DollarSign size={18} className="text-optionpulse-blue" />
           Simulated Trading
-          <div className="flex space-x-1 ml-2">
-            <ExplanationTooltip 
-              title={strategyExplanations.nakedCall.title}
-              content={strategyExplanations.nakedCall.content}
-              iconClass="text-[#00FF7F]"
-            />
-            <ExplanationTooltip 
-              title={strategyExplanations.nakedPut.title}
-              content={strategyExplanations.nakedPut.content}
-              iconClass="text-[#00FF7F]"
-            />
-            <ExplanationTooltip 
-              title={strategyExplanations.cashSecuredPut.title}
-              content={strategyExplanations.cashSecuredPut.content}
-              iconClass="text-[#00FF7F]"
-            />
-            <ExplanationTooltip 
-              title={strategyExplanations.coveredCall.title}
-              content={strategyExplanations.coveredCall.content}
-              iconClass="text-[#00FF7F]"
-            />
-          </div>
         </CardTitle>
       </CardHeader>
       <CardContent>
