@@ -7,6 +7,7 @@ import GreeksChart from "@/components/dashboard/GreeksChart";
 import VolatilityAlerts from "@/components/dashboard/VolatilityAlerts";
 import VolatilityNotification from "@/components/notifications/VolatilityNotification";
 import SentimentNotification from "@/components/notifications/SentimentNotification";
+import SimulatedTrading from "@/components/trading/SimulatedTrading";
 
 const Dashboard = () => {
   const [showVolatilityAlert, setShowVolatilityAlert] = useState(false);
@@ -43,7 +44,10 @@ const Dashboard = () => {
           <GreeksChart />
         </div>
         
-        <VolatilityAlerts />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <VolatilityAlerts />
+          <SimulatedTrading />
+        </div>
 
         {showVolatilityAlert && (
           <VolatilityNotification
