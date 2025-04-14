@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 
-// Expanded mock data with more options
+// Reduced mock data to match Greeks chart height
 const optionsData = [
   {
     type: "CALL",
@@ -60,24 +60,6 @@ const optionsData = [
     bid: 6.90,
     ask: 7.15,
     iv: 35.3,
-    opportunity: true
-  },
-  {
-    type: "CALL",
-    strike: 185,
-    expiry: "2025-06-20",
-    bid: 7.65,
-    ask: 7.95,
-    iv: 33.8,
-    opportunity: true
-  },
-  {
-    type: "PUT",
-    strike: 165,
-    expiry: "2025-06-20",
-    bid: 3.85,
-    ask: 4.05,
-    iv: 35.1,
     opportunity: true
   }
 ];

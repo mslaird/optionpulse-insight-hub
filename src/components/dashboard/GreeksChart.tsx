@@ -76,7 +76,7 @@ const GreeksChart = () => {
           <ResponsiveContainer width="100%" height="100%">
             <LineChart
               data={lineData}
-              margin={{ top: 10, right: 10, left: 0, bottom: 40 }} // Reduced bottom margin to prevent cut-off
+              margin={{ top: 10, right: 10, left: 0, bottom: 30 }}
             >
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.1)" />
               <XAxis 
@@ -85,10 +85,10 @@ const GreeksChart = () => {
                 tick={{ fill: '#FFFFFF' }}
                 label={{ 
                   value: 'Strike Price Distance', 
-                  position: 'insideBottomRight', 
-                  offset: -5,  // Reduced offset
+                  position: 'insideBottom', 
+                  offset: 0,
                   fill: '#8E9196',
-                  fontSize: 12  // Slightly smaller font
+                  fontSize: 11
                 }}
               />
               <YAxis 
