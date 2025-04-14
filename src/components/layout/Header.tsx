@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { Bell, Search, User } from "lucide-react";
+import { Bell, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -10,12 +10,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Link } from "react-router-dom";
+import SearchAutocomplete from "@/components/header/SearchAutocomplete";
 
 const Header = () => {
-  const [searchTerm, setSearchTerm] = useState("");
   const [profileImage, setProfileImage] = useState<string | null>(null);
   
   // Load profile image from localStorage when component mounts
@@ -43,14 +42,7 @@ const Header = () => {
       <div className="md:hidden w-8"></div>
       <div className="flex-1 flex items-center justify-between">
         <div className="relative max-w-md w-full hidden md:block">
-          <Search size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
-          <Input
-            type="text"
-            placeholder="Search tickers, strategies..."
-            className="pl-10 bg-muted/30 border-muted/30 focus:border-optionpulse-blue"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+          <SearchAutocomplete />
         </div>
         
         <div className="flex items-center gap-2">
