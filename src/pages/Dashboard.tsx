@@ -15,6 +15,10 @@ import { useDraggableDashboard } from "@/hooks/use-draggable-dashboard";
 import { Toaster } from "@/components/ui/toaster";
 import { useIsMobile } from "@/hooks/use-mobile";
 
+// Define types for the dynamic imports
+type HTML5BackendType = any;
+type TouchBackendType = any;
+
 const Dashboard = () => {
   const { toast } = useToast();
   const { widgets, moveWidget, toggleWidgetVisibility } = useDraggableDashboard();
