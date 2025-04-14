@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import MarketOverview from "@/components/dashboard/MarketOverview";
@@ -24,7 +23,6 @@ const Dashboard = () => {
   const [isDragDropSupported, setIsDragDropSupported] = useState(true);
   const isMobile = useIsMobile();
   
-  // Default layouts for different breakpoints
   const layouts = {
     lg: [
       { i: "options-chain", x: 0, y: 0, w: 1, h: 2 },
@@ -44,7 +42,6 @@ const Dashboard = () => {
     ],
   };
 
-  // Show the alerts after short delays
   useEffect(() => {
     const volatilityTimer = setTimeout(() => {
       setShowVolatilityAlert(true);
@@ -54,16 +51,12 @@ const Dashboard = () => {
       setShowSentimentAlert(true);
     }, 3000);  // Show sentiment alert after volatility alert
 
-    // Check if drag and drop is supported
     try {
-      // Touch events are required for mobile drag and drop
       const isTouchSupported = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
       
-      // Create a test draggable element to verify browser support
       const div = document.createElement('div');
       div.setAttribute('draggable', 'true');
       
-      // If either check fails, disable drag and drop
       setIsDragDropSupported(isTouchSupported && typeof div.ondragstart !== 'undefined');
     } catch (error) {
       console.error("Error while checking drag-drop support:", error);
@@ -76,9 +69,7 @@ const Dashboard = () => {
     };
   }, []);
 
-  // Handle layout change - could be used to save layout to user preferences
   const handleLayoutChange = (currentLayout: GridLayout[], allLayouts: any) => {
-    // Save layout to localStorage or database here if needed
     console.log("Layout changed:", currentLayout);
   };
 
