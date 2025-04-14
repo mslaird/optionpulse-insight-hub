@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { DollarSign, Wallet } from "lucide-react";
+import { DollarSign, Wallet, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { mockStocks } from "@/data/mockStockData";
 import { cn } from "@/lib/utils";
+import ExplanationTooltip from "@/components/tooltips/ExplanationTooltip";
 
 // Mock options data
 const mockOptionsData = {
@@ -23,6 +24,26 @@ const optionTypes = [
   { value: "call", label: "Call" },
   { value: "put", label: "Put" },
 ];
+
+// Strategy explanations
+const strategyExplanations = {
+  nakedCall: {
+    title: "Naked Call",
+    content: "A naked call is selling a call option without owning the underlying stock, risking unlimited loss if the stock price rises significantly. Example: Sell AAPL $150 call for $5 premium; if AAPL rises to $200, you must buy at $200 to sell at $150, losing $45/share."
+  },
+  nakedPut: {
+    title: "Naked Put",
+    content: "A naked put is selling a put option without holding cash to buy the stock, risking loss if the stock price falls. Example: Sell AAPL $150 put for $5 premium; if AAPL drops to $100, you must buy at $150, losing $45/share."
+  },
+  cashSecuredPut: {
+    title: "Cash-Secured Put",
+    content: "A cash-secured put is selling a put option while holding enough cash to buy the stock if assigned. Example: Sell AAPL $150 put for $5 premium, hold $15,000 cash; if AAPL drops to $100, you buy at $150, but your cost basis is $145 after the premium."
+  },
+  coveredCall: {
+    title: "Covered Call",
+    content: "A covered call is selling a call option while owning the underlying stock, earning a premium but capping upside potential. Example: Own 100 AAPL shares at $150, sell $160 call for $5 premium; if AAPL rises to $170, you sell at $160, missing $10/share but keeping the $5 premium."
+  }
+};
 
 const SimulatedTrading = () => {
   const { toast } = useToast();
@@ -70,6 +91,28 @@ const SimulatedTrading = () => {
         <CardTitle className="text-lg font-medium flex items-center gap-2">
           <DollarSign size={18} className="text-optionpulse-blue" />
           Simulated Trading
+          <div className="flex space-x-1 ml-2">
+            <ExplanationTooltip 
+              title={strategyExplanations.nakedCall.title}
+              content={strategyExplanations.nakedCall.content}
+              iconClass="text-[#00FF7F]"
+            />
+            <ExplanationTooltip 
+              title={strategyExplanations.nakedPut.title}
+              content={strategyExplanations.nakedPut.content}
+              iconClass="text-[#00FF7F]"
+            />
+            <ExplanationTooltip 
+              title={strategyExplanations.cashSecuredPut.title}
+              content={strategyExplanations.cashSecuredPut.content}
+              iconClass="text-[#00FF7F]"
+            />
+            <ExplanationTooltip 
+              title={strategyExplanations.coveredCall.title}
+              content={strategyExplanations.coveredCall.content}
+              iconClass="text-[#00FF7F]"
+            />
+          </div>
         </CardTitle>
       </CardHeader>
       <CardContent>

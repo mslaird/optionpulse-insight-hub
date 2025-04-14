@@ -6,12 +6,33 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { MessageCircle, Heart, ThumbsUp, ThumbsDown, Share2, MessageSquarePlus, Users } from "lucide-react";
+import { MessageCircle, Heart, ThumbsUp, ThumbsDown, Share2, MessageSquarePlus, Users, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
+import ExplanationTooltip from "@/components/tooltips/ExplanationTooltip";
+
+// Strategy explanations
+const strategyExplanations = {
+  nakedCall: {
+    title: "Naked Call",
+    content: "A naked call is selling a call option without owning the underlying stock, risking unlimited loss if the stock price rises significantly. Example: Sell AAPL $150 call for $5 premium; if AAPL rises to $200, you must buy at $200 to sell at $150, losing $45/share."
+  },
+  nakedPut: {
+    title: "Naked Put",
+    content: "A naked put is selling a put option without holding cash to buy the stock, risking loss if the stock price falls. Example: Sell AAPL $150 put for $5 premium; if AAPL drops to $100, you must buy at $150, losing $45/share."
+  },
+  cashSecuredPut: {
+    title: "Cash-Secured Put",
+    content: "A cash-secured put is selling a put option while holding enough cash to buy the stock if assigned. Example: Sell AAPL $150 put for $5 premium, hold $15,000 cash; if AAPL drops to $100, you buy at $150, but your cost basis is $145 after the premium."
+  },
+  coveredCall: {
+    title: "Covered Call",
+    content: "A covered call is selling a call option while owning the underlying stock, earning a premium but capping upside potential. Example: Own 100 AAPL shares at $150, sell $160 call for $5 premium; if AAPL rises to $170, you sell at $160, missing $10/share but keeping the $5 premium."
+  }
+};
 
 // Define the types for our post data
 interface PostAuthor {
@@ -223,6 +244,43 @@ const Community = () => {
                     </div>
                   </div>
                 </form>
+              </CardContent>
+            </Card>
+            
+            {/* Top Strategies Section with Info Icons */}
+            <Card className="bg-card/30 backdrop-blur-sm border-border/50">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  Top Strategies
+                  <div className="flex space-x-1 ml-2">
+                    <ExplanationTooltip 
+                      title={strategyExplanations.nakedCall.title}
+                      content={strategyExplanations.nakedCall.content}
+                      iconClass="text-[#00FF7F]"
+                    />
+                    <ExplanationTooltip 
+                      title={strategyExplanations.nakedPut.title}
+                      content={strategyExplanations.nakedPut.content}
+                      iconClass="text-[#00FF7F]"
+                    />
+                  </div>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="p-4 bg-black/20 rounded-lg border border-border/50">
+                    <h3 className="font-medium mb-1">Iron Condor</h3>
+                    <p className="text-sm text-muted-foreground">Trading range-bound markets with defined risk</p>
+                  </div>
+                  <div className="p-4 bg-black/20 rounded-lg border border-border/50">
+                    <h3 className="font-medium mb-1">Covered Calls</h3>
+                    <p className="text-sm text-muted-foreground">Generate income while holding stock positions</p>
+                  </div>
+                  <div className="p-4 bg-black/20 rounded-lg border border-border/50">
+                    <h3 className="font-medium mb-1">Bull Put Spread</h3>
+                    <p className="text-sm text-muted-foreground">Bullish strategy with defined risk/reward</p>
+                  </div>
+                </div>
               </CardContent>
             </Card>
             

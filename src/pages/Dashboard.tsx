@@ -12,6 +12,26 @@ import StaticAlertWidget from "@/components/dashboard/StaticAlertWidget";
 import ExplanationTooltip from "@/components/tooltips/ExplanationTooltip";
 import explanations from "@/data/explanations";
 
+// Create strategy explanations object
+const strategyExplanations = {
+  nakedCall: {
+    title: "Naked Call",
+    content: "A naked call is selling a call option without owning the underlying stock, risking unlimited loss if the stock price rises significantly. Example: Sell AAPL $150 call for $5 premium; if AAPL rises to $200, you must buy at $200 to sell at $150, losing $45/share."
+  },
+  nakedPut: {
+    title: "Naked Put",
+    content: "A naked put is selling a put option without holding cash to buy the stock, risking loss if the stock price falls. Example: Sell AAPL $150 put for $5 premium; if AAPL drops to $100, you must buy at $150, losing $45/share."
+  },
+  cashSecuredPut: {
+    title: "Cash-Secured Put",
+    content: "A cash-secured put is selling a put option while holding enough cash to buy the stock if assigned. Example: Sell AAPL $150 put for $5 premium, hold $15,000 cash; if AAPL drops to $100, you buy at $150, but your cost basis is $145 after the premium."
+  },
+  coveredCall: {
+    title: "Covered Call",
+    content: "A covered call is selling a call option while owning the underlying stock, earning a premium but capping upside potential. Example: Own 100 AAPL shares at $150, sell $160 call for $5 premium; if AAPL rises to $170, you sell at $160, missing $10/share but keeping the $5 premium."
+  }
+};
+
 const Dashboard = () => {
   const [showVolatilityAlert, setShowVolatilityAlert] = useState(false);
   const [showSentimentAlert, setShowSentimentAlert] = useState(false);
@@ -75,10 +95,11 @@ const Dashboard = () => {
           </div>
           <div className="relative">
             <SimulatedTrading />
-            <div className="absolute top-4 right-4">
+            <div className="absolute top-4 right-4 flex space-x-1">
               <ExplanationTooltip 
-                title={explanations.coveredCall.title}
-                content={explanations.coveredCall.content}
+                title={strategyExplanations.coveredCall.title}
+                content={strategyExplanations.coveredCall.content}
+                iconClass="text-[#00FF7F]"
               />
             </div>
           </div>
