@@ -20,7 +20,7 @@ const Logo = ({ collapsed = false }: LogoProps) => {
   
   if (collapsed) {
     return (
-      <div className="w-8 h-8 rounded-full bg-optionpulse-blue flex items-center justify-center text-white font-bold">
+      <div className="w-10 h-10 rounded-full bg-optionpulse-blue flex items-center justify-center text-white font-bold text-lg">
         OP
       </div>
     );
@@ -29,8 +29,8 @@ const Logo = ({ collapsed = false }: LogoProps) => {
   return (
     <div className="flex flex-col items-start">
       <div className="flex items-end">
-        <span className="text-[10px] font-bold text-[#00B7EB]">Option</span>
-        <span className="text-[14px] font-bold text-[#00FF7F] leading-none ml-0.5">Pulse</span>
+        <span className="text-[14px] font-bold text-[#00B7EB]">Option</span>
+        <span className="text-[18px] font-bold text-[#00FF7F] leading-none ml-1">Pulse</span>
       </div>
       <div 
         className={cn(
