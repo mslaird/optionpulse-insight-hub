@@ -1,40 +1,67 @@
 
 import { useState } from "react";
-import { PlayCircle, DollarSign } from "lucide-react";
+import { DollarSign, Wallet } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { mockStocks } from "@/data/mockStockData";
+import { cn } from "@/lib/utils";
 
-const mockOptionData = {
-  symbol: "AAPL",
-  strike: 150,
-  type: "call",
-  bid: 10,
-  ask: 11,
-  expiry: "2025-06-20",
+// Mock options data
+const mockOptionsData = {
+  AAPL: { bid: 10, ask: 11, strike: 150 },
+  SPY: { bid: 8.5, ask: 9.2, strike: 450 },
+  TSLA: { bid: 15.2, ask: 16.0, strike: 240 },
+  MSFT: { bid: 12.5, ask: 13.1, strike: 325 },
 };
+
+// Option types
+const optionTypes = [
+  { value: "call", label: "Call" },
+  { value: "put", label: "Put" },
+];
 
 const SimulatedTrading = () => {
   const { toast } = useToast();
-  const [isTrading, setIsTrading] = useState(false);
-  const isMobile = useIsMobile();
+  const [isSimulating, setIsSimulating] = useState(false);
+  const [showTradeSummary, setShowTradeSummary] = useState(false);
+  
+  // Form state
+  const [selectedTicker, setSelectedTicker] = useState("AAPL");
+  const [optionType, setOptionType] = useState("call");
+  const [strikePrice, setStrikePrice] = useState("150");
+  const [quantity, setQuantity] = useState("1");
+  
+  // Filtered stock list (only stocks, not strategies)
+  const stockOptions = mockStocks.filter(stock => stock.type === 'stock' || stock.type === 'etf');
 
-  const handleTrade = () => {
-    setIsTrading(true);
+  const handleSimulateTrade = () => {
+    setIsSimulating(true);
+    setShowTradeSummary(false);
     
     // Simulate API call delay
     setTimeout(() => {
-      setIsTrading(false);
+      setIsSimulating(false);
+      setShowTradeSummary(true);
       
       // Show toast notification for trade confirmation
       toast({
-        title: "Trade Confirmed",
-        description: `Trade placed: ${mockOptionData.symbol} $${mockOptionData.strike} ${mockOptionData.type}, $${mockOptionData.bid} premium`,
+        title: "Trade Simulated",
+        description: `Simulated trade: ${quantity} ${selectedTicker} $${strikePrice} ${optionType}, $${mockOptionsData[selectedTicker]?.bid || 0} premium`,
         variant: "default",
         className: "bg-black/80 border-[#00B7EB]/30 text-white",
       });
-    }, 1500);
+    }, 1000);
+  };
+
+  // Calculate total cost
+  const calculateTotalCost = () => {
+    const bid = mockOptionsData[selectedTicker]?.bid || 0;
+    const qty = parseInt(quantity) || 0;
+    return (bid * 100 * qty).toLocaleString('en-US');
   };
 
   return (
@@ -47,31 +74,116 @@ const SimulatedTrading = () => {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          <div className="p-4 rounded-lg border border-optionpulse-blue/30 bg-optionpulse-blue/10">
-            <div className="flex justify-between mb-2">
-              <span className="font-medium text-white">{mockOptionData.symbol} ${mockOptionData.strike} {mockOptionData.type}</span>
-              <span className="text-xs text-muted-foreground">Exp: {mockOptionData.expiry}</span>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="ticker" className="text-sm text-muted-foreground">
+                Select Ticker
+              </Label>
+              <Select 
+                value={selectedTicker} 
+                onValueChange={setSelectedTicker}
+              >
+                <SelectTrigger id="ticker" className="w-full bg-background/50">
+                  <SelectValue placeholder="Select Ticker" />
+                </SelectTrigger>
+                <SelectContent>
+                  {stockOptions.map((stock) => (
+                    <SelectItem key={stock.id} value={stock.ticker}>
+                      {stock.ticker} - {stock.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
-            <div className="grid grid-cols-2 gap-2 mt-3">
-              <div className="text-center">
-                <div className="text-xs text-muted-foreground">Bid</div>
-                <div className="text-lg font-medium text-optionpulse-blue">${mockOptionData.bid.toFixed(2)}</div>
-              </div>
-              <div className="text-center">
-                <div className="text-xs text-muted-foreground">Ask</div>
-                <div className="text-lg font-medium text-optionpulse-blue">${mockOptionData.ask.toFixed(2)}</div>
-              </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="optionType" className="text-sm text-muted-foreground">
+                Option Type
+              </Label>
+              <Select 
+                value={optionType} 
+                onValueChange={setOptionType}
+              >
+                <SelectTrigger id="optionType" className="w-full bg-background/50">
+                  <SelectValue placeholder="Select Option Type" />
+                </SelectTrigger>
+                <SelectContent>
+                  {optionTypes.map((type) => (
+                    <SelectItem key={type.value} value={type.value}>
+                      {type.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
           
-          <Button 
-            onClick={handleTrade} 
-            disabled={isTrading}
-            className="w-full bg-optionpulse-blue hover:bg-optionpulse-blue-dark text-white transition-colors"
-          >
-            <PlayCircle size={isMobile ? 16 : 18} className="mr-2" />
-            {isTrading ? "Processing..." : "Go Live"}
-          </Button>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="strike" className="text-sm text-muted-foreground">
+                Strike Price ($)
+              </Label>
+              <Input
+                id="strike"
+                type="number"
+                value={strikePrice}
+                onChange={(e) => setStrikePrice(e.target.value)}
+                className="bg-background/50"
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="quantity" className="text-sm text-muted-foreground">
+                Quantity (Contracts)
+              </Label>
+              <Input
+                id="quantity"
+                type="number"
+                min="1"
+                value={quantity}
+                onChange={(e) => setQuantity(e.target.value)}
+                className="bg-background/50"
+              />
+            </div>
+          </div>
+          
+          <div className="pt-2">
+            <Button 
+              onClick={handleSimulateTrade} 
+              disabled={isSimulating}
+              className="w-full bg-optionpulse-blue hover:bg-optionpulse-blue/80 text-white transition-colors"
+            >
+              <Wallet size={18} className="mr-2" />
+              {isSimulating ? "Processing..." : "Simulate Trade"}
+            </Button>
+          </div>
+          
+          {showTradeSummary && (
+            <div className={cn(
+              "mt-4 p-4 rounded-lg border bg-black/30 transition-all duration-300 animate-in fade-in",
+              "border-optionpulse-blue/30"
+            )}>
+              <h3 className="text-sm font-semibold text-optionpulse-blue mb-2">Trade Summary</h3>
+              <div className="space-y-1 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Instrument:</span>
+                  <span className="font-medium">{selectedTicker} ${strikePrice} {optionType}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Premium:</span>
+                  <span className="font-medium">${mockOptionsData[selectedTicker]?.bid || 0} per share</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Contracts:</span>
+                  <span className="font-medium">{quantity}</span>
+                </div>
+                <div className="flex justify-between pt-2 border-t border-muted/20">
+                  <span className="text-muted-foreground">Total Cost:</span>
+                  <span className="font-semibold text-optionpulse-blue">${calculateTotalCost()}</span>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>
