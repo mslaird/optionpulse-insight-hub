@@ -77,14 +77,19 @@ const GreeksChart = () => {
           <ResponsiveContainer width="100%" height="100%">
             <LineChart
               data={lineData}
-              margin={{ top: 10, right: 10, left: 0, bottom: 20 }}
+              margin={{ top: 10, right: 10, left: 0, bottom: 40 }} // Increased bottom margin
             >
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.1)" />
               <XAxis 
                 dataKey="x" 
                 axisLine={false} 
                 tick={{ fill: '#FFFFFF' }}
-                label={{ value: 'Strike Price Distance', position: 'insideBottomRight', offset: -5, fill: '#8E9196' }}
+                label={{ 
+                  value: 'Strike Price Distance', 
+                  position: 'insideBottomRight', 
+                  offset: 20, // Increased offset to push label down
+                  fill: '#8E9196' 
+                }}
               />
               <YAxis 
                 axisLine={false}
