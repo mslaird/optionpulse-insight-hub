@@ -29,7 +29,7 @@ const Logo = ({ collapsed = false }: LogoProps) => {
   return (
     <div className="flex flex-col items-start">
       <div className="flex items-end relative">
-        <span className="text-[18px] font-bold"><span className="text-[#00B7EB]">Option</span><span className="text-[#00FF7F]">Pulse</span></span>
+        <span className="text-[18px] font-bold"><span className="text-[#00B7EB]">Option</span><span className="text-[22px] font-bold text-[#00FF7F]">Pulse</span></span>
         <div className="absolute -bottom-2 w-full">
           <svg 
             viewBox="0 0 120 10" 
