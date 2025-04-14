@@ -76,14 +76,20 @@ const GreeksChart = () => {
           <ResponsiveContainer width="100%" height="100%">
             <LineChart
               data={lineData}
-              margin={{ top: 10, right: 10, left: 0, bottom: 20 }}
+              margin={{ top: 10, right: 10, left: 0, bottom: 40 }} // Reduced bottom margin to prevent cut-off
             >
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.1)" />
               <XAxis 
                 dataKey="x" 
                 axisLine={false} 
                 tick={{ fill: '#FFFFFF' }}
-                label={{ value: 'Strike Price Distance', position: 'insideBottomRight', offset: -15, fill: '#8E9196' }}
+                label={{ 
+                  value: 'Strike Price Distance', 
+                  position: 'insideBottomRight', 
+                  offset: -5,  // Reduced offset
+                  fill: '#8E9196',
+                  fontSize: 12  // Slightly smaller font
+                }}
               />
               <YAxis 
                 axisLine={false}
@@ -140,9 +146,10 @@ const GreeksChart = () => {
               key={greek.name} 
               className="bg-card/40 p-3 rounded-lg border border-border/50 flex flex-col items-center justify-between"
             >
-              <div className="flex items-center justify-center mb-2">
-                <div className="h-2 w-10 mr-1" style={{ backgroundColor: greek.color, borderRadius: "1px" }}></div>
-              </div>
+              <div 
+                className="w-4 h-4 rounded-full mb-2" 
+                style={{ backgroundColor: greek.color }}
+              ></div>
               <span className="font-medium text-sm mb-2 text-center">{greek.name}</span>
               <div className={cn(
                 "text-lg font-semibold text-center",
