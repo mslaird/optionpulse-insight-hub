@@ -8,6 +8,14 @@ import { Separator } from "@/components/ui/separator";
 const alertsData = [
   {
     id: 1,
+    symbol: "SPY",
+    message: "IV spiked 5% - currently at 20%",
+    timestamp: "Just now",
+    type: "volatility" as const,
+    priority: "high" as const
+  },
+  {
+    id: 2,
     symbol: "AAPL",
     message: "IV spiked 10% - good time to sell a put?",
     timestamp: "2h ago",
@@ -15,7 +23,7 @@ const alertsData = [
     priority: "high" as const
   },
   {
-    id: 2,
+    id: 3,
     symbol: "TSLA", 
     message: "Unusual options activity detected",
     timestamp: "4h ago",
@@ -23,7 +31,7 @@ const alertsData = [
     priority: "medium" as const
   },
   {
-    id: 3,
+    id: 4,
     symbol: "MSFT",
     message: "IV crushed 15% after earnings",
     timestamp: "8h ago",
@@ -31,7 +39,7 @@ const alertsData = [
     priority: "low" as const
   },
   {
-    id: 4,
+    id: 5,
     symbol: "AAPL",
     message: "Expected to rise 5% in 24 hours, 80% bullish sentiment",
     timestamp: "1h ago",
@@ -39,7 +47,7 @@ const alertsData = [
     priority: "high" as const
   },
   {
-    id: 5,
+    id: 6,
     symbol: "AMZN",
     message: "Potential bearish trend forming, 60% probability",
     timestamp: "3h ago",
@@ -47,7 +55,7 @@ const alertsData = [
     priority: "medium" as const
   },
   {
-    id: 6,
+    id: 7,
     symbol: "NFLX",
     message: "Earnings volatility expected to rise 20% next week",
     timestamp: "12h ago",
@@ -55,7 +63,7 @@ const alertsData = [
     priority: "medium" as const
   },
   {
-    id: 7,
+    id: 8,
     symbol: "META",
     message: "Support level likely to hold at $300, 75% probability",
     timestamp: "5h ago",
@@ -63,7 +71,7 @@ const alertsData = [
     priority: "low" as const
   },
   {
-    id: 8,
+    id: 9,
     symbol: "NVDA",
     message: "IV rank at 90th percentile - high premium selling opportunity",
     timestamp: "6h ago",
@@ -116,7 +124,7 @@ const AlertsList = ({ filterType }: AlertsListProps) => {
               )}
             >
               {alert.type === "volatility" ? 
-                <AlertCircle size={20} /> : 
+                <Bell size={20} /> : 
                 <TrendingUp size={20} />
               }
             </div>
