@@ -24,7 +24,7 @@ const Dashboard = () => {
   const { widgets, moveWidget, toggleWidgetVisibility } = useDraggableDashboard();
   const isMobileDevice = useIsMobile();
   const [dndBackend, setDndBackend] = useState<any>(null);
-  const [backendOptions, setBackendOptions] = useState({});
+  const [backendOptions, setBackendOptions] = useState<{enableMouseEvents?: boolean}>({});
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
