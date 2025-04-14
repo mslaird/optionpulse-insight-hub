@@ -15,10 +15,6 @@ import { useDraggableDashboard } from "@/hooks/use-draggable-dashboard";
 import { Toaster } from "@/components/ui/toaster";
 import { useIsMobile } from "@/hooks/use-mobile";
 
-// Dynamic imports to avoid issues with SSR or missing modules
-const HTML5BackendModule = import('react-dnd-html5-backend').then(module => module.HTML5Backend);
-const TouchBackendModule = import('react-dnd-touch-backend').then(module => module.TouchBackend);
-
 const Dashboard = () => {
   const { toast } = useToast();
   const { widgets, moveWidget, toggleWidgetVisibility } = useDraggableDashboard();
@@ -32,12 +28,14 @@ const Dashboard = () => {
     const loadBackend = async () => {
       try {
         if (isMobile) {
-          const TouchBackend = await TouchBackendModule;
-          setDndBackend(TouchBackend);
+          // Dynamic import of TouchBackend
+          const touchModule = await import('react-dnd-touch-backend');
+          setDndBackend(touchModule.TouchBackend);
           setBackendOptions({ enableMouseEvents: true });
         } else {
-          const HTML5Backend = await HTML5BackendModule;
-          setDndBackend(HTML5Backend);
+          // Dynamic import of HTML5Backend
+          const html5Module = await import('react-dnd-html5-backend');
+          setDndBackend(html5Module.HTML5Backend);
         }
         setIsLoading(false);
       } catch (error) {
