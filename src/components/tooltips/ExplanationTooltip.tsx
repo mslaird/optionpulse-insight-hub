@@ -13,7 +13,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -40,25 +39,23 @@ const ExplanationTooltip = ({
     <>
       <TooltipProvider>
         <Tooltip delayDuration={300}>
-          <DialogTrigger asChild>
-            <TooltipTrigger asChild>
-              <button 
-                onClick={() => setOpen(true)}
-                className={cn(
-                  "inline-flex items-center justify-center rounded-full",
-                  "focus:outline-none focus:ring-2 focus:ring-primary/50 focus-visible:ring-offset-2",
-                  "text-muted-foreground hover:text-primary transition-colors",
-                  className
-                )}
-                aria-label={`Learn more about ${title}`}
-              >
-                <HelpCircle 
-                  className={cn("cursor-pointer", iconClass)} 
-                  size={iconSize} 
-                />
-              </button>
-            </TooltipTrigger>
-          </DialogTrigger>
+          <TooltipTrigger asChild>
+            <button 
+              onClick={() => setOpen(true)}
+              className={cn(
+                "inline-flex items-center justify-center rounded-full",
+                "focus:outline-none focus:ring-2 focus:ring-primary/50 focus-visible:ring-offset-2",
+                "text-muted-foreground hover:text-primary transition-colors",
+                className
+              )}
+              aria-label={`Learn more about ${title}`}
+            >
+              <HelpCircle 
+                className={cn("cursor-pointer", iconClass)} 
+                size={iconSize} 
+              />
+            </button>
+          </TooltipTrigger>
           {!isMobile && (
             <TooltipContent side="top" className="max-w-xs">
               <p>Click to learn more about {title}</p>
