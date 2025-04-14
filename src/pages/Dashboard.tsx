@@ -16,14 +16,14 @@ import { Toaster } from "@/components/ui/toaster";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 // Define types for the dynamic imports
-type HTML5BackendType = any;
-type TouchBackendType = any;
+type HTML5BackendType = typeof import('react-dnd-html5-backend').HTML5Backend;
+type TouchBackendType = typeof import('react-dnd-touch-backend').TouchBackend;
 
 const Dashboard = () => {
   const { toast } = useToast();
   const { widgets, moveWidget, toggleWidgetVisibility } = useDraggableDashboard();
   const isMobileDevice = useIsMobile();
-  const [dndBackend, setDndBackend] = useState<any>(null);
+  const [dndBackend, setDndBackend] = useState<HTML5BackendType | TouchBackendType | null>(null);
   const [backendOptions, setBackendOptions] = useState<{enableMouseEvents?: boolean}>({});
   const [isLoading, setIsLoading] = useState(true);
 
