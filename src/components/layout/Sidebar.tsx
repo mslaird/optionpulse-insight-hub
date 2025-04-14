@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -15,6 +14,7 @@ import {
   X
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Logo from "@/components/brand/Logo";
 
 type SidebarItem = {
   path: string;
@@ -36,12 +36,10 @@ export const Sidebar = ({ onToggle }: SidebarProps) => {
     const newCollapsedState = !isCollapsed;
     setIsCollapsed(newCollapsedState);
     
-    // Notify parent component
     if (onToggle) {
       onToggle(newCollapsedState);
     }
     
-    // Dispatch custom event for any listeners
     const event = new CustomEvent('sidebar-toggle', { 
       detail: { collapsed: newCollapsedState } 
     });
@@ -108,7 +106,6 @@ export const Sidebar = ({ onToggle }: SidebarProps) => {
 
   return (
     <>
-      {/* Mobile menu button (always visible) */}
       <div className="fixed top-4 left-4 z-50 md:hidden">
         <Button 
           variant="ghost" 
@@ -120,29 +117,41 @@ export const Sidebar = ({ onToggle }: SidebarProps) => {
         </Button>
       </div>
       
-      {/* Desktop Sidebar */}
       <aside className={cn(
         "fixed h-full top-0 left-0 z-40 transition-all duration-300 bg-sidebar",
         "border-r border-border hidden md:flex flex-col",
         isCollapsed ? "w-16" : "w-64"
       )}>
-        <div className="flex items-center justify-between p-4 h-16">
-          {!isCollapsed && (
+        <div className="flex items-center justify-between p-4 h-16 bg-[#1C2526]">
+          {!isCollapsed ? (
             <Link to="/" className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-optionpulse-blue flex items-center justify-center text-white font-bold">
-                OP
-              </div>
-              <span className="font-bold text-lg text-foreground">OptionPulse</span>
+              <Logo collapsed={false} />
+            </Link>
+          ) : (
+            <Link to="/" className="mx-auto">
+              <Logo collapsed={true} />
             </Link>
           )}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={toggleSidebar}
-            className={cn("ml-auto", isCollapsed && "mx-auto")}
-          >
-            <Menu size={20} />
-          </Button>
+          {!isCollapsed && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleSidebar}
+              className="ml-auto"
+            >
+              <Menu size={20} />
+            </Button>
+          )}
+          {isCollapsed && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleSidebar}
+              className="mx-auto"
+            >
+              <Menu size={20} />
+            </Button>
+          )}
         </div>
         
         <div className="flex flex-col flex-1 py-4 overflow-y-auto">
@@ -201,19 +210,15 @@ export const Sidebar = ({ onToggle }: SidebarProps) => {
         </div>
       </aside>
       
-      {/* Mobile Sidebar (overlay) */}
       <aside className={cn(
         "fixed inset-0 z-40 transition-all duration-300 md:hidden",
         isMobileOpen ? "translate-x-0" : "-translate-x-full"
       )}>
         <div className="absolute inset-0 bg-black/50" onClick={toggleMobileSidebar} />
         <div className="absolute top-0 left-0 w-64 h-full bg-sidebar border-r border-border">
-          <div className="flex items-center justify-between p-4 h-16">
+          <div className="flex items-center justify-between p-4 h-16 bg-[#1C2526]">
             <Link to="/" className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-optionpulse-blue flex items-center justify-center text-white font-bold">
-                OP
-              </div>
-              <span className="font-bold text-lg text-foreground">OptionPulse</span>
+              <Logo collapsed={false} />
             </Link>
             <Button
               variant="ghost"
