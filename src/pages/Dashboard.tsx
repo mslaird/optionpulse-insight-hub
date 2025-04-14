@@ -1,7 +1,6 @@
 
 import { useState, useEffect } from "react";
 import Layout from "@/components/layout/Layout";
-import StockSearch from "@/components/search/StockSearch";
 import MarketOverview from "@/components/dashboard/MarketOverview";
 import OptionsChainPreview from "@/components/dashboard/OptionsChainPreview";
 import GreeksChart from "@/components/dashboard/GreeksChart";
@@ -39,10 +38,6 @@ const Dashboard = () => {
         <div>
           <h1 className="text-2xl md:text-3xl font-bold mb-2">Dashboard</h1>
           <p className="text-muted-foreground">Monitor market data and options opportunities</p>
-        </div>
-        
-        <div className="mb-2">
-          <StockSearch />
         </div>
         
         <MarketOverview />
