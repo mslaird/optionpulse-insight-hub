@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AreaChart } from "lucide-react";
 import { 
@@ -75,7 +76,7 @@ const GreeksChart = () => {
           <ResponsiveContainer width="100%" height="100%">
             <LineChart
               data={lineData}
-              margin={{ top: 10, right: 10, left: 0, bottom: 60 }} // Increased bottom margin for label
+              margin={{ top: 10, right: 10, left: 0, bottom: 60 }}
             >
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.1)" />
               <XAxis 
@@ -85,7 +86,7 @@ const GreeksChart = () => {
                 label={{ 
                   value: 'Strike Price Distance', 
                   position: 'insideBottom', 
-                  offset: -20, // Adjusted offset to push label lower
+                  offset: -20,
                   fill: '#8E9196',
                   fontSize: 11
                 }}
@@ -139,19 +140,19 @@ const GreeksChart = () => {
           </ResponsiveContainer>
         </div>
         
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-2">
           {greeksData.map((greek) => (
             <div 
               key={greek.name} 
-              className="bg-card/40 p-3 rounded-lg border border-border/50 flex flex-col items-center justify-between"
+              className="bg-card/40 p-2 rounded-lg border border-border/50 flex flex-col items-center justify-between"
             >
               <div 
-                className="w-4 h-4 rounded-full mb-2" 
+                className="w-4 h-4 rounded-full mb-1" 
                 style={{ backgroundColor: greek.color }}
               ></div>
-              <span className="font-medium text-sm mb-2 text-center">{greek.name}</span>
+              <span className="font-medium text-xs mb-1 text-center">{greek.name}</span>
               <div className={cn(
-                "text-lg font-semibold text-center",
+                "text-sm font-semibold text-center",
                 greek.value > 0 ? "text-white" : "text-optionpulse-red"
               )}>
                 {greek.value.toFixed(2)}
@@ -165,3 +166,4 @@ const GreeksChart = () => {
 };
 
 export default GreeksChart;
+
