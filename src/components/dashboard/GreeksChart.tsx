@@ -1,6 +1,6 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { AreaChart } from "lucide-react";
+import { AreaChart, Info } from "lucide-react";
 import { 
   LineChart, 
   Line, 
@@ -11,6 +11,15 @@ import {
   ResponsiveContainer
 } from 'recharts';
 import { cn } from "@/lib/utils";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 // Mock data
 const greeksData = [
@@ -66,10 +75,59 @@ const GreeksChart = () => {
   return (
     <Card className="bg-card/30 backdrop-blur-sm border-border/50">
       <CardHeader className="pb-2">
-        <CardTitle className="text-lg font-medium flex items-center gap-2">
-          <AreaChart size={18} className="text-optionpulse-blue" />
-          Greeks Analysis (AAPL $180 Call)
-        </CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-lg font-medium flex items-center gap-2">
+            <AreaChart size={18} className="text-optionpulse-blue" />
+            Greeks Analysis (AAPL $180 Call)
+          </CardTitle>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="flex items-center gap-1 text-[#00FF7F] hover:text-[#00FF7F]/80 hover:bg-background/20"
+              >
+                <Info size={16} className="text-[#00FF7F]" />
+                <span className="text-xs">How are Greeks calculated?</span>
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-md bg-optionpulse-navy border-border/50">
+              <DialogHeader>
+                <DialogTitle className="text-xl text-[#00B7EB] font-semibold">Understanding Options Greeks</DialogTitle>
+                <DialogDescription className="text-muted-foreground">
+                  How these values influence option pricing
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4">
+                {greeksData.map((greek) => (
+                  <div key={greek.name} className="border-b border-border/30 pb-3">
+                    <div className="flex items-center gap-2 mb-1">
+                      <div 
+                        className="w-3 h-3 rounded-full" 
+                        style={{ backgroundColor: greek.color }}
+                      ></div>
+                      <h3 className="font-medium text-white">{greek.name}</h3>
+                    </div>
+                    <p className="text-sm text-muted-foreground pl-5">
+                      {
+                        greek.name === 'Delta' ? 
+                          "Measures price change per $1 stock move (e.g., Delta 0.6 means option price moves $0.60 when stock moves $1)." :
+                        greek.name === 'Gamma' ? 
+                          "Measures Delta change per $1 stock move (e.g., Gamma 0.05 means Delta increases by 0.05 for a $1 move in the stock)." :
+                        greek.name === 'Theta' ? 
+                          "Measures daily time decay (e.g., Theta -0.03 means option loses $0.03 per day as it approaches expiration)." :
+                        "Measures price change per 1% volatility change (e.g., Vega 0.2 means option price moves $0.20 when implied volatility changes by 1%)."
+                      }
+                    </p>
+                  </div>
+                ))}
+                <p className="text-sm text-muted-foreground pt-1">
+                  Understanding these Greeks helps traders make more informed decisions about option strategies and risk management.
+                </p>
+              </div>
+            </DialogContent>
+          </Dialog>
+        </div>
       </CardHeader>
       <CardContent>
         <div className="h-64 mt-4">
@@ -166,4 +224,3 @@ const GreeksChart = () => {
 };
 
 export default GreeksChart;
-
