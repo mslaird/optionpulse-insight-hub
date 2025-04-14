@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AreaChart } from "lucide-react";
 import { 
@@ -75,7 +76,7 @@ const GreeksChart = () => {
           <ResponsiveContainer width="100%" height="100%">
             <LineChart
               data={lineData}
-              margin={{ top: 10, right: 10, left: 0, bottom: 60 }} // Increased bottom margin
+              margin={{ top: 10, right: 10, left: 0, bottom: 40 }} // Reduced bottom margin slightly
             >
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.1)" />
               <XAxis 
@@ -85,7 +86,7 @@ const GreeksChart = () => {
                 label={{ 
                   value: 'Strike Price Distance', 
                   position: 'insideBottom', 
-                  offset: 30, // Increased offset to create more space
+                  offset: 10, // Reduced offset to create a small gap
                   fill: '#8E9196',
                   fontSize: 11
                 }}
@@ -165,3 +166,4 @@ const GreeksChart = () => {
 };
 
 export default GreeksChart;
+
