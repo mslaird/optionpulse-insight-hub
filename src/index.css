@@ -43,6 +43,10 @@
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 195 81% 49%;
+    
+    /* New accent colors */
+    --accent-blue: 190 100% 46%;   /* #00B7EB */
+    --accent-green: 157 100% 50%;  /* #00FF7F */
   }
 }
 
@@ -80,14 +84,29 @@
   }
   
   .text-glow {
-    text-shadow: 0 0 15px rgba(30, 174, 219, 0.5);
+    text-shadow: 0 0 15px rgba(0, 183, 235, 0.5);
   }
   
   .text-glow-green {
-    text-shadow: 0 0 15px rgba(52, 211, 153, 0.5);
+    text-shadow: 0 0 15px rgba(0, 255, 127, 0.5);
   }
   
   .text-glow-red {
     text-shadow: 0 0 15px rgba(248, 113, 113, 0.5);
   }
+  
+  /* Mobile optimizations */
+  .mobile-container {
+    @apply max-w-md mx-auto px-4;
+  }
+  
+  .mobile-card {
+    @apply rounded-lg shadow-lg;
+  }
+}
+
+/* Enable smooth transitions for draggable items */
+.react-draggable-dragging {
+  transition: none !important;
+  z-index: 1000;
 }
