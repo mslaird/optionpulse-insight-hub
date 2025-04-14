@@ -142,18 +142,21 @@ const GreeksChart = () => {
           </ResponsiveContainer>
         </div>
         
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-2">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
           {greeksData.map((greek) => (
-            <div key={greek.name} className="bg-card/40 p-3 rounded-lg border border-border/50">
-              <div className="flex justify-between items-center">
-                <span className="font-medium">{greek.name}</span>
+            <div 
+              key={greek.name} 
+              className="bg-card/40 p-3 rounded-lg border border-border/50 flex flex-col justify-between"
+            >
+              <div className="flex justify-between items-center mb-2">
+                <span className="font-medium text-sm">{greek.name}</span>
                 <div 
                   className="w-3 h-3 rounded-full" 
                   style={{ backgroundColor: greek.color }}
                 ></div>
               </div>
               <div className={cn(
-                "mt-2 text-lg font-semibold",
+                "text-lg font-semibold text-center",
                 greek.value > 0 ? "text-white" : "text-optionpulse-red"
               )}>
                 {greek.value.toFixed(2)}
