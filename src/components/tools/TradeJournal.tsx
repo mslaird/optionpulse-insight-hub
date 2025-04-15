@@ -27,7 +27,6 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { 
   Plus, 
   Trash2, 
@@ -192,14 +191,14 @@ const TradeJournal = () => {
   const lossTrades = trades.filter(t => t.result === 'loss').length;
   const winRate = closedTrades > 0 ? (profitTrades / closedTrades) * 100 : 0;
   const totalProfitLoss = trades.reduce((sum, trade) => sum + trade.profitLoss, 0);
-
+  
   const profitByTicker = Object.entries(
     trades.reduce((acc, trade) => {
       acc[trade.ticker] = (acc[trade.ticker] || 0) + trade.profitLoss;
       return acc;
     }, {} as {[key: string]: number})
   ).map(([ticker, profit]) => ({ ticker, profit }));
-
+  
   const tradesByStrategy = Object.entries(
     trades.reduce((acc, trade) => {
       acc[trade.strategy] = (acc[trade.strategy] || 0) + 1;
@@ -220,7 +219,7 @@ const TradeJournal = () => {
         cumulativeProfitLoss: runningProfitLoss
       };
     });
-
+  
   const alertSuggestions = filteredAlerts
     .filter(alert => alert.itmProbability >= 0.7)
     .slice(0, 3);
@@ -335,41 +334,51 @@ const TradeJournal = () => {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                <div className="h-[180px] flex items-center justify-center">
+                <div className="h-[200px]">
                   <ResponsiveContainer width="100%" height="100%">
                     <RechartsPieChart>
-                      <Tooltip formatter={(value: number) => [`${value} trades`]} />
+                      <Tooltip 
+                        formatter={(value: number) => [`${value} trades`]} 
+                        contentStyle={{ 
+                          backgroundColor: 'rgba(0, 0, 0, 0.8)', 
+                          color: 'white', 
+                          borderRadius: '8px' 
+                        }}
+                      />
                       <Pie
                         data={tradesByStrategy}
                         cx="50%"
                         cy="50%"
-                        outerRadius={60}
+                        outerRadius={80}
                         fill="#8884d8"
                         dataKey="count"
                         nameKey="strategy"
-                        label={false}
+                        label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
+                        labelLine={false}
                       >
                         {tradesByStrategy.map((_, index) => (
                           <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                         ))}
                       </Pie>
                       <Legend 
-                        layout="vertical" 
-                        verticalAlign="middle" 
-                        align="right"
-                        formatter={(value, entry) => {
-                          const item = tradesByStrategy.find(item => item.strategy === value);
-                          return `${value} (${item ? item.count : 0})`;
+                        layout="horizontal" 
+                        verticalAlign="bottom" 
+                        align="center"
+                        iconType="circle"
+                        formatter={(value) => value}
+                        wrapperStyle={{ 
+                          paddingTop: '10px', 
+                          color: 'white' 
                         }}
                       />
                     </RechartsPieChart>
                   </ResponsiveContainer>
                 </div>
                 
-                <div className="h-[180px] flex items-center justify-center">
+                <div className="h-[200px]">
                   <ResponsiveContainer width="100%" height="100%">
                     <RechartsPieChart>
-                      <Tooltip formatter={(value: number) => [`$${Math.abs(value).toFixed(2)}`, value >= 0 ? 'Profit' : 'Loss']} />
+                      <Tooltip formatter={(value: number) => [`${value > 0 ? '+' : ''}$${value.toFixed(2)}`]} />
                       <Pie
                         data={profitByTicker}
                         cx="50%"
@@ -378,7 +387,7 @@ const TradeJournal = () => {
                         fill="#8884d8"
                         dataKey="profit"
                         nameKey="ticker"
-                        label={false}
+                        label={({ ticker, profit }) => `${ticker} ${profit > 0 ? '+' : ''}$${profit.toFixed(0)}`}
                       >
                         {profitByTicker.map((entry, index) => (
                           <Cell 
@@ -387,15 +396,7 @@ const TradeJournal = () => {
                           />
                         ))}
                       </Pie>
-                      <Legend 
-                        layout="vertical" 
-                        verticalAlign="middle" 
-                        align="right"
-                        formatter={(value, entry) => {
-                          const item = profitByTicker.find(item => item.ticker === value);
-                          return `${value} (${item ? (item.profit >= 0 ? '+' : '') + '$' + item.profit.toFixed(2) : '$0'})`;
-                        }}
-                      />
+                      <Legend />
                     </RechartsPieChart>
                   </ResponsiveContainer>
                 </div>
