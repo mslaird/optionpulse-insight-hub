@@ -14,7 +14,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { ChartContainer } from "@/components/ui/chart";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
 // Mock payoff data generator
@@ -146,6 +145,8 @@ const PayoffDiagramGenerator = () => {
                 label={{ value: 'Profit/Loss ($)', angle: -90, position: 'insideLeft' }} 
               />
               <Tooltip 
+                wrapperClassName="!rounded-lg"
+                contentClassName="!rounded-lg !p-2 !text-sm !shadow-lg"
                 formatter={(value, name, props) => {
                   const stockPrice = props.payload.stockPrice;
                   const maxProfit = Math.max(...payoffData.map(d => d.profit));
@@ -206,4 +207,3 @@ const PayoffDiagramGenerator = () => {
 };
 
 export default PayoffDiagramGenerator;
-
