@@ -230,7 +230,7 @@ const TradeJournal = () => {
       };
     });
   
-  // AI alert suggestions
+  // AI alert suggestions - filter for usable format
   const alertSuggestions = filteredAlerts
     .filter(alert => alert.itmProbability >= 0.7) // Only high probability alerts
     .slice(0, 3); // Limit to 3 suggestions
@@ -323,7 +323,7 @@ const TradeJournal = () => {
                     <XAxis dataKey="date" />
                     <YAxis />
                     <Tooltip 
-                      formatter={(value) => [`$${value}`, 'P/L']}
+                      formatter={(value: number) => [`$${value}`, 'P/L']}
                       labelFormatter={(date) => `Date: ${date}`}
                     />
                     <Legend />
@@ -349,7 +349,7 @@ const TradeJournal = () => {
                 <div className="h-[200px]">
                   <ResponsiveContainer width="100%" height="100%">
                     <RechartsPieChart>
-                      <Tooltip formatter={(value) => [`${value} trades`]} />
+                      <Tooltip formatter={(value: number) => [`${value} trades`]} />
                       <Pie
                         data={tradesByStrategy}
                         cx="50%"
@@ -372,7 +372,7 @@ const TradeJournal = () => {
                 <div className="h-[200px]">
                   <ResponsiveContainer width="100%" height="100%">
                     <RechartsPieChart>
-                      <Tooltip formatter={(value) => [`${value > 0 ? '+' : ''}$${value.toFixed(2)}`]} />
+                      <Tooltip formatter={(value: number) => [`${value > 0 ? '+' : ''}$${value.toFixed(2)}`]} />
                       <Pie
                         data={profitByTicker}
                         cx="50%"
@@ -405,7 +405,7 @@ const TradeJournal = () => {
         <Card className="bg-card/30 backdrop-blur-sm border-border/50">
           <CardHeader className="pb-2">
             <CardTitle className="text-lg flex items-center gap-2">
-              <Sparkles size={16} className="text-optionpulse-green" />
+              <TrendingUp size={16} className="text-optionpulse-green" />
               Trade Opportunities from AI Alerts
             </CardTitle>
           </CardHeader>
@@ -415,7 +415,7 @@ const TradeJournal = () => {
                 <Card key={alert.id} className="bg-optionpulse-navy/70 hover:bg-optionpulse-navy transition-colors border-border/50">
                   <CardContent className="p-4">
                     <div className="flex justify-between items-start mb-2">
-                      <div className="font-medium">{alert.symbol} ${alert.strike} {alert.type}</div>
+                      <div className="font-medium">{alert.symbol} ${alert.strikePrice} {alert.type}</div>
                       <Badge variant="outline" className="bg-optionpulse-blue text-white">
                         {Math.round(alert.itmProbability * 100)}% ITM
                       </Badge>
@@ -424,15 +424,15 @@ const TradeJournal = () => {
                       Expires: {alert.expiryDate}
                     </div>
                     <div className="text-sm mb-3">
-                      {alert.sentiment === 'bullish' ? (
+                      {alert.sentiment.direction === 'bullish' ? (
                         <div className="flex items-center text-optionpulse-green">
                           <TrendingUp size={14} className="mr-1" />
-                          {Math.round(alert.sentimentScore * 100)}% Bullish
+                          {Math.round(alert.sentiment.percentage)}% Bullish
                         </div>
                       ) : (
                         <div className="flex items-center text-optionpulse-red">
                           <TrendingDown size={14} className="mr-1" />
-                          {Math.round(alert.sentimentScore * 100)}% Bearish
+                          {Math.round(alert.sentiment.percentage)}% Bearish
                         </div>
                       )}
                     </div>
@@ -448,8 +448,8 @@ const TradeJournal = () => {
                           strategy: alert.type === 'call' ? 'Long Call' : 'Long Put',
                           action: 'buy',
                           quantity: 1,
-                          premium: alert.estimatedPremium || 5,
-                          strike: alert.strike,
+                          premium: 5,
+                          strike: alert.strikePrice,
                           expiryDate: alert.expiryDate,
                           result: 'open',
                           profitLoss: 0,

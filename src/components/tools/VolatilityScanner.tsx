@@ -51,7 +51,7 @@ const VolatilityScanner = () => {
   const [sortDirection, setSortDirection] = useState("desc");
   const [refreshKey, setRefreshKey] = useState(0);
 
-  const handleSort = (column) => {
+  const handleSort = (column: string) => {
     if (sortColumn === column) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
@@ -95,7 +95,7 @@ const VolatilityScanner = () => {
       } else if (sortColumn === "strike") {
         comparison = a.strike - b.strike;
       } else if (sortColumn === "expiry") {
-        comparison = new Date(a.expiry) - new Date(b.expiry);
+        comparison = new Date(a.expiry).getTime() - new Date(b.expiry).getTime();
       } else if (sortColumn === "recentChange") {
         comparison = a.recentChange - b.recentChange;
       }
