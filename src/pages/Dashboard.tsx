@@ -9,8 +9,10 @@ import VolatilityNotification from "@/components/notifications/VolatilityNotific
 import SentimentNotification from "@/components/notifications/SentimentNotification";
 import SimulatedTrading from "@/components/trading/SimulatedTrading";
 import StaticAlertWidget from "@/components/dashboard/StaticAlertWidget";
+import AIAlertsWidget from "@/components/dashboard/AIAlertsWidget";
 import ExplanationTooltip from "@/components/tooltips/ExplanationTooltip";
 import explanations from "@/data/explanations";
+import { AIAlertsProvider } from "@/contexts/AIAlertsContext";
 
 // Create strategy explanations object
 const strategyExplanations = {
@@ -53,89 +55,100 @@ const Dashboard = () => {
   }, []);
 
   return (
-    <Layout>
-      <div className="flex flex-col gap-6 animate-fade-in">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-bold mb-2">Dashboard</h1>
-          <p className="text-muted-foreground">Monitor market data and options opportunities</p>
-        </div>
-        
-        <MarketOverview />
-        
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="relative">
-            <OptionsChainPreview />
-            <div className="absolute top-4 right-4">
-              <ExplanationTooltip 
-                title={explanations.greeks.title}
-                content={explanations.greeks.content}
-              />
+    <AIAlertsProvider>
+      <Layout>
+        <div className="flex flex-col gap-6 animate-fade-in">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold mb-2">Dashboard</h1>
+            <p className="text-muted-foreground">Monitor market data and options opportunities</p>
+          </div>
+          
+          <MarketOverview />
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="relative">
+              <OptionsChainPreview />
+              <div className="absolute top-4 right-4">
+                <ExplanationTooltip 
+                  title={explanations.greeks.title}
+                  content={explanations.greeks.content}
+                />
+              </div>
+            </div>
+            <div className="relative">
+              <GreeksChart />
+              <div className="absolute top-4 right-4">
+                <ExplanationTooltip 
+                  title={explanations.greeks.title}
+                  content={explanations.greeks.content}
+                />
+              </div>
             </div>
           </div>
-          <div className="relative">
-            <GreeksChart />
-            <div className="absolute top-4 right-4">
-              <ExplanationTooltip 
-                title={explanations.greeks.title}
-                content={explanations.greeks.content}
-              />
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="relative">
+              <AIAlertsWidget />
+              <div className="absolute top-4 right-4">
+                <ExplanationTooltip 
+                  title={explanations.sentiment.title}
+                  content={explanations.sentiment.content}
+                />
+              </div>
+            </div>
+            <div className="relative">
+              <SimulatedTrading />
+              <div className="absolute top-4 right-4 flex space-x-1">
+                <ExplanationTooltip 
+                  title={strategyExplanations.coveredCall.title}
+                  content={strategyExplanations.coveredCall.content}
+                  iconClass="text-[#00FF7F]"
+                />
+              </div>
             </div>
           </div>
-        </div>
-        
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="relative">
-            <VolatilityAlerts />
-            <div className="absolute top-4 right-4">
-              <ExplanationTooltip 
-                title={explanations.volatility.title}
-                content={explanations.volatility.content}
-              />
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="relative">
+              <VolatilityAlerts />
+              <div className="absolute top-4 right-4">
+                <ExplanationTooltip 
+                  title={explanations.volatility.title}
+                  content={explanations.volatility.content}
+                />
+              </div>
+            </div>
+            <div className="relative">
+              <StaticAlertWidget />
+              <div className="absolute top-4 right-4">
+                <ExplanationTooltip 
+                  title={explanations.sentiment.title}
+                  content={explanations.sentiment.content}
+                />
+              </div>
             </div>
           </div>
-          <div className="relative">
-            <SimulatedTrading />
-            <div className="absolute top-4 right-4 flex space-x-1">
-              <ExplanationTooltip 
-                title={strategyExplanations.coveredCall.title}
-                content={strategyExplanations.coveredCall.content}
-                iconClass="text-[#00FF7F]"
-              />
-            </div>
-          </div>
-        </div>
-        
-        <div className="grid grid-cols-1 gap-6">
-          <div className="relative">
-            <StaticAlertWidget />
-            <div className="absolute top-4 right-4">
-              <ExplanationTooltip 
-                title={explanations.sentiment.title}
-                content={explanations.sentiment.content}
-              />
-            </div>
-          </div>
-        </div>
 
-        {showVolatilityAlert && (
-          <VolatilityNotification
-            symbol="SPY"
-            currentVolatility={20}
-            previousVolatility={15}
-            onClose={() => setShowVolatilityAlert(false)}
-          />
-        )}
-        
-        {showSentimentAlert && (
-          <SentimentNotification
-            symbol="AAPL"
-            sentiment={75}
-            instrumentType="calls"
-            onClose={() => setShowSentimentAlert(false)}
-          />
-        )}
-      </div>
-    </Layout>
+          {showVolatilityAlert && (
+            <VolatilityNotification
+              symbol="SPY"
+              currentVolatility={20}
+              previousVolatility={15}
+              onClose={() => setShowVolatilityAlert(false)}
+            />
+          )}
+          
+          {showSentimentAlert && (
+            <SentimentNotification
+              symbol="AAPL"
+              sentiment={75}
+              instrumentType="calls"
+              onClose={() => setShowSentimentAlert(false)}
+            />
+          )}
+        </div>
+      </Layout>
+    </AIAlertsProvider>
   );
 };
 
