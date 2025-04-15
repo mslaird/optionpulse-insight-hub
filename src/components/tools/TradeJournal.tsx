@@ -334,74 +334,72 @@ const TradeJournal = () => {
               <CardTitle className="text-lg">Trade Distribution</CardTitle>
             </CardHeader>
             <CardContent>
-              <ScrollArea className="h-[250px]">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 px-2">
-                  <div className="h-[180px] flex items-center justify-center">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <RechartsPieChart>
-                        <Tooltip formatter={(value: number) => [`${value} trades`]} />
-                        <Pie
-                          data={tradesByStrategy}
-                          cx="50%"
-                          cy="50%"
-                          outerRadius={70}
-                          fill="#8884d8"
-                          dataKey="count"
-                          nameKey="strategy"
-                          label={false}
-                        >
-                          {tradesByStrategy.map((_, index) => (
-                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                          ))}
-                        </Pie>
-                        <Legend 
-                          layout="horizontal" 
-                          verticalAlign="bottom" 
-                          align="center"
-                          formatter={(value, entry) => {
-                            const item = tradesByStrategy.find(item => item.strategy === value);
-                            return `${value} (${item ? item.count : 0})`;
-                          }}
-                        />
-                      </RechartsPieChart>
-                    </ResponsiveContainer>
-                  </div>
-                  
-                  <div className="h-[180px] flex items-center justify-center">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <RechartsPieChart>
-                        <Tooltip formatter={(value: number) => [`$${Math.abs(value).toFixed(2)}`, value >= 0 ? 'Profit' : 'Loss']} />
-                        <Pie
-                          data={profitByTicker}
-                          cx="50%"
-                          cy="50%"
-                          outerRadius={70}
-                          fill="#8884d8"
-                          dataKey="profit"
-                          nameKey="ticker"
-                          label={false}
-                        >
-                          {profitByTicker.map((entry, index) => (
-                            <Cell 
-                              key={`cell-${index}`} 
-                              fill={entry.profit >= 0 ? COLORS[0] : COLORS[2]} 
-                            />
-                          ))}
-                        </Pie>
-                        <Legend 
-                          layout="horizontal" 
-                          verticalAlign="bottom" 
-                          align="center"
-                          formatter={(value, entry) => {
-                            const item = profitByTicker.find(item => item.ticker === value);
-                            return `${value} (${item?.profit >= 0 ? '+' : ''}$${item ? item.profit.toFixed(2) : 0})`;
-                          }}
-                        />
-                      </RechartsPieChart>
-                    </ResponsiveContainer>
-                  </div>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <div className="h-[180px] flex items-center justify-center">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <RechartsPieChart>
+                      <Tooltip formatter={(value: number) => [`${value} trades`]} />
+                      <Pie
+                        data={tradesByStrategy}
+                        cx="50%"
+                        cy="50%"
+                        outerRadius={60}
+                        fill="#8884d8"
+                        dataKey="count"
+                        nameKey="strategy"
+                        label={false}
+                      >
+                        {tradesByStrategy.map((_, index) => (
+                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                        ))}
+                      </Pie>
+                      <Legend 
+                        layout="vertical" 
+                        verticalAlign="middle" 
+                        align="right"
+                        formatter={(value, entry) => {
+                          const item = tradesByStrategy.find(item => item.strategy === value);
+                          return `${value} (${item ? item.count : 0})`;
+                        }}
+                      />
+                    </RechartsPieChart>
+                  </ResponsiveContainer>
                 </div>
-              </ScrollArea>
+                
+                <div className="h-[180px] flex items-center justify-center">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <RechartsPieChart>
+                      <Tooltip formatter={(value: number) => [`$${Math.abs(value).toFixed(2)}`, value >= 0 ? 'Profit' : 'Loss']} />
+                      <Pie
+                        data={profitByTicker}
+                        cx="50%"
+                        cy="50%"
+                        outerRadius={60}
+                        fill="#8884d8"
+                        dataKey="profit"
+                        nameKey="ticker"
+                        label={false}
+                      >
+                        {profitByTicker.map((entry, index) => (
+                          <Cell 
+                            key={`cell-${index}`} 
+                            fill={entry.profit >= 0 ? COLORS[0] : COLORS[2]} 
+                          />
+                        ))}
+                      </Pie>
+                      <Legend 
+                        layout="vertical" 
+                        verticalAlign="middle" 
+                        align="right"
+                        formatter={(value, entry) => {
+                          const item = profitByTicker.find(item => item.ticker === value);
+                          return `${value} (${item ? (item.profit >= 0 ? '+' : '') + '$' + item.profit.toFixed(2) : '$0'})`;
+                        }}
+                      />
+                    </RechartsPieChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </div>
