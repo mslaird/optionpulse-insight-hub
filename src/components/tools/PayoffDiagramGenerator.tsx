@@ -146,7 +146,12 @@ const PayoffDiagramGenerator = () => {
                 label={{ value: 'Profit/Loss ($)', angle: -90, position: 'insideLeft' }} 
               />
               <Tooltip 
-                formatter={(value) => [`$${value}`, 'P/L']}
+                formatter={(value, name, props) => {
+                  const stockPrice = props.payload.stockPrice;
+                  const maxProfit = Math.max(...payoffData.map(d => d.profit));
+                  const percentageOfMaxProfit = ((value as number / maxProfit) * 100).toFixed(2);
+                  return [`$${value} (${percentageOfMaxProfit}%)`, 'P/L'];
+                }}
                 labelFormatter={(value) => `Stock Price: $${value}`}
               />
               <Legend />
@@ -201,3 +206,4 @@ const PayoffDiagramGenerator = () => {
 };
 
 export default PayoffDiagramGenerator;
+
