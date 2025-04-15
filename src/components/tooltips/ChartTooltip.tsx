@@ -10,6 +10,11 @@ interface ChartTooltipProps {
   valueLabel?: string;
   showPercentage?: boolean;
   labelFormatter?: (value: any) => string;
+  dataPoints?: Array<{
+    name: string;
+    value: string;
+    color: string;
+  }>;
 }
 
 const ChartTooltip = ({ 
@@ -20,9 +25,25 @@ const ChartTooltip = ({
   valueSuffix = "", 
   valueLabel = "P/L",
   showPercentage = true,
-  labelFormatter
+  labelFormatter,
+  dataPoints
 }: ChartTooltipProps) => {
   if (active && payload && payload.length) {
+    // Handle the case when explicit data points are provided
+    if (dataPoints && dataPoints.length > 0) {
+      return (
+        <div className="bg-background border border-border/50 rounded-lg p-2 text-sm shadow-lg">
+          <p className="font-medium">{labelFormatter ? labelFormatter(label) : label}</p>
+          {dataPoints.map((point, index) => (
+            <p key={index} className="text-primary" style={{ color: point.color }}>
+              {point.name}: {point.value}
+            </p>
+          ))}
+        </div>
+      );
+    }
+
+    // Regular tooltip handling
     const stockPrice = labelFormatter ? labelFormatter(label) : `Stock Price: $${label}`;
     const value = payload[0].value;
     let percentageDisplay = null;
@@ -49,4 +70,4 @@ const ChartTooltip = ({
   return null;
 };
 
-export default ChartTooltip; // Ensure this is a default export
+export default ChartTooltip;

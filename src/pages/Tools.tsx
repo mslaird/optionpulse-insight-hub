@@ -9,7 +9,8 @@ import RiskRewardAnalyzer from "@/components/tools/RiskRewardAnalyzer";
 import VolatilityScanner from "@/components/tools/VolatilityScanner";
 import StrategyBuilder from "@/components/tools/StrategyBuilder";
 import TradeJournal from "@/components/tools/TradeJournal";
-import { Calculator, LineChart, BarChart3, TrendingUp, Maximize2, BookMarked } from "lucide-react";
+import OptionStrategyTrader from "@/components/trading/OptionStrategyTrader";
+import { Calculator, LineChart, BarChart3, TrendingUp, Maximize2, BookMarked, DollarSign } from "lucide-react";
 
 const Tools = () => {
   return (
@@ -22,8 +23,13 @@ const Tools = () => {
           </p>
         </div>
 
-        <Tabs defaultValue="payoff" className="w-full">
-          <TabsList className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 mb-6">
+        <Tabs defaultValue="strategy-trader" className="w-full">
+          <TabsList className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-7 mb-6">
+            <TabsTrigger value="strategy-trader" className="flex items-center gap-2">
+              <DollarSign size={16} />
+              <span className="hidden md:inline">Strategy Trader</span>
+              <span className="md:hidden">Trader</span>
+            </TabsTrigger>
             <TabsTrigger value="payoff" className="flex items-center gap-2">
               <LineChart size={16} />
               <span className="hidden md:inline">Payoff Diagram</span>
@@ -54,6 +60,20 @@ const Tools = () => {
               <span className="md:hidden">Journal</span>
             </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="strategy-trader" className="space-y-4">
+            <Card className="bg-card/30 backdrop-blur-sm border-border/50">
+              <CardHeader>
+                <CardTitle>Options Strategy Trader</CardTitle>
+                <CardDescription>
+                  Simulate multi-leg option strategies with virtual funds to practice advanced trading techniques
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <OptionStrategyTrader />
+              </CardContent>
+            </Card>
+          </TabsContent>
 
           <TabsContent value="payoff" className="space-y-4">
             <Card className="bg-card/30 backdrop-blur-sm border-border/50">

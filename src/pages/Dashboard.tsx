@@ -13,6 +13,9 @@ import AIAlertsWidget from "@/components/dashboard/AIAlertsWidget";
 import ExplanationTooltip from "@/components/tooltips/ExplanationTooltip";
 import explanations from "@/data/explanations";
 import { AIAlertsProvider } from "@/contexts/AIAlertsContext";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
+import { Briefcase } from "lucide-react";
 
 // Create strategy explanations object
 const strategyExplanations = {
@@ -58,9 +61,17 @@ const Dashboard = () => {
     <AIAlertsProvider>
       <Layout>
         <div className="flex flex-col gap-6 animate-fade-in">
-          <div>
-            <h1 className="text-2xl md:text-3xl font-bold mb-2">Dashboard</h1>
-            <p className="text-muted-foreground">Monitor market data and options opportunities</p>
+          <div className="flex flex-col sm:flex-row justify-between gap-3 items-start sm:items-center">
+            <div>
+              <h1 className="text-2xl md:text-3xl font-bold mb-2">Dashboard</h1>
+              <p className="text-muted-foreground">Monitor market data and options opportunities</p>
+            </div>
+            <Link to="/tools">
+              <Button variant="outline" className="bg-optionpulse-blue/10 border-optionpulse-blue/20 hover:bg-optionpulse-blue/20">
+                <Briefcase size={16} className="mr-2" />
+                Advanced Strategy Trader
+              </Button>
+            </Link>
           </div>
           
           <MarketOverview />
