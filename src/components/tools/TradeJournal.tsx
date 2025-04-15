@@ -40,20 +40,7 @@ import {
   FileText
 } from "lucide-react";
 import { useAIAlerts } from "@/contexts/AIAlertsContext";
-import { 
-  LineChart, 
-  Line, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  Legend, 
-  ResponsiveContainer, 
-  PieChart as RechartsPieChart, 
-  Pie, 
-  Cell 
-} from "recharts";
-import { ChartContainer, ChartTooltipContent, ChartTooltip } from "@/components/ui/chart";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart as RechartsPieChart, Pie, Cell } from "recharts";
 
 interface Trade {
   id: string;
@@ -251,25 +238,6 @@ const TradeJournal = () => {
   // Colors for charts
   const COLORS = ['#1EAEDB', '#34D399', '#F87171', '#8E9196', '#10B981'];
 
-  // Custom renderer for the pie chart labels that shows strategy and count/profit
-  const renderCustomizedLabel = ({ 
-    cx, 
-    cy, 
-    midAngle, 
-    innerRadius, 
-    outerRadius, 
-    index, 
-    value, 
-    name 
-  }: any) => {
-    const RADIAN = Math.PI / 180;
-    const radius = outerRadius * 1.2;
-    const x = cx + radius * Math.cos(-midAngle * RADIAN);
-    const y = cy + radius * Math.sin(-midAngle * RADIAN);
-
-    return null; // We'll use the legend instead of labels directly on the pie
-  };
-
   return (
     <div className="flex flex-col space-y-6">
       <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
@@ -378,85 +346,53 @@ const TradeJournal = () => {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                <div className="h-[200px] w-full flex flex-col items-center">
-                  <div className="w-full h-[140px]">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <RechartsPieChart>
-                        <Tooltip 
-                          formatter={(value: number) => [`${value} trades`, 'Count']}
-                          labelFormatter={(strategy) => `Strategy: ${strategy}`}
-                        />
-                        <Pie
-                          data={tradesByStrategy}
-                          cx="50%"
-                          cy="50%"
-                          outerRadius={50}
-                          fill="#8884d8"
-                          dataKey="count"
-                          nameKey="strategy"
-                          label={false}
-                        >
-                          {tradesByStrategy.map((_, index) => (
-                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                          ))}
-                        </Pie>
-                      </RechartsPieChart>
-                    </ResponsiveContainer>
-                  </div>
-                  <div className="mt-4 w-full flex flex-wrap justify-center gap-2">
-                    {tradesByStrategy.map((entry, index) => (
-                      <div key={`legend-${index}`} className="flex items-center gap-1 text-xs">
-                        <div 
-                          className="w-3 h-3 rounded-sm" 
-                          style={{ backgroundColor: COLORS[index % COLORS.length] }}
-                        />
-                        <span>{entry.strategy}: {entry.count} trades</span>
-                      </div>
-                    ))}
-                  </div>
+                <div className="h-[200px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <RechartsPieChart>
+                      <Tooltip formatter={(value: number) => [`${value} trades`]} />
+                      <Pie
+                        data={tradesByStrategy}
+                        cx="50%"
+                        cy="50%"
+                        outerRadius={60}
+                        fill="#8884d8"
+                        dataKey="count"
+                        nameKey="strategy"
+                        label={({ strategy }) => strategy}
+                      >
+                        {tradesByStrategy.map((_, index) => (
+                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                        ))}
+                      </Pie>
+                      <Legend />
+                    </RechartsPieChart>
+                  </ResponsiveContainer>
                 </div>
                 
-                <div className="h-[200px] w-full flex flex-col items-center">
-                  <div className="w-full h-[140px]">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <RechartsPieChart>
-                        <Tooltip 
-                          formatter={(value: number) => [`${value > 0 ? '+' : ''}$${value.toFixed(2)}`, 'Profit/Loss']}
-                          labelFormatter={(ticker) => `Ticker: ${ticker}`}
-                        />
-                        <Pie
-                          data={profitByTicker}
-                          cx="50%"
-                          cy="50%"
-                          outerRadius={50}
-                          fill="#8884d8"
-                          dataKey="profit"
-                          nameKey="ticker"
-                          label={false}
-                        >
-                          {profitByTicker.map((entry, index) => (
-                            <Cell 
-                              key={`cell-${index}`} 
-                              fill={entry.profit >= 0 ? COLORS[0] : COLORS[2]} 
-                            />
-                          ))}
-                        </Pie>
-                      </RechartsPieChart>
-                    </ResponsiveContainer>
-                  </div>
-                  <div className="mt-4 w-full flex flex-wrap justify-center gap-2">
-                    {profitByTicker.map((entry, index) => (
-                      <div key={`legend-${index}`} className="flex items-center gap-1 text-xs">
-                        <div 
-                          className="w-3 h-3 rounded-sm" 
-                          style={{ backgroundColor: entry.profit >= 0 ? COLORS[0] : COLORS[2] }}
-                        />
-                        <span>
-                          {entry.ticker}: {entry.profit > 0 ? '+' : ''}${entry.profit.toFixed(2)}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
+                <div className="h-[200px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <RechartsPieChart>
+                      <Tooltip formatter={(value: number) => [`${value > 0 ? '+' : ''}$${value.toFixed(2)}`]} />
+                      <Pie
+                        data={profitByTicker}
+                        cx="50%"
+                        cy="50%"
+                        outerRadius={60}
+                        fill="#8884d8"
+                        dataKey="profit"
+                        nameKey="ticker"
+                        label={({ ticker, profit }) => `${ticker} ${profit > 0 ? '+' : ''}$${profit.toFixed(0)}`}
+                      >
+                        {profitByTicker.map((entry, index) => (
+                          <Cell 
+                            key={`cell-${index}`} 
+                            fill={entry.profit >= 0 ? COLORS[0] : COLORS[2]} 
+                          />
+                        ))}
+                      </Pie>
+                      <Legend />
+                    </RechartsPieChart>
+                  </ResponsiveContainer>
                 </div>
               </div>
             </CardContent>
