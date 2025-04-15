@@ -344,9 +344,9 @@ const TradeJournal = () => {
             <CardHeader className="pb-2">
               <CardTitle className="text-lg">Trade Distribution</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="pt-6"> {/* Added extra padding to shift contents down */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                <div className="h-[200px]">
+                <div className="h-[200px] flex items-center justify-center"> {/* Added centering */}
                   <ResponsiveContainer width="100%" height="100%">
                     <RechartsPieChart>
                       <Tooltip formatter={(value: number) => [`${value} trades`]} />
@@ -354,22 +354,25 @@ const TradeJournal = () => {
                         data={tradesByStrategy}
                         cx="50%"
                         cy="50%"
-                        outerRadius={60}
+                        outerRadius={80} // Increased radius for better visibility
                         fill="#8884d8"
                         dataKey="count"
                         nameKey="strategy"
-                        label={({ strategy }) => strategy}
+                        labelLine={true}
+                        label={({ name, percent }) => 
+                          `${name} (${(percent * 100).toFixed(0)}%)`
+                        }
                       >
                         {tradesByStrategy.map((_, index) => (
                           <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                         ))}
                       </Pie>
-                      <Legend />
+                      <Legend verticalAlign="bottom" height={36}/>
                     </RechartsPieChart>
                   </ResponsiveContainer>
                 </div>
                 
-                <div className="h-[200px]">
+                <div className="h-[200px] flex items-center justify-center"> {/* Added centering */}
                   <ResponsiveContainer width="100%" height="100%">
                     <RechartsPieChart>
                       <Tooltip formatter={(value: number) => [`${value > 0 ? '+' : ''}$${value.toFixed(2)}`]} />
@@ -377,11 +380,14 @@ const TradeJournal = () => {
                         data={profitByTicker}
                         cx="50%"
                         cy="50%"
-                        outerRadius={60}
+                        outerRadius={80} // Increased radius for better visibility
                         fill="#8884d8"
                         dataKey="profit"
                         nameKey="ticker"
-                        label={({ ticker, profit }) => `${ticker} ${profit > 0 ? '+' : ''}$${profit.toFixed(0)}`}
+                        labelLine={true}
+                        label={({ name, percent }) => 
+                          `${name} (${(percent * 100).toFixed(0)}%)`
+                        }
                       >
                         {profitByTicker.map((entry, index) => (
                           <Cell 
@@ -390,7 +396,7 @@ const TradeJournal = () => {
                           />
                         ))}
                       </Pie>
-                      <Legend />
+                      <Legend verticalAlign="bottom" height={36}/>
                     </RechartsPieChart>
                   </ResponsiveContainer>
                 </div>
