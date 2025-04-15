@@ -11,7 +11,8 @@ import {
   BookMarked,
   Bell,
   Settings,
-  X
+  X,
+  Calculator
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Logo from "@/components/brand/Logo";
@@ -62,6 +63,12 @@ export const Sidebar = ({ onToggle }: SidebarProps) => {
       label: "Options Chain",
       icon: <BarChart3 size={20} />,
       active: location.pathname === "/options-chain"
+    },
+    {
+      path: "/tools",
+      label: "Tools",
+      icon: <Calculator size={20} />,
+      active: location.pathname === "/tools"
     },
     {
       path: "/education",
