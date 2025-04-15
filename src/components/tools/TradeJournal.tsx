@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import {
   Card,
@@ -58,7 +57,6 @@ interface Trade {
   relatedAlert?: string;
 }
 
-// Mock trades data
 const initialTrades: Trade[] = [
   {
     id: '1',
@@ -114,7 +112,6 @@ const TradeJournal = () => {
   const [expandedTrade, setExpandedTrade] = useState<string | null>(null);
   const [showStats, setShowStats] = useState(true);
   
-  // New trade form state
   const [newTrade, setNewTrade] = useState<Omit<Trade, 'id'>>({
     date: new Date().toISOString().slice(0, 10),
     ticker: 'AAPL',
@@ -129,7 +126,6 @@ const TradeJournal = () => {
     notes: ''
   });
 
-  // Load trades from localStorage
   useEffect(() => {
     const savedTrades = localStorage.getItem('tradeJournal');
     if (savedTrades) {
@@ -137,7 +133,6 @@ const TradeJournal = () => {
     }
   }, []);
 
-  // Save trades to localStorage when they change
   useEffect(() => {
     localStorage.setItem('tradeJournal', JSON.stringify(trades));
   }, [trades]);
@@ -156,7 +151,6 @@ const TradeJournal = () => {
       description: `${newTrade.action === 'buy' ? 'Bought' : 'Sold'} ${newTrade.ticker} ${newTrade.strategy}`,
     });
     
-    // Reset form
     setNewTrade({
       date: new Date().toISOString().slice(0, 10),
       ticker: 'AAPL',
@@ -191,7 +185,6 @@ const TradeJournal = () => {
     return matchesTicker && matchesResult;
   });
 
-  // Calculate statistics
   const totalTrades = trades.length;
   const closedTrades = trades.filter(t => t.result !== 'open').length;
   const profitTrades = trades.filter(t => t.result === 'profit').length;
@@ -199,7 +192,6 @@ const TradeJournal = () => {
   const winRate = closedTrades > 0 ? (profitTrades / closedTrades) * 100 : 0;
   const totalProfitLoss = trades.reduce((sum, trade) => sum + trade.profitLoss, 0);
   
-  // Prepare chart data
   const profitByTicker = Object.entries(
     trades.reduce((acc, trade) => {
       acc[trade.ticker] = (acc[trade.ticker] || 0) + trade.profitLoss;
@@ -214,11 +206,9 @@ const TradeJournal = () => {
     }, {} as {[key: string]: number})
   ).map(([strategy, count]) => ({ strategy, count }));
 
-  // Prepare trade history chart data
   const tradeHistoryData = [...trades]
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
     .map((trade, index, array) => {
-      // Calculate running sum of profit/loss
       const runningProfitLoss = array
         .slice(0, index + 1)
         .reduce((sum, t) => sum + t.profitLoss, 0);
@@ -230,12 +220,10 @@ const TradeJournal = () => {
       };
     });
   
-  // AI alert suggestions - filter for usable format
   const alertSuggestions = filteredAlerts
-    .filter(alert => alert.itmProbability >= 0.7) // Only high probability alerts
-    .slice(0, 3); // Limit to 3 suggestions
+    .filter(alert => alert.itmProbability >= 0.7)
+    .slice(0, 3);
 
-  // Colors for charts
   const COLORS = ['#1EAEDB', '#34D399', '#F87171', '#8E9196', '#10B981'];
 
   return (
@@ -349,22 +337,40 @@ const TradeJournal = () => {
                 <div className="h-[200px]">
                   <ResponsiveContainer width="100%" height="100%">
                     <RechartsPieChart>
-                      <Tooltip formatter={(value: number) => [`${value} trades`]} />
+                      <Tooltip 
+                        formatter={(value: number) => [`${value} trades`]} 
+                        contentStyle={{ 
+                          backgroundColor: 'rgba(0, 0, 0, 0.8)', 
+                          color: 'white', 
+                          borderRadius: '8px' 
+                        }}
+                      />
                       <Pie
                         data={tradesByStrategy}
                         cx="50%"
                         cy="50%"
-                        outerRadius={60}
+                        outerRadius={80}
                         fill="#8884d8"
                         dataKey="count"
                         nameKey="strategy"
-                        label={({ strategy }) => strategy}
+                        label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
+                        labelLine={false}
                       >
                         {tradesByStrategy.map((_, index) => (
                           <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                         ))}
                       </Pie>
-                      <Legend />
+                      <Legend 
+                        layout="horizontal" 
+                        verticalAlign="bottom" 
+                        align="center"
+                        iconType="circle"
+                        formatter={(value) => value}
+                        wrapperStyle={{ 
+                          paddingTop: '10px', 
+                          color: 'white' 
+                        }}
+                      />
                     </RechartsPieChart>
                   </ResponsiveContainer>
                 </div>
@@ -400,7 +406,6 @@ const TradeJournal = () => {
         </div>
       )}
       
-      {/* AI Alert Suggestions */}
       {alertSuggestions.length > 0 && (
         <Card className="bg-card/30 backdrop-blur-sm border-border/50">
           <CardHeader className="pb-2">
@@ -469,7 +474,6 @@ const TradeJournal = () => {
         </Card>
       )}
       
-      {/* Add Trade Form */}
       {showAddForm && (
         <Card className="bg-card/30 backdrop-blur-sm border-border/50">
           <CardHeader>
@@ -632,26 +636,25 @@ const TradeJournal = () => {
         </Card>
       )}
       
-      {/* Trades List */}
-      <Card className="bg-card/30 backdrop-blur-sm border-border/50">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-lg">Trade Journal ({filteredTrades.length} trades)</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {filteredTrades.length === 0 ? (
-            <div className="text-center py-6">
-              <FileText size={48} className="mx-auto text-muted-foreground mb-4 opacity-50" />
-              <h3 className="text-lg font-medium mb-2">No trades found</h3>
-              <p className="text-muted-foreground mb-4">
-                {trades.length === 0 
-                  ? "Your trade journal is empty. Add your first trade to get started."
-                  : "No trades match your current filters. Try adjusting your filters or add new trades."}
-              </p>
-              {trades.length === 0 && (
-                <Button onClick={() => setShowAddForm(true)}>Add Your First Trade</Button>
-              )}
-            </div>
-          ) : (
+      {filteredTrades.length === 0 ? (
+        <div className="text-center py-6">
+          <FileText size={48} className="mx-auto text-muted-foreground mb-4 opacity-50" />
+          <h3 className="text-lg font-medium mb-2">No trades found</h3>
+          <p className="text-muted-foreground mb-4">
+            {trades.length === 0 
+              ? "Your trade journal is empty. Add your first trade to get started."
+              : "No trades match your current filters. Try adjusting your filters or add new trades."}
+          </p>
+          {trades.length === 0 && (
+            <Button onClick={() => setShowAddForm(true)}>Add Your First Trade</Button>
+          )}
+        </div>
+      ) : (
+        <Card className="bg-card/30 backdrop-blur-sm border-border/50">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg">Trade Journal ({filteredTrades.length} trades)</CardTitle>
+          </CardHeader>
+          <CardContent>
             <Table>
               <TableHeader>
                 <TableRow>
@@ -773,9 +776,9 @@ const TradeJournal = () => {
                 ))}
               </TableBody>
             </Table>
-          )}
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };
