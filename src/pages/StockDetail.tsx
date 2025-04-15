@@ -283,239 +283,239 @@ const StockDetail = () => {
                   <span>Fundamentals</span>
                 </TabsTrigger>
               </TabsList>
-            </CardHeader>
-            <CardContent>
-              <TabsContent value="overview" className="mt-0">
-                <div className="space-y-6">
+            </Tabs>
+          </CardHeader>
+          <CardContent>
+            <TabsContent value="overview" className="mt-0">
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-lg font-medium mb-2">About {stockDetail.name}</h3>
+                  <p className="text-muted-foreground">
+                    {stockDetail.description}
+                  </p>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-4">
+                    <h4 className="text-sm font-medium border-b border-border pb-1">Company Information</h4>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-1">
+                        <p className="text-xs text-muted-foreground">Founded</p>
+                        <p>{stockDetail.yearFounded}</p>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-xs text-muted-foreground">Employees</p>
+                        <p>{formatNumber(stockDetail.employees)}</p>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-xs text-muted-foreground">CEO</p>
+                        <p>{stockDetail.ceo}</p>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-xs text-muted-foreground">Headquarters</p>
+                        <p>{stockDetail.headquarters}</p>
+                      </div>
+                    </div>
+                    <Button variant="outline" size="sm" className="mt-2" asChild>
+                      <a href={stockDetail.website} target="_blank" rel="noopener noreferrer">
+                        <Globe size={14} className="mr-1" />
+                        Visit Website
+                      </a>
+                    </Button>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    <h4 className="text-sm font-medium border-b border-border pb-1">Trade Information</h4>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-1">
+                        <p className="text-xs text-muted-foreground">Sector</p>
+                        <p>{stockDetail.sector}</p>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-xs text-muted-foreground">Industry</p>
+                        <p>{stockDetail.industry}</p>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-xs text-muted-foreground">Market Cap</p>
+                        <p>{formatMarketCap(stockDetail.marketCap)}</p>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-xs text-muted-foreground">P/E Ratio</p>
+                        <p>{stockDetail.peRatio.toFixed(2)}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="options" className="mt-0">
+              <div className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <h3 className="text-lg font-medium mb-2">About {stockDetail.name}</h3>
-                    <p className="text-muted-foreground">
-                      {stockDetail.description}
+                    <h3 className="text-lg font-medium mb-4">Options Overview</h3>
+                    <div className="grid grid-cols-2 gap-6">
+                      <div className="bg-sidebar-accent rounded-lg p-4">
+                        <h4 className="text-sm font-medium mb-2">Call Volume</h4>
+                        <p className="text-2xl font-semibold">{formatNumber(stockDetail.optionsData.callVolume)}</p>
+                        <div className="mt-1 text-xs text-muted-foreground">
+                          {((stockDetail.optionsData.callVolume / stockDetail.optionsData.totalVolume) * 100).toFixed(1)}% of total
+                        </div>
+                      </div>
+                      <div className="bg-sidebar-accent rounded-lg p-4">
+                        <h4 className="text-sm font-medium mb-2">Put Volume</h4>
+                        <p className="text-2xl font-semibold">{formatNumber(stockDetail.optionsData.putVolume)}</p>
+                        <div className="mt-1 text-xs text-muted-foreground">
+                          {((stockDetail.optionsData.putVolume / stockDetail.optionsData.totalVolume) * 100).toFixed(1)}% of total
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="mt-6">
+                      <h4 className="text-sm font-medium mb-2">Call/Put Ratio</h4>
+                      <div className="flex items-center bg-sidebar-accent rounded-lg p-4">
+                        <div className="flex-1">
+                          <p className="text-2xl font-semibold">{stockDetail.optionsData.callPutRatio.toFixed(2)}</p>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            {stockDetail.optionsData.callPutRatio > 1 
+                              ? "Bullish sentiment (more calls than puts)" 
+                              : "Bearish sentiment (more puts than calls)"}
+                          </p>
+                        </div>
+                        <div className="h-16 w-16 rounded-full bg-muted flex items-center justify-center">
+                          <TrendingUp 
+                            size={24} 
+                            className={cn(
+                              stockDetail.optionsData.callPutRatio > 1 
+                                ? "text-accent" 
+                                : "text-destructive"
+                            )} 
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <h3 className="text-lg font-medium mb-4">Top Option Strikes</h3>
+                    <div className="space-y-3">
+                      {stockDetail.optionsData.topStrikes.map((strike, index) => (
+                        <div key={index} className="bg-sidebar-accent rounded-lg p-3 flex justify-between items-center">
+                          <div>
+                            <div className="flex items-center">
+                              <Badge 
+                                variant="outline" 
+                                className={cn(
+                                  "mr-2",
+                                  strike.type === 'call' ? "bg-accent/20 text-accent" : "bg-destructive/20 text-destructive"
+                                )}
+                              >
+                                {strike.type.toUpperCase()}
+                              </Badge>
+                              <span className="font-medium">${strike.strike}</span>
+                            </div>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              OI: {formatNumber(strike.openInterest)}
+                            </p>
+                          </div>
+                          <div className="text-right">
+                            <p className="font-semibold">{formatNumber(strike.volume)}</p>
+                            <p className="text-xs text-muted-foreground">volume</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    
+                    <div className="mt-6 bg-sidebar-accent rounded-lg p-4">
+                      <h4 className="text-sm font-medium mb-2">Implied Volatility</h4>
+                      <p className="text-2xl font-semibold">{stockDetail.optionsData.impliedVolatility.toFixed(1)}%</p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {stockDetail.optionsData.impliedVolatility > 30 
+                          ? "High volatility - greater price swings expected" 
+                          : "Moderate volatility - normal price action expected"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="fundamentals" className="mt-0">
+              <div className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="bg-sidebar-accent rounded-lg p-4">
+                    <h4 className="text-sm font-medium mb-2">Market Cap</h4>
+                    <p className="text-2xl font-semibold">{formatMarketCap(stockDetail.marketCap)}</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {stockDetail.marketCap > 200 ? "Large Cap" : stockDetail.marketCap > 10 ? "Mid Cap" : "Small Cap"} company
                     </p>
                   </div>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-4">
-                      <h4 className="text-sm font-medium border-b border-border pb-1">Company Information</h4>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-1">
-                          <p className="text-xs text-muted-foreground">Founded</p>
-                          <p>{stockDetail.yearFounded}</p>
-                        </div>
-                        <div className="space-y-1">
-                          <p className="text-xs text-muted-foreground">Employees</p>
-                          <p>{formatNumber(stockDetail.employees)}</p>
-                        </div>
-                        <div className="space-y-1">
-                          <p className="text-xs text-muted-foreground">CEO</p>
-                          <p>{stockDetail.ceo}</p>
-                        </div>
-                        <div className="space-y-1">
-                          <p className="text-xs text-muted-foreground">Headquarters</p>
-                          <p>{stockDetail.headquarters}</p>
-                        </div>
-                      </div>
-                      <Button variant="outline" size="sm" className="mt-2" asChild>
-                        <a href={stockDetail.website} target="_blank" rel="noopener noreferrer">
-                          <Globe size={14} className="mr-1" />
-                          Visit Website
-                        </a>
-                      </Button>
-                    </div>
-                    
-                    <div className="space-y-4">
-                      <h4 className="text-sm font-medium border-b border-border pb-1">Trade Information</h4>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-1">
-                          <p className="text-xs text-muted-foreground">Sector</p>
-                          <p>{stockDetail.sector}</p>
-                        </div>
-                        <div className="space-y-1">
-                          <p className="text-xs text-muted-foreground">Industry</p>
-                          <p>{stockDetail.industry}</p>
-                        </div>
-                        <div className="space-y-1">
-                          <p className="text-xs text-muted-foreground">Market Cap</p>
-                          <p>{formatMarketCap(stockDetail.marketCap)}</p>
-                        </div>
-                        <div className="space-y-1">
-                          <p className="text-xs text-muted-foreground">P/E Ratio</p>
-                          <p>{stockDetail.peRatio.toFixed(2)}</p>
-                        </div>
-                      </div>
-                    </div>
+                  <div className="bg-sidebar-accent rounded-lg p-4">
+                    <h4 className="text-sm font-medium mb-2">P/E Ratio</h4>
+                    <p className="text-2xl font-semibold">{stockDetail.peRatio.toFixed(2)}</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {stockDetail.peRatio > 25 ? "Above industry average" : "Below industry average"}
+                    </p>
+                  </div>
+                  
+                  <div className="bg-sidebar-accent rounded-lg p-4">
+                    <h4 className="text-sm font-medium mb-2">EPS</h4>
+                    <p className="text-2xl font-semibold">${stockDetail.eps.toFixed(2)}</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Earnings per share
+                    </p>
                   </div>
                 </div>
-              </TabsContent>
-              
-              <TabsContent value="options" className="mt-0">
-                <div className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <h3 className="text-lg font-medium mb-4">Options Overview</h3>
-                      <div className="grid grid-cols-2 gap-6">
-                        <div className="bg-sidebar-accent rounded-lg p-4">
-                          <h4 className="text-sm font-medium mb-2">Call Volume</h4>
-                          <p className="text-2xl font-semibold">{formatNumber(stockDetail.optionsData.callVolume)}</p>
-                          <div className="mt-1 text-xs text-muted-foreground">
-                            {((stockDetail.optionsData.callVolume / stockDetail.optionsData.totalVolume) * 100).toFixed(1)}% of total
-                          </div>
-                        </div>
-                        <div className="bg-sidebar-accent rounded-lg p-4">
-                          <h4 className="text-sm font-medium mb-2">Put Volume</h4>
-                          <p className="text-2xl font-semibold">{formatNumber(stockDetail.optionsData.putVolume)}</p>
-                          <div className="mt-1 text-xs text-muted-foreground">
-                            {((stockDetail.optionsData.putVolume / stockDetail.optionsData.totalVolume) * 100).toFixed(1)}% of total
-                          </div>
-                        </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="bg-sidebar-accent rounded-lg p-4">
+                    <h4 className="text-sm font-medium mb-2">Company Information</h4>
+                    <div className="grid grid-cols-2 gap-4 mt-4">
+                      <div className="space-y-1">
+                        <p className="text-xs text-muted-foreground">Founded</p>
+                        <p>{stockDetail.yearFounded}</p>
                       </div>
-                      
-                      <div className="mt-6">
-                        <h4 className="text-sm font-medium mb-2">Call/Put Ratio</h4>
-                        <div className="flex items-center bg-sidebar-accent rounded-lg p-4">
-                          <div className="flex-1">
-                            <p className="text-2xl font-semibold">{stockDetail.optionsData.callPutRatio.toFixed(2)}</p>
-                            <p className="text-xs text-muted-foreground mt-1">
-                              {stockDetail.optionsData.callPutRatio > 1 
-                                ? "Bullish sentiment (more calls than puts)" 
-                                : "Bearish sentiment (more puts than calls)"}
-                            </p>
-                          </div>
-                          <div className="h-16 w-16 rounded-full bg-muted flex items-center justify-center">
-                            <TrendingUp 
-                              size={24} 
-                              className={cn(
-                                stockDetail.optionsData.callPutRatio > 1 
-                                  ? "text-accent" 
-                                  : "text-destructive"
-                              )} 
-                            />
-                          </div>
-                        </div>
+                      <div className="space-y-1">
+                        <p className="text-xs text-muted-foreground">Employees</p>
+                        <p>{formatNumber(stockDetail.employees)}</p>
                       </div>
-                    </div>
-                    
-                    <div>
-                      <h3 className="text-lg font-medium mb-4">Top Option Strikes</h3>
-                      <div className="space-y-3">
-                        {stockDetail.optionsData.topStrikes.map((strike, index) => (
-                          <div key={index} className="bg-sidebar-accent rounded-lg p-3 flex justify-between items-center">
-                            <div>
-                              <div className="flex items-center">
-                                <Badge 
-                                  variant="outline" 
-                                  className={cn(
-                                    "mr-2",
-                                    strike.type === 'call' ? "bg-accent/20 text-accent" : "bg-destructive/20 text-destructive"
-                                  )}
-                                >
-                                  {strike.type.toUpperCase()}
-                                </Badge>
-                                <span className="font-medium">${strike.strike}</span>
-                              </div>
-                              <p className="text-xs text-muted-foreground mt-1">
-                                OI: {formatNumber(strike.openInterest)}
-                              </p>
-                            </div>
-                            <div className="text-right">
-                              <p className="font-semibold">{formatNumber(strike.volume)}</p>
-                              <p className="text-xs text-muted-foreground">volume</p>
-                            </div>
-                          </div>
-                        ))}
+                      <div className="space-y-1">
+                        <p className="text-xs text-muted-foreground">CEO</p>
+                        <p>{stockDetail.ceo}</p>
                       </div>
-                      
-                      <div className="mt-6 bg-sidebar-accent rounded-lg p-4">
-                        <h4 className="text-sm font-medium mb-2">Implied Volatility</h4>
-                        <p className="text-2xl font-semibold">{stockDetail.optionsData.impliedVolatility.toFixed(1)}%</p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          {stockDetail.optionsData.impliedVolatility > 30 
-                            ? "High volatility - greater price swings expected" 
-                            : "Moderate volatility - normal price action expected"}
-                        </p>
+                      <div className="space-y-1">
+                        <p className="text-xs text-muted-foreground">Headquarters</p>
+                        <p>{stockDetail.headquarters}</p>
                       </div>
-                    </div>
-                  </div>
-                </div>
-              </TabsContent>
-              
-              <TabsContent value="fundamentals" className="mt-0">
-                <div className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="bg-sidebar-accent rounded-lg p-4">
-                      <h4 className="text-sm font-medium mb-2">Market Cap</h4>
-                      <p className="text-2xl font-semibold">{formatMarketCap(stockDetail.marketCap)}</p>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        {stockDetail.marketCap > 200 ? "Large Cap" : stockDetail.marketCap > 10 ? "Mid Cap" : "Small Cap"} company
-                      </p>
-                    </div>
-                    
-                    <div className="bg-sidebar-accent rounded-lg p-4">
-                      <h4 className="text-sm font-medium mb-2">P/E Ratio</h4>
-                      <p className="text-2xl font-semibold">{stockDetail.peRatio.toFixed(2)}</p>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        {stockDetail.peRatio > 25 ? "Above industry average" : "Below industry average"}
-                      </p>
-                    </div>
-                    
-                    <div className="bg-sidebar-accent rounded-lg p-4">
-                      <h4 className="text-sm font-medium mb-2">EPS</h4>
-                      <p className="text-2xl font-semibold">${stockDetail.eps.toFixed(2)}</p>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        Earnings per share
-                      </p>
                     </div>
                   </div>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="bg-sidebar-accent rounded-lg p-4">
-                      <h4 className="text-sm font-medium mb-2">Company Information</h4>
-                      <div className="grid grid-cols-2 gap-4 mt-4">
-                        <div className="space-y-1">
-                          <p className="text-xs text-muted-foreground">Founded</p>
-                          <p>{stockDetail.yearFounded}</p>
-                        </div>
-                        <div className="space-y-1">
-                          <p className="text-xs text-muted-foreground">Employees</p>
-                          <p>{formatNumber(stockDetail.employees)}</p>
-                        </div>
-                        <div className="space-y-1">
-                          <p className="text-xs text-muted-foreground">CEO</p>
-                          <p>{stockDetail.ceo}</p>
-                        </div>
-                        <div className="space-y-1">
-                          <p className="text-xs text-muted-foreground">Headquarters</p>
-                          <p>{stockDetail.headquarters}</p>
-                        </div>
+                  <div className="bg-sidebar-accent rounded-lg p-4">
+                    <h4 className="text-sm font-medium mb-2">Dividend Information</h4>
+                    <div className="mt-4">
+                      <div className="space-y-1 mb-4">
+                        <p className="text-xs text-muted-foreground">Dividend Yield</p>
+                        <p className="text-2xl font-semibold">
+                          {stockDetail.dividendYield ? `${(stockDetail.dividendYield * 100).toFixed(2)}%` : 'N/A'}
+                        </p>
                       </div>
-                    </div>
-                    
-                    <div className="bg-sidebar-accent rounded-lg p-4">
-                      <h4 className="text-sm font-medium mb-2">Dividend Information</h4>
-                      <div className="mt-4">
-                        <div className="space-y-1 mb-4">
-                          <p className="text-xs text-muted-foreground">Dividend Yield</p>
-                          <p className="text-2xl font-semibold">
-                            {stockDetail.dividendYield ? `${(stockDetail.dividendYield * 100).toFixed(2)}%` : 'N/A'}
-                          </p>
+                      
+                      {stockDetail.dividendYield ? (
+                        <div className="text-xs text-muted-foreground">
+                          A $10,000 investment would yield approximately ${(10000 * stockDetail.dividendYield).toFixed(2)} annually in dividends
                         </div>
-                        
-                        {stockDetail.dividendYield ? (
-                          <div className="text-xs text-muted-foreground">
-                            A $10,000 investment would yield approximately ${(10000 * stockDetail.dividendYield).toFixed(2)} annually in dividends
-                          </div>
-                        ) : (
-                          <div className="text-xs text-muted-foreground">
-                            This company does not currently pay dividends to shareholders
-                          </div>
-                        )}
-                      </div>
+                      ) : (
+                        <div className="text-xs text-muted-foreground">
+                          This company does not currently pay dividends to shareholders
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
-              </TabsContent>
-            </CardContent>
-          </Card>
+              </div>
+            </TabsContent>
+          </CardContent>
         </Card>
       </div>
     </Layout>
