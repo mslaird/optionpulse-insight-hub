@@ -49,4 +49,4 @@ const ChartTooltip = ({
   return null;
 };
 
-export default ChartTooltip;
+export default ChartTooltip; // Ensure this is a default export

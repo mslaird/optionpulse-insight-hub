@@ -9,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft, Globe, TrendingUp, Star, BarChart4, BookOpen } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import { ChartTooltip } from "@/components/tooltips/ChartTooltip";
+import ChartTooltip from "@/components/tooltips/ChartTooltip"; // Changed from { ChartTooltip } to default import
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
