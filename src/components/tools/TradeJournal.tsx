@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import {
   Card,
@@ -58,7 +57,6 @@ interface Trade {
   relatedAlert?: string;
 }
 
-// Mock trades data
 const initialTrades: Trade[] = [
   {
     id: '1',
@@ -114,7 +112,6 @@ const TradeJournal = () => {
   const [expandedTrade, setExpandedTrade] = useState<string | null>(null);
   const [showStats, setShowStats] = useState(true);
   
-  // New trade form state
   const [newTrade, setNewTrade] = useState<Omit<Trade, 'id'>>({
     date: new Date().toISOString().slice(0, 10),
     ticker: 'AAPL',
@@ -129,7 +126,6 @@ const TradeJournal = () => {
     notes: ''
   });
 
-  // Load trades from localStorage
   useEffect(() => {
     const savedTrades = localStorage.getItem('tradeJournal');
     if (savedTrades) {
@@ -137,7 +133,6 @@ const TradeJournal = () => {
     }
   }, []);
 
-  // Save trades to localStorage when they change
   useEffect(() => {
     localStorage.setItem('tradeJournal', JSON.stringify(trades));
   }, [trades]);
@@ -156,7 +151,6 @@ const TradeJournal = () => {
       description: `${newTrade.action === 'buy' ? 'Bought' : 'Sold'} ${newTrade.ticker} ${newTrade.strategy}`,
     });
     
-    // Reset form
     setNewTrade({
       date: new Date().toISOString().slice(0, 10),
       ticker: 'AAPL',
@@ -191,7 +185,6 @@ const TradeJournal = () => {
     return matchesTicker && matchesResult;
   });
 
-  // Calculate statistics
   const totalTrades = trades.length;
   const closedTrades = trades.filter(t => t.result !== 'open').length;
   const profitTrades = trades.filter(t => t.result === 'profit').length;
@@ -199,7 +192,6 @@ const TradeJournal = () => {
   const winRate = closedTrades > 0 ? (profitTrades / closedTrades) * 100 : 0;
   const totalProfitLoss = trades.reduce((sum, trade) => sum + trade.profitLoss, 0);
   
-  // Prepare chart data
   const profitByTicker = Object.entries(
     trades.reduce((acc, trade) => {
       acc[trade.ticker] = (acc[trade.ticker] || 0) + trade.profitLoss;
@@ -214,11 +206,9 @@ const TradeJournal = () => {
     }, {} as {[key: string]: number})
   ).map(([strategy, count]) => ({ strategy, count }));
 
-  // Prepare trade history chart data
   const tradeHistoryData = [...trades]
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
     .map((trade, index, array) => {
-      // Calculate running sum of profit/loss
       const runningProfitLoss = array
         .slice(0, index + 1)
         .reduce((sum, t) => sum + t.profitLoss, 0);
@@ -229,13 +219,11 @@ const TradeJournal = () => {
         cumulativeProfitLoss: runningProfitLoss
       };
     });
-  
-  // AI alert suggestions - filter for usable format
-  const alertSuggestions = filteredAlerts
-    .filter(alert => alert.itmProbability >= 0.7) // Only high probability alerts
-    .slice(0, 3); // Limit to 3 suggestions
 
-  // Colors for charts
+  const alertSuggestions = filteredAlerts
+    .filter(alert => alert.itmProbability >= 0.7)
+    .slice(0, 3);
+
   const COLORS = ['#1EAEDB', '#34D399', '#F87171', '#8E9196', '#10B981'];
 
   return (
@@ -316,7 +304,7 @@ const TradeJournal = () => {
                 </div>
               </div>
               
-              <div className="h-[200px]">
+              <div className="h-[200px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={tradeHistoryData} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#333" />
@@ -345,43 +333,51 @@ const TradeJournal = () => {
               <CardTitle className="text-lg">Trade Distribution</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                <div className="h-[200px]">
-                  <ResponsiveContainer width="100%" height="100%">
+              <div className="w-full h-auto min-h-[300px] overflow-visible grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <div className="relative w-full h-auto min-h-[200px] flex items-center justify-center">
+                  <ResponsiveContainer width="100%" height={200}>
                     <RechartsPieChart>
                       <Tooltip formatter={(value: number) => [`${value} trades`]} />
                       <Pie
                         data={tradesByStrategy}
                         cx="50%"
                         cy="50%"
-                        outerRadius={60}
+                        outerRadius={70}
                         fill="#8884d8"
                         dataKey="count"
                         nameKey="strategy"
-                        label={({ strategy }) => strategy}
+                        label={false}
                       >
                         {tradesByStrategy.map((_, index) => (
                           <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                         ))}
                       </Pie>
-                      <Legend />
+                      <Legend 
+                        formatter={(value, entry) => {
+                          const item = tradesByStrategy.find(t => t.strategy === value);
+                          return `${value} (${item?.count || 0} trades)`;
+                        }}
+                        layout="vertical"
+                        align="right"
+                        verticalAlign="middle"
+                      />
                     </RechartsPieChart>
                   </ResponsiveContainer>
                 </div>
                 
-                <div className="h-[200px]">
-                  <ResponsiveContainer width="100%" height="100%">
+                <div className="relative w-full h-auto min-h-[200px] flex items-center justify-center">
+                  <ResponsiveContainer width="100%" height={200}>
                     <RechartsPieChart>
                       <Tooltip formatter={(value: number) => [`${value > 0 ? '+' : ''}$${value.toFixed(2)}`]} />
                       <Pie
                         data={profitByTicker}
                         cx="50%"
                         cy="50%"
-                        outerRadius={60}
+                        outerRadius={70}
                         fill="#8884d8"
                         dataKey="profit"
                         nameKey="ticker"
-                        label={({ ticker, profit }) => `${ticker} ${profit > 0 ? '+' : ''}$${profit.toFixed(0)}`}
+                        label={false}
                       >
                         {profitByTicker.map((entry, index) => (
                           <Cell 
@@ -390,7 +386,15 @@ const TradeJournal = () => {
                           />
                         ))}
                       </Pie>
-                      <Legend />
+                      <Legend 
+                        formatter={(value, entry) => {
+                          const item = profitByTicker.find(t => t.ticker === value);
+                          return `${value} (${item?.profit >= 0 ? '+' : ''}$${item?.profit.toFixed(0)})`;
+                        }}
+                        layout="vertical"
+                        align="right"
+                        verticalAlign="middle"
+                      />
                     </RechartsPieChart>
                   </ResponsiveContainer>
                 </div>
@@ -400,7 +404,6 @@ const TradeJournal = () => {
         </div>
       )}
       
-      {/* AI Alert Suggestions */}
       {alertSuggestions.length > 0 && (
         <Card className="bg-card/30 backdrop-blur-sm border-border/50">
           <CardHeader className="pb-2">
@@ -469,7 +472,6 @@ const TradeJournal = () => {
         </Card>
       )}
       
-      {/* Add Trade Form */}
       {showAddForm && (
         <Card className="bg-card/30 backdrop-blur-sm border-border/50">
           <CardHeader>
@@ -632,7 +634,6 @@ const TradeJournal = () => {
         </Card>
       )}
       
-      {/* Trades List */}
       <Card className="bg-card/30 backdrop-blur-sm border-border/50">
         <CardHeader className="pb-2">
           <CardTitle className="text-lg">Trade Journal ({filteredTrades.length} trades)</CardTitle>
