@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import {
   Card,
@@ -50,6 +49,25 @@ const generatePayoffData = (strike: number, premium: number, strategy: string) =
   return data;
 };
 
+// Custom tooltip component for the chart
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    const stockPrice = label;
+    const profit = payload[0].value;
+    const maxProfit = Math.max(...payload[0].payload.parentData.map((d: any) => d.profit));
+    const percentageOfMaxProfit = ((profit / maxProfit) * 100).toFixed(2);
+    
+    return (
+      <div className="bg-background border border-border/50 rounded-lg p-2 text-sm shadow-lg">
+        <p className="font-medium">Stock Price: ${stockPrice}</p>
+        <p className="text-primary">P/L: ${profit} ({percentageOfMaxProfit}%)</p>
+      </div>
+    );
+  }
+
+  return null;
+};
+
 const PayoffDiagramGenerator = () => {
   const [ticker, setTicker] = useState("AAPL");
   const [strike, setStrike] = useState(250);
@@ -60,6 +78,12 @@ const PayoffDiagramGenerator = () => {
   const handleGeneratePayoff = () => {
     setPayoffData(generatePayoffData(strike, premium, strategy));
   };
+
+  // Add parent data reference to each data point for tooltip calculations
+  const enhancedPayoffData = payoffData.map(point => ({
+    ...point,
+    parentData: payoffData
+  }));
 
   return (
     <div className="flex flex-col space-y-6">
@@ -133,7 +157,7 @@ const PayoffDiagramGenerator = () => {
         <CardContent className="p-0 h-full">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart
-              data={payoffData}
+              data={enhancedPayoffData}
               margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
             >
               <CartesianGrid strokeDasharray="3 3" stroke="#333" />
@@ -144,17 +168,7 @@ const PayoffDiagramGenerator = () => {
               <YAxis 
                 label={{ value: 'Profit/Loss ($)', angle: -90, position: 'insideLeft' }} 
               />
-              <Tooltip 
-                wrapperClassName="!rounded-lg"
-                contentClassName="!rounded-lg !p-2 !text-sm !shadow-lg"
-                formatter={(value, name, props) => {
-                  const stockPrice = props.payload.stockPrice;
-                  const maxProfit = Math.max(...payoffData.map(d => d.profit));
-                  const percentageOfMaxProfit = ((value as number / maxProfit) * 100).toFixed(2);
-                  return [`$${value} (${percentageOfMaxProfit}%)`, 'P/L'];
-                }}
-                labelFormatter={(value) => `Stock Price: $${value}`}
-              />
+              <Tooltip content={<CustomTooltip />} />
               <Legend />
               <Line 
                 type="monotone" 
