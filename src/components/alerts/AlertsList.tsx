@@ -1,20 +1,93 @@
 
 import { AlertType } from "@/pages/Alerts";
 import { cn } from "@/lib/utils";
-import { AlertCircle, TrendingUp, Bell, Percent, ThumbsUp, Calendar } from "lucide-react";
+import { AlertCircle, TrendingUp, Bell } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
-import { useAlerts } from "@/components/alerts/AlertsContext";
+
+// Mock data for alerts
+const alertsData = [
+  {
+    id: 1,
+    symbol: "SPY",
+    message: "IV spiked 5% - currently at 20%",
+    timestamp: "Just now",
+    type: "volatility" as const,
+    priority: "high" as const
+  },
+  {
+    id: 2,
+    symbol: "AAPL",
+    message: "IV spiked 10% - good time to sell a put?",
+    timestamp: "2h ago",
+    type: "volatility" as const,
+    priority: "high" as const
+  },
+  {
+    id: 3,
+    symbol: "TSLA", 
+    message: "Unusual options activity detected",
+    timestamp: "4h ago",
+    type: "volatility" as const,
+    priority: "medium" as const
+  },
+  {
+    id: 4,
+    symbol: "MSFT",
+    message: "IV crushed 15% after earnings",
+    timestamp: "8h ago",
+    type: "volatility" as const,
+    priority: "low" as const
+  },
+  {
+    id: 5,
+    symbol: "AAPL",
+    message: "Expected to rise 5% in 24 hours, 80% bullish sentiment",
+    timestamp: "1h ago",
+    type: "prediction" as const,
+    priority: "high" as const
+  },
+  {
+    id: 6,
+    symbol: "AMZN",
+    message: "Potential bearish trend forming, 60% probability",
+    timestamp: "3h ago",
+    type: "prediction" as const,
+    priority: "medium" as const
+  },
+  {
+    id: 7,
+    symbol: "NFLX",
+    message: "Earnings volatility expected to rise 20% next week",
+    timestamp: "12h ago",
+    type: "prediction" as const,
+    priority: "medium" as const
+  },
+  {
+    id: 8,
+    symbol: "META",
+    message: "Support level likely to hold at $300, 75% probability",
+    timestamp: "5h ago",
+    type: "prediction" as const,
+    priority: "low" as const
+  },
+  {
+    id: 9,
+    symbol: "NVDA",
+    message: "IV rank at 90th percentile - high premium selling opportunity",
+    timestamp: "6h ago",
+    type: "volatility" as const,
+    priority: "high" as const
+  }
+];
 
 interface AlertsListProps {
   filterType: AlertType;
 }
 
 const AlertsList = ({ filterType }: AlertsListProps) => {
-  const { alerts } = useAlerts();
-  
   const filteredAlerts = filterType === "all" 
-    ? alerts 
-    : alerts.filter(alert => alert.type === filterType);
+    ? alertsData 
+    : alertsData.filter(alert => alert.type === filterType);
 
   if (filteredAlerts.length === 0) {
     return (
@@ -70,36 +143,7 @@ const AlertsList = ({ filterType }: AlertsListProps) => {
                 </div>
                 <span className="text-xs text-muted-foreground">{alert.timestamp}</span>
               </div>
-              
-              <p className="text-sm mt-1 mb-2">{alert.message}</p>
-              
-              {alert.type === "prediction" && (
-                <div className="flex flex-wrap gap-3 mt-2 text-xs">
-                  {alert.probability !== undefined && (
-                    <div className="flex items-center gap-1 text-optionpulse-blue">
-                      <Percent size={14} />
-                      <span>{alert.probability}% ITM Probability</span>
-                    </div>
-                  )}
-                  
-                  {alert.sentiment !== undefined && (
-                    <div className={cn(
-                      "flex items-center gap-1",
-                      alert.sentiment >= 50 ? "text-optionpulse-green" : "text-optionpulse-red"
-                    )}>
-                      <ThumbsUp size={14} className={alert.sentiment < 50 ? "rotate-180" : ""} />
-                      <span>{alert.sentiment}% {alert.sentiment >= 50 ? "Bullish" : "Bearish"} Sentiment</span>
-                    </div>
-                  )}
-                  
-                  {alert.expiryDate && (
-                    <div className="flex items-center gap-1 text-optionpulse-neutral">
-                      <Calendar size={14} />
-                      <span>Expires {alert.expiryDate}</span>
-                    </div>
-                  )}
-                </div>
-              )}
+              <p className="text-sm mt-1">{alert.message}</p>
             </div>
           </div>
           <Separator className="mt-4 opacity-10" />
