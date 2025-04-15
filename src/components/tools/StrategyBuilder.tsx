@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import {
   Card,
@@ -21,6 +20,7 @@ import { CheckCircle, XCircle, Move, ArrowUp, ArrowDown, Plus, Trash2 } from "lu
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
+import ChartTooltip from "@/components/tooltips/ChartTooltip";
 
 interface OptionLeg {
   id: string;
@@ -31,7 +31,6 @@ interface OptionLeg {
   quantity: number;
 }
 
-// Generate payoff data based on all legs
 const generatePayoffData = (legs: OptionLeg[], ticker: string, currentPrice: number) => {
   const data = [];
   const range = 0.3; // 30% range around current price
@@ -64,12 +63,7 @@ const generatePayoffData = (legs: OptionLeg[], ticker: string, currentPrice: num
   return data;
 };
 
-// Calculate strategy metrics
 const calculateStrategyMetrics = (legs: OptionLeg[]) => {
-  // These would actually be calculated based on the legs
-  // Just using simple mock values for now
-  
-  // Sum of all bought premiums minus sold premiums
   const netPremium = legs.reduce((sum, leg) => {
     return sum + (leg.action === 'buy' ? -1 : 1) * leg.premium * leg.quantity;
   }, 0);
@@ -110,10 +104,9 @@ const StrategyBuilder = () => {
     const newPrice = defaultStockPrices[value as keyof typeof defaultStockPrices];
     setCurrentPrice(newPrice);
     
-    // Adjust strikes based on new ticker price
     const newLegs = legs.map(leg => ({
       ...leg,
-      strike: Math.round(leg.strike * (newPrice / currentPrice) / 5) * 5 // Round to nearest $5
+      strike: Math.round(leg.strike * (newPrice / currentPrice) / 5) * 5
     }));
     
     setLegs(newLegs);
@@ -229,6 +222,11 @@ const StrategyBuilder = () => {
     }
     return "Custom Strategy";
   };
+
+  const enhancedPayoffData = payoffData.map(point => ({
+    ...point,
+    parentData: payoffData
+  }));
 
   return (
     <div className="flex flex-col space-y-6">
@@ -405,7 +403,7 @@ const StrategyBuilder = () => {
           <CardContent className="p-0 h-[320px]">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart
-                data={payoffData}
+                data={enhancedPayoffData}
                 margin={{ top: 5, right: 30, left: 20, bottom: 20 }}
               >
                 <CartesianGrid strokeDasharray="3 3" stroke="#333" />
@@ -416,10 +414,7 @@ const StrategyBuilder = () => {
                 <YAxis 
                   label={{ value: 'Profit/Loss ($)', angle: -90, position: 'insideLeft' }} 
                 />
-                <Tooltip 
-                  formatter={(value) => [`$${value}`, 'P/L']}
-                  labelFormatter={(value) => `Stock Price: $${value}`}
-                />
+                <Tooltip content={<ChartTooltip />} />
                 <Legend />
                 <Line 
                   type="monotone" 

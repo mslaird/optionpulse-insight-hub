@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import {
   Select,
@@ -12,6 +11,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import ChartTooltip from "@/components/tooltips/ChartTooltip";
+import ExplanationTooltip from "@/components/tooltips/ExplanationTooltip";
 
 // Mock strategy data
 const strategyData = {
@@ -235,6 +236,11 @@ const RiskRewardAnalyzer = () => {
     setPayoffData(generatePayoffData(selectedStrategy, params));
   };
 
+  const enhancedPayoffData = payoffData.map(point => ({
+    ...point,
+    parentData: payoffData
+  }));
+
   return (
     <div className="flex flex-col space-y-6">
       <div className="grid grid-cols-1 gap-4">
@@ -386,7 +392,7 @@ const RiskRewardAnalyzer = () => {
           <div className="w-full h-[400px]">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart
-                data={payoffData}
+                data={enhancedPayoffData}
                 margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
               >
                 <CartesianGrid strokeDasharray="3 3" stroke="#333" />
@@ -397,10 +403,7 @@ const RiskRewardAnalyzer = () => {
                 <YAxis 
                   label={{ value: 'Profit/Loss ($)', angle: -90, position: 'insideLeft' }} 
                 />
-                <Tooltip 
-                  formatter={(value) => [`$${value}`, 'P/L']}
-                  labelFormatter={(value) => `Stock Price: $${value}`}
-                />
+                <Tooltip content={<ChartTooltip />} />
                 <Legend />
                 <Line 
                   type="monotone" 

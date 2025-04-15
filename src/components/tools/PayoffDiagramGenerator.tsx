@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import ChartTooltip from "@/components/tooltips/ChartTooltip";
 
 // Mock payoff data generator
 const generatePayoffData = (strike: number, premium: number, strategy: string) => {
@@ -47,25 +48,6 @@ const generatePayoffData = (strike: number, premium: number, strategy: string) =
   }
   
   return data;
-};
-
-// Custom tooltip component for the chart
-const CustomTooltip = ({ active, payload, label }: any) => {
-  if (active && payload && payload.length) {
-    const stockPrice = label;
-    const profit = payload[0].value;
-    const maxProfit = Math.max(...payload[0].payload.parentData.map((d: any) => d.profit));
-    const percentageOfMaxProfit = ((profit / maxProfit) * 100).toFixed(2);
-    
-    return (
-      <div className="bg-background border border-border/50 rounded-lg p-2 text-sm shadow-lg">
-        <p className="font-medium">Stock Price: ${stockPrice}</p>
-        <p className="text-primary">P/L: ${profit} ({percentageOfMaxProfit}%)</p>
-      </div>
-    );
-  }
-
-  return null;
 };
 
 const PayoffDiagramGenerator = () => {
@@ -168,7 +150,7 @@ const PayoffDiagramGenerator = () => {
               <YAxis 
                 label={{ value: 'Profit/Loss ($)', angle: -90, position: 'insideLeft' }} 
               />
-              <Tooltip content={<CustomTooltip />} />
+              <Tooltip content={<ChartTooltip />} />
               <Legend />
               <Line 
                 type="monotone" 
