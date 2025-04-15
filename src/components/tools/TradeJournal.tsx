@@ -27,6 +27,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { 
   Plus, 
   Trash2, 
@@ -333,16 +334,16 @@ const TradeJournal = () => {
               <CardTitle className="text-lg">Trade Distribution</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="w-full h-auto min-h-[300px] overflow-visible grid grid-cols-1 lg:grid-cols-2 gap-4">
-                <div className="relative w-full h-auto min-h-[200px] flex items-center justify-center">
-                  <ResponsiveContainer width="100%" height={200}>
+              <div className="w-full h-auto min-h-[300px] overflow-auto relative grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <div className="relative w-full h-auto min-h-[180px] flex items-center justify-center">
+                  <ResponsiveContainer width="100%" height={180}>
                     <RechartsPieChart>
                       <Tooltip formatter={(value: number) => [`${value} trades`]} />
                       <Pie
                         data={tradesByStrategy}
                         cx="50%"
                         cy="50%"
-                        outerRadius={70}
+                        outerRadius={60}
                         fill="#8884d8"
                         dataKey="count"
                         nameKey="strategy"
@@ -355,25 +356,26 @@ const TradeJournal = () => {
                       <Legend 
                         formatter={(value, entry) => {
                           const item = tradesByStrategy.find(t => t.strategy === value);
-                          return `${value} (${item?.count || 0} trades)`;
+                          return `${value} (${item?.count || 0})`;
                         }}
                         layout="vertical"
                         align="right"
                         verticalAlign="middle"
+                        wrapperStyle={{ fontSize: '11px', maxWidth: '120px' }}
                       />
                     </RechartsPieChart>
                   </ResponsiveContainer>
                 </div>
                 
-                <div className="relative w-full h-auto min-h-[200px] flex items-center justify-center">
-                  <ResponsiveContainer width="100%" height={200}>
+                <div className="relative w-full h-auto min-h-[180px] flex items-center justify-center">
+                  <ResponsiveContainer width="100%" height={180}>
                     <RechartsPieChart>
                       <Tooltip formatter={(value: number) => [`${value > 0 ? '+' : ''}$${value.toFixed(2)}`]} />
                       <Pie
                         data={profitByTicker}
                         cx="50%"
                         cy="50%"
-                        outerRadius={70}
+                        outerRadius={60}
                         fill="#8884d8"
                         dataKey="profit"
                         nameKey="ticker"
@@ -394,6 +396,7 @@ const TradeJournal = () => {
                         layout="vertical"
                         align="right"
                         verticalAlign="middle"
+                        wrapperStyle={{ fontSize: '11px', maxWidth: '120px' }}
                       />
                     </RechartsPieChart>
                   </ResponsiveContainer>
