@@ -1,5 +1,6 @@
 
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Search, X, TrendingUp } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
@@ -14,6 +15,7 @@ interface SearchAutocompleteProps {
 }
 
 const SearchAutocomplete = ({ className }: SearchAutocompleteProps) => {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [selectedStock, setSelectedStock] = useState<StockData | null>(null);
@@ -45,6 +47,9 @@ const SearchAutocomplete = ({ className }: SearchAutocompleteProps) => {
         setSelectedStrategy(strategyKey);
         setShowStrategyDialog(true);
       }
+    } else {
+      // Navigate to stock detail page for non-strategy items
+      navigate(`/stock/${stock.ticker}`);
     }
   };
 

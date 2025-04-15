@@ -15,7 +15,8 @@ import Alerts from "./pages/Alerts";
 import Watchlist from "./pages/Watchlist";
 import Settings from "./pages/Settings";
 import Achievements from "./pages/Achievements";
-import Tools from "./pages/Tools"; // Add import for Tools page
+import Tools from "./pages/Tools";
+import StockDetail from "./pages/StockDetail";
 import { AIAlertsProvider } from "./contexts/AIAlertsContext";
 
 const queryClient = new QueryClient();
@@ -38,7 +39,8 @@ const App = () => (
             <Route path="/watchlist" element={<Watchlist />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/achievements" element={<Achievements />} />
-            <Route path="/tools" element={<Tools />} /> {/* Add new route for Tools page */}
+            <Route path="/tools" element={<Tools />} />
+            <Route path="/stock/:ticker" element={<StockDetail />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
