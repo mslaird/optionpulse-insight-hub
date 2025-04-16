@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import MarketOverview from "@/components/dashboard/MarketOverview";
@@ -33,6 +34,10 @@ const strategyExplanations = {
   coveredCall: {
     title: "Covered Call",
     content: "A covered call is selling a call option while owning the underlying stock, earning a premium but capping upside potential. Example: Own 100 AAPL shares at $150, sell $160 call for $5 premium; if AAPL rises to $170, you sell at $160, missing $10/share but keeping the $5 premium."
+  },
+  leaps: {
+    title: "LEAPS Options",
+    content: "LEAPS (Long-term Equity Anticipation Securities) are options with expirations longer than a year. They provide leverage for long-term price movements with lower capital requirements than stock ownership. Example: Buy AAPL $250 call LEAPS expiring in Jan 2026 for $32, gaining exposure to $25,000 of stock with just $3,200."
   }
 };
 
@@ -110,7 +115,7 @@ const Dashboard = () => {
               <div className="absolute top-4 right-4">
                 <ExplanationTooltip 
                   title="LEAPS Options"
-                  content="LEAPS (Long-term Equity Anticipation Securities) are options with expiration dates longer than one year, allowing traders to take long-term positions with less capital than owning the underlying asset."
+                  content={strategyExplanations.leaps.content}
                   iconClass="text-emerald-400"
                 />
               </div>
@@ -125,6 +130,11 @@ const Dashboard = () => {
                   title={strategyExplanations.coveredCall.title}
                   content={strategyExplanations.coveredCall.content}
                   iconClass="text-[#00FF7F]"
+                />
+                <ExplanationTooltip 
+                  title={strategyExplanations.leaps.title}
+                  content={strategyExplanations.leaps.content}
+                  iconClass="text-emerald-400"
                 />
               </div>
             </div>

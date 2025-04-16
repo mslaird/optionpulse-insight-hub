@@ -10,14 +10,25 @@ import VolatilityScanner from "@/components/tools/VolatilityScanner";
 import StrategyBuilder from "@/components/tools/StrategyBuilder";
 import TradeJournal from "@/components/tools/TradeJournal";
 import OptionStrategyTrader from "@/components/trading/OptionStrategyTrader";
-import { Calculator, LineChart, BarChart3, TrendingUp, Maximize2, BookMarked, DollarSign } from "lucide-react";
+import { Calculator, LineChart, BarChart3, TrendingUp, Maximize2, BookMarked, DollarSign, Zap } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 const Tools = () => {
+  const [showLeaps, setShowLeaps] = useState(false);
+  
   return (
     <Layout>
       <div className="flex flex-col gap-6 animate-fade-in">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold mb-2">Options Tools</h1>
+          <h1 className="text-2xl md:text-3xl font-bold mb-2 flex items-center">
+            Options Tools
+            {showLeaps && (
+              <Badge className="ml-3 bg-emerald-500/20 text-emerald-400 border-emerald-500/40">
+                <Zap size={14} className="mr-1" />
+                LEAPS Mode
+              </Badge>
+            )}
+          </h1>
           <p className="text-muted-foreground">
             Advanced calculators and tools for options analysis and strategy building
           </p>
@@ -133,14 +144,23 @@ const Tools = () => {
 
           <TabsContent value="strategy" className="space-y-4">
             <Card className="bg-card/30 backdrop-blur-sm border-border/50">
-              <CardHeader>
-                <CardTitle>Strategy Builder</CardTitle>
-                <CardDescription>
-                  Build custom option strategies and see the potential outcomes
-                </CardDescription>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                  <CardTitle>Strategy Builder</CardTitle>
+                  <CardDescription>
+                    Build custom option strategies and see the potential outcomes
+                  </CardDescription>
+                </div>
+                <Badge 
+                  className="cursor-pointer bg-emerald-500/20 text-emerald-400 border-emerald-500/40 hover:bg-emerald-500/30"
+                  onClick={() => setShowLeaps(!showLeaps)}
+                >
+                  <Zap size={14} className="mr-1" />
+                  {showLeaps ? "LEAPS Mode: ON" : "LEAPS Mode: OFF"}
+                </Badge>
               </CardHeader>
               <CardContent>
-                <StrategyBuilder />
+                <StrategyBuilder showLeaps={showLeaps} />
               </CardContent>
             </Card>
           </TabsContent>
