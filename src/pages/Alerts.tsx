@@ -9,6 +9,7 @@ import AIAlertsFilter from "@/components/alerts/AIAlertsFilter";
 import { useState } from "react";
 import { AIAlertsProvider } from "@/contexts/AIAlertsContext";
 import { Bell, TrendingUp } from "lucide-react";
+import CustomAlerts from "@/components/alerts/CustomAlerts";
 
 export type AlertType = "volatility" | "prediction" | "all";
 
@@ -23,9 +24,12 @@ const Alerts = () => {
           <div>
             <h1 className="text-2xl md:text-3xl font-bold mb-2">Alerts</h1>
             <p className="text-muted-foreground">
-              Monitor volatility changes and AI-driven predictions
+              Monitor volatility changes, AI-driven predictions, and custom alerts
             </p>
           </div>
+
+          {/* Custom Alerts Section - Always visible on top */}
+          <CustomAlerts />
 
           <Tabs defaultValue="traditional" onValueChange={setActiveTab}>
             <TabsList className="grid w-full md:w-auto grid-cols-2 mb-6">
