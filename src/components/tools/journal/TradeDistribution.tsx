@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from "recharts";
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import { StrategyCount, ProfitByTicker } from "./types";
 
 interface TradeDistributionProps {
@@ -111,7 +111,11 @@ const TradeDistribution: React.FC<TradeDistributionProps> = ({
                     ))}
                   </Pie>
                   <Tooltip 
-                    formatter={(value) => [`${value >= 0 ? '+' : ''}$${Math.abs(value).toFixed(2)}`]} 
+                    formatter={(value) => {
+                      // Fix by ensuring value is treated as a number
+                      const numValue = typeof value === 'string' ? parseFloat(value) : Number(value);
+                      return [`${numValue >= 0 ? '+' : ''}$${Math.abs(numValue).toFixed(2)}`];
+                    }} 
                   />
                 </PieChart>
               </ResponsiveContainer>
