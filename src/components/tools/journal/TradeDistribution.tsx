@@ -74,7 +74,8 @@ const TradeDistribution: React.FC<TradeDistributionProps> = ({
                     fill="#8884d8"
                     dataKey="profit"
                     nameKey="ticker"
-                    isAnimationActive={true}
+                    isAnimationActive={false}
+                    label={false}
                   >
                     {profitByTicker.map((entry, index) => (
                       <Cell 
