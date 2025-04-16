@@ -4,8 +4,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Move, Trash2 } from "lucide-react";
+import { Move, Trash2, Clock } from "lucide-react";
 import { LegTableProps } from "./types";
+import { Badge } from "@/components/ui/badge";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const LegTable: React.FC<LegTableProps> = ({
   legs,
@@ -14,7 +16,8 @@ const LegTable: React.FC<LegTableProps> = ({
   onDragStart,
   onDragOver,
   onDragEnd,
-  draggedLeg
+  draggedLeg,
+  showLeaps = false
 }) => {
   return (
     <div className="rounded-md border overflow-hidden">
@@ -25,7 +28,26 @@ const LegTable: React.FC<LegTableProps> = ({
             <TableHead>Action</TableHead>
             <TableHead>Type</TableHead>
             <TableHead>Strike</TableHead>
-            <TableHead>Premium</TableHead>
+            <TableHead>
+              Premium
+              {showLeaps && (
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Badge className="ml-2 bg-purple-500/10 text-purple-400 border-purple-500/30">
+                        <Clock size={10} className="mr-1" />Higher
+                      </Badge>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="w-[200px] text-xs">
+                        LEAPS typically have higher premiums due to their longer duration, 
+                        but lower time decay (theta) per day
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              )}
+            </TableHead>
             <TableHead>Quantity</TableHead>
             <TableHead style={{ width: "80px" }}></TableHead>
           </TableRow>
@@ -35,6 +57,11 @@ const LegTable: React.FC<LegTableProps> = ({
             <TableRow>
               <TableCell colSpan={7} className="text-center py-6">
                 No option legs added. Click "Add Leg" to start building your strategy.
+                {showLeaps && (
+                  <p className="text-sm text-purple-400 mt-2">
+                    LEAPS mode is enabled. You can add longer-dated options with different IV characteristics.
+                  </p>
+                )}
               </TableCell>
             </TableRow>
           ) : (
@@ -93,7 +120,7 @@ const LegTable: React.FC<LegTableProps> = ({
                     type="number"
                     value={leg.premium}
                     onChange={(e) => onLegChange(leg.id, 'premium', parseFloat(e.target.value))}
-                    className="w-full"
+                    className={`w-full ${showLeaps ? "border-purple-500/30" : ""}`}
                   />
                 </TableCell>
                 <TableCell>

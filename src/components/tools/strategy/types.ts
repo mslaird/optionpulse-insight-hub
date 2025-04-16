@@ -29,6 +29,7 @@ export interface TickerSelectorProps {
   onTickerChange: (value: string) => void;
   onCurrentPriceChange: (value: number) => void;
   onExpiryChange: (value: string) => void;
+  showLeaps?: boolean;
 }
 
 export interface LegTableProps {
@@ -39,11 +40,13 @@ export interface LegTableProps {
   onDragOver: (e: React.DragEvent, index: number) => void;
   onDragEnd: () => void;
   draggedLeg: number | null;
+  showLeaps?: boolean;
 }
 
 export interface StrategyHeaderProps {
   strategyName: string;
   onAddLeg: () => void;
+  showLeaps?: boolean;
 }
 
 export interface PayoffChartProps {
@@ -56,4 +59,5 @@ export interface PayoffChartProps {
 
 export interface MetricsCardProps {
   metrics: StrategyMetrics;
+  showLeaps?: boolean;
 }
