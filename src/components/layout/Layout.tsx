@@ -40,7 +40,7 @@ const Layout = ({ children }: LayoutProps) => {
 
   return (
     <div className="min-h-screen bg-optionpulse-navy text-foreground">
-      <Sidebar onToggle={toggleSidebar} />
+      <Sidebar onToggle={setIsSidebarCollapsed} />
       <Header toggleSidebar={toggleSidebar} />
       <main className={cn(
         "pt-16 min-h-screen transition-all duration-300",

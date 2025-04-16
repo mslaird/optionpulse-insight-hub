@@ -1,7 +1,5 @@
 
 import { Link } from "react-router-dom";
-import { Menu } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import Logo from "@/components/brand/Logo";
 
 interface SidebarHeaderProps {
@@ -9,7 +7,7 @@ interface SidebarHeaderProps {
   toggleSidebar: () => void;
 }
 
-export const SidebarHeader = ({ isCollapsed, toggleSidebar }: SidebarHeaderProps) => {
+export const SidebarHeader = ({ isCollapsed }: SidebarHeaderProps) => {
   return (
     <div className="flex items-center justify-between p-4 h-16 bg-[#1C2526]">
       {!isCollapsed ? (
