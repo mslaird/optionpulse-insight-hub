@@ -109,6 +109,52 @@ const challenges: Challenge[] = [
     status: "active",
     difficulty: "advanced",
     completionRate: 22
+  },
+  {
+    id: 6,
+    title: "AAPL Bull Put Spread",
+    description: "Design the optimal bull put spread on AAPL that maximizes profit while managing risk effectively.",
+    category: "spreads",
+    deadline: "May 5, 2025",
+    participants: 174,
+    pointsReward: 500,
+    status: "upcoming",
+    difficulty: "intermediate"
+  },
+  {
+    id: 7,
+    title: "SPY Iron Condor Builder",
+    description: "Build a SPY iron condor (sell $510 call, buy $515 call, sell $490 put, buy $485 put) with the best risk/reward ratio.",
+    category: "iron-condors",
+    deadline: "Apr 30, 2025",
+    participants: 143,
+    pointsReward: 550,
+    status: "active",
+    difficulty: "advanced",
+    completionRate: 18
+  },
+  {
+    id: 8,
+    title: "Straddle Volatility Play",
+    description: "Create a straddle strategy that best capitalizes on upcoming market volatility events.",
+    category: "straddles",
+    deadline: "May 12, 2025",
+    participants: 112,
+    pointsReward: 500,
+    status: "active",
+    difficulty: "intermediate",
+    completionRate: 10
+  },
+  {
+    id: 9,
+    title: "Credit Spread Master",
+    description: "Develop a portfolio of credit spreads across different sectors to maximize monthly income.",
+    category: "spreads",
+    deadline: "May 20, 2025",
+    participants: 98,
+    pointsReward: 450,
+    status: "upcoming",
+    difficulty: "intermediate"
   }
 ];
 
@@ -204,6 +250,19 @@ const getStatusColor = (status: Challenge["status"]) => {
   }
 };
 
+const getCategoryIcon = (category: string) => {
+  switch (category) {
+    case "iron-condors":
+      return <Trophy size={14} className="text-purple-400" />;
+    case "spreads":
+      return <TrendingUp size={14} className="text-blue-400" />;
+    case "straddles":
+      return <Layers size={14} className="text-green-400" />;
+    default:
+      return <Calendar size={14} />;
+  }
+};
+
 const ChallengeCard = ({ challenge }: { challenge: Challenge }) => {
   return (
     <Card className="bg-sidebar transition-all duration-200 hover:shadow-md hover:shadow-primary/5 hover:border-primary/30">
@@ -226,8 +285,26 @@ const ChallengeCard = ({ challenge }: { challenge: Challenge }) => {
                 content={explanations.ironCondor.content}
               />
             )}
+            {challenge.title.includes("Bull Put Spread") && (
+              <ExplanationTooltip 
+                title="Bull Put Spread"
+                content="A bull put spread involves selling a put option while buying a lower strike put option in the same expiration. This creates a net credit position with defined risk, used when you're moderately bullish on a stock."
+              />
+            )}
+            {challenge.title.includes("Straddle") && (
+              <ExplanationTooltip 
+                title="Long Straddle"
+                content="A long straddle involves buying both a call and put option at the same strike price and expiration date. This strategy profits from significant price movement in either direction, ideal for high volatility events."
+              />
+            )}
+            {challenge.title.includes("Credit Spread") && (
+              <ExplanationTooltip 
+                title="Credit Spread"
+                content="A credit spread involves selling one option and buying another with the same expiration but different strikes, resulting in a net credit. It limits risk while allowing you to profit from the premium received if the market moves as expected."
+              />
+            )}
           </div>
-          <CardDescription className="text-muted-foreground mt-1 w-full">
+          <CardDescription className="text-muted-foreground mt-1 w-full flex items-center">
             {challenge.description}
           </CardDescription>
         </div>
@@ -272,10 +349,11 @@ const ChallengeCard = ({ challenge }: { challenge: Challenge }) => {
 
 const Challenges = () => {
   const [filter, setFilter] = useState<Challenge["status"] | "all">("all");
+  const [categoryFilter, setCategoryFilter] = useState<string>("all");
   
-  const filteredChallenges = filter === "all" 
-    ? challenges 
-    : challenges.filter(challenge => challenge.status === filter);
+  const filteredChallenges = challenges
+    .filter(challenge => filter === "all" || challenge.status === filter)
+    .filter(challenge => categoryFilter === "all" || challenge.category === categoryFilter);
   
   return (
     <Layout>
@@ -301,35 +379,75 @@ const Challenges = () => {
           </TabsList>
           
           <TabsContent value="challenges" className="animate-fade-in">
-            <div className="flex flex-wrap gap-2 mb-6">
-              <Badge 
-                variant={filter === "all" ? "default" : "outline"} 
-                className="cursor-pointer" 
-                onClick={() => setFilter("all")}
-              >
-                All
-              </Badge>
-              <Badge 
-                variant={filter === "active" ? "default" : "outline"} 
-                className="cursor-pointer" 
-                onClick={() => setFilter("active")}
-              >
-                Active
-              </Badge>
-              <Badge 
-                variant={filter === "upcoming" ? "default" : "outline"} 
-                className="cursor-pointer" 
-                onClick={() => setFilter("upcoming")}
-              >
-                Upcoming
-              </Badge>
-              <Badge 
-                variant={filter === "completed" ? "default" : "outline"} 
-                className="cursor-pointer" 
-                onClick={() => setFilter("completed")}
-              >
-                Completed
-              </Badge>
+            <div className="flex flex-wrap justify-between gap-4 mb-6">
+              <div className="flex flex-wrap gap-2">
+                <Badge 
+                  variant={filter === "all" ? "default" : "outline"} 
+                  className="cursor-pointer" 
+                  onClick={() => setFilter("all")}
+                >
+                  All Status
+                </Badge>
+                <Badge 
+                  variant={filter === "active" ? "default" : "outline"} 
+                  className="cursor-pointer" 
+                  onClick={() => setFilter("active")}
+                >
+                  Active
+                </Badge>
+                <Badge 
+                  variant={filter === "upcoming" ? "default" : "outline"} 
+                  className="cursor-pointer" 
+                  onClick={() => setFilter("upcoming")}
+                >
+                  Upcoming
+                </Badge>
+                <Badge 
+                  variant={filter === "completed" ? "default" : "outline"} 
+                  className="cursor-pointer" 
+                  onClick={() => setFilter("completed")}
+                >
+                  Completed
+                </Badge>
+              </div>
+              
+              <div className="flex flex-wrap gap-2">
+                <Badge 
+                  variant={categoryFilter === "all" ? "default" : "outline"} 
+                  className="cursor-pointer" 
+                  onClick={() => setCategoryFilter("all")}
+                >
+                  All Types
+                </Badge>
+                <Badge 
+                  variant={categoryFilter === "spreads" ? "default" : "outline"} 
+                  className="cursor-pointer" 
+                  onClick={() => setCategoryFilter("spreads")}
+                >
+                  Credit Spreads
+                </Badge>
+                <Badge 
+                  variant={categoryFilter === "iron-condors" ? "default" : "outline"} 
+                  className="cursor-pointer" 
+                  onClick={() => setCategoryFilter("iron-condors")}
+                >
+                  Iron Condors
+                </Badge>
+                <Badge 
+                  variant={categoryFilter === "straddles" ? "default" : "outline"} 
+                  className="cursor-pointer" 
+                  onClick={() => setCategoryFilter("straddles")}
+                >
+                  Straddles
+                </Badge>
+                <Badge 
+                  variant={categoryFilter === "options" ? "default" : "outline"} 
+                  className="cursor-pointer" 
+                  onClick={() => setCategoryFilter("options")}
+                >
+                  Options
+                </Badge>
+              </div>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
