@@ -133,12 +133,12 @@ const PayoffDiagramGenerator = () => {
         Generate Payoff Diagram
       </Button>
       
-      <Card className="w-full h-[400px] p-4">
+      <Card className="w-full h-[450px] p-4">
         <CardContent className="p-0 h-full">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart
               data={enhancedPayoffData}
-              margin={{ top: 5, right: 30, left: 20, bottom: 20 }}
+              margin={{ top: 20, right: 30, left: 20, bottom: 50 }}
             >
               <CartesianGrid strokeDasharray="3 3" stroke="#333" />
               <XAxis 
@@ -165,7 +165,11 @@ const PayoffDiagramGenerator = () => {
                 }} 
               />
               <Tooltip content={<ChartTooltip />} />
-              <Legend />
+              <Legend 
+                verticalAlign="bottom" 
+                height={36} 
+                wrapperStyle={{ paddingBottom: '10px' }}
+              />
               <Line 
                 type="monotone" 
                 dataKey="profit" 
