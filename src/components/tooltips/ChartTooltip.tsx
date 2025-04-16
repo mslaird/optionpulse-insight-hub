@@ -46,6 +46,8 @@ const ChartTooltip = ({
     // Regular tooltip handling
     const stockPrice = labelFormatter ? labelFormatter(label) : `Stock Price: $${label}`;
     const value = payload[0].value;
+    const lineColor = payload[0].color; // Get the color of the current line
+    
     let percentageDisplay = null;
     
     if (showPercentage && payload[0].payload.parentData) {
@@ -59,7 +61,10 @@ const ChartTooltip = ({
     return (
       <div className="bg-background border border-border/50 rounded-lg p-2 text-sm shadow-lg">
         <p className="font-medium">{stockPrice}</p>
-        <p className="text-primary">
+        <p 
+          className="text-primary" 
+          style={{ color: lineColor }} // Use the line's original color for the tooltip text
+        >
           {valueLabel}: {valuePrefix}{value.toFixed(2)}{valueSuffix}
           {percentageDisplay}
         </p>
