@@ -16,7 +16,6 @@ import { Button } from "@/components/ui/button";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import ChartTooltip from "@/components/tooltips/ChartTooltip";
 
-// Mock payoff data generator
 const generatePayoffData = (strike: number, premium: number, strategy: string) => {
   const data = [];
   const range = 0.3; // 30% range around strike price
@@ -61,7 +60,6 @@ const PayoffDiagramGenerator = () => {
     setPayoffData(generatePayoffData(strike, premium, strategy));
   };
 
-  // Add parent data reference to each data point for tooltip calculations
   const enhancedPayoffData = payoffData.map(point => ({
     ...point,
     parentData: payoffData
@@ -140,15 +138,31 @@ const PayoffDiagramGenerator = () => {
           <ResponsiveContainer width="100%" height="100%">
             <LineChart
               data={enhancedPayoffData}
-              margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+              margin={{ top: 5, right: 30, left: 20, bottom: 20 }}
             >
               <CartesianGrid strokeDasharray="3 3" stroke="#333" />
               <XAxis 
                 dataKey="stockPrice" 
-                label={{ value: 'Stock Price ($)', position: 'insideBottomRight', offset: -10 }} 
+                label={{ 
+                  value: 'Stock Price ($)', 
+                  position: 'insideBottom', 
+                  offset: -10,
+                  style: { 
+                    textAnchor: 'middle', 
+                    fontSize: '0.75rem' 
+                  } 
+                }} 
               />
               <YAxis 
-                label={{ value: 'Profit/Loss ($)', angle: -90, position: 'insideLeft' }} 
+                label={{ 
+                  value: 'Profit/Loss ($)', 
+                  angle: -90, 
+                  position: 'insideLeft',
+                  style: { 
+                    textAnchor: 'middle', 
+                    fontSize: '0.75rem' 
+                  } 
+                }} 
               />
               <Tooltip content={<ChartTooltip />} />
               <Legend />
