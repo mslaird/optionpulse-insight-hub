@@ -1,14 +1,10 @@
 
-import React, { useState } from "react";
+import React from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, ChevronRight, Lock, Sparkles } from "lucide-react";
+import { Sparkles, ChevronRight } from "lucide-react";
 import { UserTier } from "@/utils/auth";
-
-interface PlanFeature {
-  name: string;
-  included: boolean;
-}
+import PlanFeatureList, { PlanFeature } from "./PlanFeatureList";
 
 interface PlanCardProps {
   title: string;
@@ -70,25 +66,10 @@ const PlanCard: React.FC<PlanCardProps> = ({
         </div>
       </CardHeader>
       <CardContent className="flex-grow">
-        <ul className="space-y-2">
-          {features.map((feature, index) => (
-            <li key={index} className="flex items-start gap-2">
-              {feature.included ? (
-                <CheckCircle2 
-                  size={18} 
-                  className={`mt-0.5 flex-shrink-0 ${
-                    isPro ? 'text-yellow-400' : 'text-optionpulse-blue'
-                  }`} 
-                />
-              ) : (
-                <Lock size={18} className="text-muted-foreground mt-0.5 flex-shrink-0" />
-              )}
-              <span className={feature.included ? '' : 'text-muted-foreground'}>
-                {feature.name}
-              </span>
-            </li>
-          ))}
-        </ul>
+        <PlanFeatureList 
+          features={features} 
+          isPro={isPro} 
+        />
       </CardContent>
       <CardFooter>
         {isCurrent ? (
