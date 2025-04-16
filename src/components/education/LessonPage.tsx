@@ -1,14 +1,12 @@
-
-import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
-import { ArrowLeft, Play, Check, ExternalLink } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
+import { ArrowLeft } from "lucide-react";
 import strategyDefinitions from "@/data/strategyDefinitions";
-import { useIsMobile } from "@/hooks/use-mobile";
+import LessonHeader from "./LessonHeader";
+import VideoPlayer from "./VideoPlayer";
+import LessonTranscript from "./LessonTranscript";
+import RelatedStrategy from "./RelatedStrategy";
 
 // Mock lesson data - In a real app, this would come from an API
 const lessonsData = {
@@ -65,9 +63,6 @@ const lessonsData = {
 const LessonPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const isMobile = useIsMobile();
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [progress, setProgress] = useState(0);
   
   // Get lesson data
   const lesson = id && lessonsData[id as keyof typeof lessonsData];
@@ -87,132 +82,26 @@ const LessonPage = () => {
       </Layout>
     );
   }
-  
-  const startVideo = () => {
-    setIsPlaying(true);
-    // In a real app, we would increment progress gradually
-    // For demo purposes, we'll set a timeout to simulate progress
-    const interval = setInterval(() => {
-      setProgress(prev => {
-        if (prev < 100) {
-          return prev + 1;
-        } else {
-          clearInterval(interval);
-          return 100;
-        }
-      });
-    }, 500);
-  };
-  
-  const getDifficultyColor = (difficulty: string) => {
-    switch (difficulty) {
-      case "beginner":
-        return "border-optionpulse-green text-optionpulse-green";
-      case "intermediate":
-        return "border-optionpulse-blue text-optionpulse-blue";
-      case "advanced":
-        return "border-optionpulse-red text-optionpulse-red";
-      default:
-        return "";
-    }
-  };
 
   return (
     <Layout>
       <div className="flex flex-col gap-6 animate-fade-in max-w-5xl mx-auto">
-        <div className="flex items-center gap-4">
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={() => navigate("/education")}
-            className="border-border/50"
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" /> Back
-          </Button>
-          
-          <Badge
-            variant="outline"
-            className={`text-xs ${getDifficultyColor(lesson.difficulty)}`}
-          >
-            {lesson.difficulty.charAt(0).toUpperCase() + lesson.difficulty.slice(1)}
-          </Badge>
-          
-          <Badge variant="outline" className="text-xs border-muted-foreground text-muted-foreground">
-            {lesson.duration}
-          </Badge>
-        </div>
+        <LessonHeader 
+          title={lesson.title}
+          description={lesson.description}
+          difficulty={lesson.difficulty}
+          duration={lesson.duration}
+        />
         
-        <h1 className="text-2xl md:text-3xl font-bold">{lesson.title}</h1>
-        <p className="text-muted-foreground">{lesson.description}</p>
+        <VideoPlayer 
+          title={lesson.title}
+          duration={lesson.duration}
+          videoSrc={lesson.videoSrc}
+        />
         
-        <div className="w-full flex flex-col space-y-4">
-          {!isPlaying ? (
-            <div 
-              className="relative w-full sm:w-3/4 aspect-video mx-auto bg-optionpulse-charcoal rounded-lg overflow-hidden cursor-pointer flex items-center justify-center border border-border/50 group hover:border-optionpulse-blue/70 transition-all" 
-              onClick={startVideo}
-            >
-              <div className="absolute inset-0 bg-gradient-to-br from-optionpulse-navy/70 to-optionpulse-charcoal/70 z-10"></div>
-              <div className="w-20 h-20 rounded-full bg-optionpulse-blue/20 flex items-center justify-center z-20 transition-all group-hover:scale-110">
-                <Play size={32} className="text-optionpulse-blue ml-1" />
-              </div>
-              <div className="absolute bottom-0 left-0 right-0 p-4 z-20">
-                <h3 className="text-lg font-medium">{lesson.title}</h3>
-                <p className="text-sm text-muted-foreground">{lesson.duration}</p>
-              </div>
-            </div>
-          ) : (
-            <div className="w-full sm:w-3/4 mx-auto">
-              <video 
-                src={lesson.videoSrc} 
-                className="w-full rounded-lg border border-border/50"
-                controls 
-                autoPlay
-                onTimeUpdate={(e) => {
-                  const video = e.target as HTMLVideoElement;
-                  const percent = (video.currentTime / video.duration) * 100;
-                  setProgress(percent);
-                }}
-              >
-                Your browser does not support the video tag.
-              </video>
-              <div className="mt-2">
-                <div className="flex justify-between text-xs text-muted-foreground">
-                  <span>Progress</span>
-                  <span>{Math.round(progress)}%</span>
-                </div>
-                <Progress value={progress} className="h-1.5 mt-1" />
-              </div>
-            </div>
-          )}
-          
-          <div className="w-full sm:w-3/4 mx-auto mt-6">
-            <h3 className="font-medium text-lg mb-3">Transcript</h3>
-            <Card className="bg-card/30 backdrop-blur-sm border-border/50">
-              <CardContent className="p-4">
-                <p className="text-sm text-muted-foreground">{lesson.transcript}</p>
-              </CardContent>
-            </Card>
-          </div>
-          
-          {relatedStrategy && (
-            <div className="w-full sm:w-3/4 mx-auto mt-6">
-              <h3 className="font-medium text-lg mb-3">Related Strategy Guide</h3>
-              <Card className="bg-card/30 backdrop-blur-sm border-border/50 hover:border-optionpulse-blue/50 transition-all">
-                <CardContent className="p-4">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h4 className="font-medium">{relatedStrategy.name}</h4>
-                      <p className="text-sm text-muted-foreground mt-1">{relatedStrategy.description}</p>
-                    </div>
-                    <Button variant="outline" size="sm" className="flex-shrink-0">
-                      View <ExternalLink size={14} className="ml-2" />
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          )}
-        </div>
+        <LessonTranscript transcript={lesson.transcript} />
+        
+        <RelatedStrategy strategy={relatedStrategy} />
       </div>
     </Layout>
   );

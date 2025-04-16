@@ -1,8 +1,8 @@
 
 import React from "react";
 import { Separator } from "@/components/ui/separator";
-import { ArrowUpRight, ArrowDownRight } from "lucide-react";
 import ExplanationTooltip from "@/components/tooltips/ExplanationTooltip";
+import MarketSectionItem from "./MarketSectionItem";
 
 interface MarketSectionProps {
   title: string;
@@ -29,6 +29,25 @@ const MarketSection = ({ title, tooltip, children }: MarketSectionProps) => {
 };
 
 const MarketMoversSection = () => {
+  // Data could be moved to props in a real application
+  const gainers = [
+    { symbol: "NVDA", value: 5.2, isPositive: true },
+    { symbol: "AMD", value: 3.8, isPositive: true },
+    { symbol: "META", value: 2.9, isPositive: true }
+  ];
+  
+  const losers = [
+    { symbol: "INTC", value: 4.1, isPositive: false },
+    { symbol: "PYPL", value: 3.5, isPositive: false },
+    { symbol: "NFLX", value: 2.2, isPositive: false }
+  ];
+  
+  const highIV = [
+    { symbol: "TSLA 200C", value: "85%" },
+    { symbol: "AAPL 190C", value: "65%" },
+    { symbol: "SPY 425P", value: "50%" }
+  ];
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       <MarketSection 
@@ -36,27 +55,14 @@ const MarketMoversSection = () => {
         tooltip="Top Gainers represent stocks that have experienced the most significant percentage increase in price during the trading day. These stocks are showing strong positive momentum and could indicate bullish market sentiment or positive company-specific news."
       >
         <div className="space-y-2">
-          <div className="flex justify-between items-center">
-            <span className="font-medium">NVDA</span>
-            <span className="text-accent text-glow-green flex items-center">
-              <ArrowUpRight size={14} className="mr-1" />
-              5.2%
-            </span>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="font-medium">AMD</span>
-            <span className="text-accent text-glow-green flex items-center">
-              <ArrowUpRight size={14} className="mr-1" />
-              3.8%
-            </span>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="font-medium">META</span>
-            <span className="text-accent text-glow-green flex items-center">
-              <ArrowUpRight size={14} className="mr-1" />
-              2.9%
-            </span>
-          </div>
+          {gainers.map((item, index) => (
+            <MarketSectionItem 
+              key={index}
+              symbol={item.symbol}
+              value={item.value}
+              isPositive={item.isPositive}
+            />
+          ))}
         </div>
       </MarketSection>
       
@@ -65,27 +71,14 @@ const MarketMoversSection = () => {
         tooltip="Top Losers represent stocks that have experienced the most significant percentage decrease in price during the trading day. These stocks are showing negative price movement and could indicate bearish market sentiment, potential challenges, or negative company-specific news."
       >
         <div className="space-y-2">
-          <div className="flex justify-between items-center">
-            <span className="font-medium">INTC</span>
-            <span className="text-destructive text-glow-red flex items-center">
-              <ArrowDownRight size={14} className="mr-1" />
-              4.1%
-            </span>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="font-medium">PYPL</span>
-            <span className="text-destructive text-glow-red flex items-center">
-              <ArrowDownRight size={14} className="mr-1" />
-              3.5%
-            </span>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="font-medium">NFLX</span>
-            <span className="text-destructive text-glow-red flex items-center">
-              <ArrowDownRight size={14} className="mr-1" />
-              2.2%
-            </span>
-          </div>
+          {losers.map((item, index) => (
+            <MarketSectionItem 
+              key={index}
+              symbol={item.symbol}
+              value={item.value}
+              isPositive={item.isPositive}
+            />
+          ))}
         </div>
       </MarketSection>
       
@@ -94,18 +87,15 @@ const MarketMoversSection = () => {
         tooltip="High Implied Volatility (IV) options indicate higher expected price fluctuations. Options with high IV suggest increased market uncertainty or anticipated significant price movements. Traders often use these to assess potential trading opportunities or implement volatility-based strategies."
       >
         <div className="space-y-2">
-          <div className="flex justify-between items-center">
-            <span className="font-medium">TSLA 200C</span>
-            <span>IV 85%</span>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="font-medium">AAPL 190C</span>
-            <span>IV 65%</span>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="font-medium">SPY 425P</span>
-            <span>IV 50%</span>
-          </div>
+          {highIV.map((item, index) => (
+            <MarketSectionItem 
+              key={index}
+              symbol={item.symbol}
+              value={item.value}
+              showPercentage={false}
+              prefix="IV "
+            />
+          ))}
         </div>
       </MarketSection>
     </div>

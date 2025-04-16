@@ -1,14 +1,10 @@
-
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Layout from "@/components/layout/Layout";
-import LessonCard from "@/components/education/LessonCard";
-import ResourceCard from "@/components/education/ResourceCard";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Input } from "@/components/ui/input";
-import { Search, BookOpen, Filter, Check } from "lucide-react";
+import { Tabs } from "@/components/ui/tabs";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import EducationHeader from "@/components/education/EducationHeader";
+import EducationFilters from "@/components/education/EducationFilters";
+import { LessonsContent, ResourcesContent } from "@/components/education/EducationContent";
 
 // Mock data for lessons
 const lessonsData = [
@@ -165,226 +161,54 @@ const Education = () => {
     setSelectedCategory(null);
   };
   
+  // Clear search and filters
+  const clearAllFilters = () => {
+    setSearchTerm("");
+    clearFilters();
+  };
+
+  // Clear search only
+  const clearSearch = () => {
+    setSearchTerm("");
+  };
+  
   // Determine if any filters are active
   const hasActiveFilters = selectedDifficulty !== null || selectedCategory !== null;
 
   return (
     <Layout>
       <div className="flex flex-col gap-6 animate-fade-in">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div>
-            <h1 className="text-2xl md:text-3xl font-bold mb-2">Education Hub</h1>
-            <p className="text-muted-foreground">Learn options trading strategies and concepts</p>
-          </div>
-          
-          <div className="relative w-full md:w-64">
-            <Search size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
-            <Input
-              type="text"
-              placeholder="Search lessons & resources..."
-              className="pl-10 bg-muted/30 border-muted/30 focus:border-optionpulse-blue w-full"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-        </div>
+        <EducationHeader 
+          searchTerm={searchTerm} 
+          setSearchTerm={setSearchTerm} 
+        />
         
         <Tabs defaultValue="lessons" value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-            <TabsList className="bg-muted/30">
-              <TabsTrigger value="lessons" className="flex gap-2 items-center">
-                <BookOpen size={16} />
-                <span>Lessons</span>
-              </TabsTrigger>
-              <TabsTrigger value="resources">Resources</TabsTrigger>
-            </TabsList>
-            
-            <div className="flex gap-2">
-              {isMobile ? (
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant="outline" size="sm" className="flex gap-2">
-                      <Filter size={14} />
-                      <span>Filters</span>
-                      {hasActiveFilters && <span className="w-2 h-2 rounded-full bg-optionpulse-blue"></span>}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-72 p-3">
-                    <div className="space-y-4">
-                      <div>
-                        <h4 className="font-medium mb-2 text-sm">Difficulty</h4>
-                        <div className="flex flex-wrap gap-2">
-                          {Object.entries(difficultyLabels).map(([key, label]) => (
-                            <Button
-                              key={key}
-                              variant={selectedDifficulty === key ? "default" : "outline"}
-                              size="sm"
-                              onClick={() => setSelectedDifficulty(selectedDifficulty === key ? null : key)}
-                              className="flex gap-1"
-                            >
-                              {selectedDifficulty === key && <Check size={12} />}
-                              {label}
-                            </Button>
-                          ))}
-                        </div>
-                      </div>
-                      <div>
-                        <h4 className="font-medium mb-2 text-sm">Category</h4>
-                        <div className="flex flex-wrap gap-2">
-                          {Object.entries(categoryLabels).map(([key, label]) => (
-                            <Button
-                              key={key}
-                              variant={selectedCategory === key ? "default" : "outline"}
-                              size="sm"
-                              onClick={() => setSelectedCategory(selectedCategory === key ? null : key)}
-                              className="flex gap-1"
-                            >
-                              {selectedCategory === key && <Check size={12} />}
-                              {label}
-                            </Button>
-                          ))}
-                        </div>
-                      </div>
-                      {hasActiveFilters && (
-                        <Button variant="ghost" size="sm" onClick={clearFilters} className="w-full">
-                          Clear Filters
-                        </Button>
-                      )}
-                    </div>
-                  </PopoverContent>
-                </Popover>
-              ) : (
-                <>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        className={selectedDifficulty ? "border-optionpulse-blue text-optionpulse-blue" : ""}
-                      >
-                        {selectedDifficulty 
-                          ? difficultyLabels[selectedDifficulty as keyof typeof difficultyLabels] 
-                          : "Difficulty"}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-56 p-3">
-                      <div className="space-y-2">
-                        {Object.entries(difficultyLabels).map(([key, label]) => (
-                          <Button
-                            key={key}
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => setSelectedDifficulty(selectedDifficulty === key ? null : key)}
-                            className={`w-full justify-start ${selectedDifficulty === key ? "bg-muted" : ""}`}
-                          >
-                            <span className="mr-auto">{label}</span>
-                            {selectedDifficulty === key && <Check size={16} />}
-                          </Button>
-                        ))}
-                      </div>
-                    </PopoverContent>
-                  </Popover>
-                  
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        className={selectedCategory ? "border-optionpulse-blue text-optionpulse-blue" : ""}
-                      >
-                        {selectedCategory 
-                          ? categoryLabels[selectedCategory as keyof typeof categoryLabels] 
-                          : "Category"}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-56 p-3">
-                      <div className="space-y-2">
-                        {Object.entries(categoryLabels).map(([key, label]) => (
-                          <Button
-                            key={key}
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => setSelectedCategory(selectedCategory === key ? null : key)}
-                            className={`w-full justify-start ${selectedCategory === key ? "bg-muted" : ""}`}
-                          >
-                            <span className="mr-auto">{label}</span>
-                            {selectedCategory === key && <Check size={16} />}
-                          </Button>
-                        ))}
-                      </div>
-                    </PopoverContent>
-                  </Popover>
-                  
-                  {hasActiveFilters && (
-                    <Button variant="ghost" size="sm" onClick={clearFilters}>
-                      Clear
-                    </Button>
-                  )}
-                </>
-              )}
-            </div>
-          </div>
+          <EducationFilters 
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+            difficultyLabels={difficultyLabels}
+            categoryLabels={categoryLabels}
+            selectedDifficulty={selectedDifficulty}
+            setSelectedDifficulty={setSelectedDifficulty}
+            selectedCategory={selectedCategory}
+            setSelectedCategory={setSelectedCategory}
+            clearFilters={clearFilters}
+            hasActiveFilters={hasActiveFilters}
+            isMobile={isMobile}
+          />
           
-          <TabsContent value="lessons" className="mt-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredLessons.map((lesson) => (
-                <LessonCard
-                  key={lesson.id}
-                  id={lesson.id}
-                  title={lesson.title}
-                  description={lesson.description}
-                  difficulty={lesson.difficulty as "beginner" | "intermediate" | "advanced"}
-                  duration={lesson.duration}
-                  completed={lesson.completed}
-                  progress={lesson.progress}
-                />
-              ))}
-            </div>
-            
-            {filteredLessons.length === 0 && (
-              <div className="text-center py-16">
-                <p className="text-muted-foreground">No lessons found for "{searchTerm}"</p>
-                <Button 
-                  variant="outline" 
-                  onClick={() => {
-                    setSearchTerm("");
-                    clearFilters();
-                  }} 
-                  className="mt-4"
-                >
-                  Clear Search & Filters
-                </Button>
-              </div>
-            )}
-          </TabsContent>
+          <LessonsContent 
+            filteredLessons={filteredLessons}
+            searchTerm={searchTerm}
+            clearAllFilters={clearAllFilters}
+          />
           
-          <TabsContent value="resources" className="mt-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {filteredResources.map((resource, index) => (
-                <ResourceCard
-                  key={index}
-                  title={resource.title}
-                  type={resource.type as "article" | "video" | "ebook"}
-                  source={resource.source}
-                  url={resource.url}
-                  tags={resource.tags}
-                />
-              ))}
-            </div>
-            
-            {filteredResources.length === 0 && (
-              <div className="text-center py-16">
-                <p className="text-muted-foreground">No resources found for "{searchTerm}"</p>
-                <Button 
-                  variant="outline" 
-                  onClick={() => setSearchTerm("")} 
-                  className="mt-4"
-                >
-                  Clear Search
-                </Button>
-              </div>
-            )}
-          </TabsContent>
+          <ResourcesContent 
+            filteredResources={filteredResources}
+            searchTerm={searchTerm}
+            clearSearch={clearSearch}
+          />
         </Tabs>
       </div>
     </Layout>
