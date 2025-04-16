@@ -1,3 +1,4 @@
+
 /**
  * Utility functions for generating option payoff diagrams
  */
@@ -10,7 +11,7 @@ export const generatePayoffData = (strike: number, premium: number, strategy: st
   const range = 0.3; // 30% range around strike price
   const minPrice = strike * (1 - range);
   const maxPrice = strike * (1 + range);
-  const step = (maxPrice - minPrice) / 20; // Reduced from 30 to 20 data points
+  const step = (maxPrice - minPrice) / 14; // Reduced from 20 to 14 data points (about 1/3 reduction)
   
   // Calculate breakeven point
   let breakEvenPoint = strike;
