@@ -59,7 +59,14 @@ const PayoffChart: React.FC<PayoffChartProps> = ({
                   textAnchor: 'middle', 
                   fontSize: '0.75rem' 
                 } 
-              }} 
+              }}
+              // Reduce the number of ticks shown on the x-axis
+              ticks={[
+                data[0]?.stockPrice,
+                strike,
+                breakEvenPoint,
+                data[data.length - 1]?.stockPrice
+              ].filter(Boolean)}
             />
             <YAxis 
               label={{ 
@@ -70,7 +77,7 @@ const PayoffChart: React.FC<PayoffChartProps> = ({
                   textAnchor: 'middle', 
                   fontSize: '0.75rem' 
                 } 
-              }} 
+              }}
             />
             <Tooltip content={<ChartTooltip />} />
             <Legend 
@@ -79,7 +86,21 @@ const PayoffChart: React.FC<PayoffChartProps> = ({
               align="center"
             />
             
-            {/* Display clear reference line for break-even point */}
+            {/* Strike price reference line */}
+            <ReferenceLine 
+              x={strike} 
+              stroke="#666" 
+              strokeWidth={1} 
+              strokeDasharray="3 3" 
+              label={{
+                value: `Strike: $${strike.toFixed(2)}`,
+                position: 'insideBottomRight',
+                fill: '#666',
+                fontSize: 12
+              }}
+            />
+            
+            {/* Break-even point reference line */}
             <ReferenceLine 
               x={breakEvenPoint} 
               stroke="#34D399" 
@@ -97,6 +118,27 @@ const PayoffChart: React.FC<PayoffChartProps> = ({
               type="monotone" 
               dataKey="profit" 
               stroke="#1EAEDB" 
+              strokeWidth={2}
+              // Show dots only on important points to reduce visual clutter
+              dot={({ cx, cy, payload }) => {
+                const isStrike = Math.abs(payload.stockPrice - strike) < 0.01;
+                const isBreakEven = Math.abs(payload.stockPrice - breakEvenPoint) < 0.01;
+                const isEndPoint = payload.stockPrice === data[0].stockPrice || 
+                                 payload.stockPrice === data[data.length - 1].stockPrice;
+                
+                if (isStrike || isBreakEven || isEndPoint) {
+                  return (
+                    <circle 
+                      cx={cx} 
+                      cy={cy} 
+                      r={4} 
+                      fill={isBreakEven ? "#34D399" : "#1EAEDB"} 
+                      stroke="none" 
+                    />
+                  );
+                }
+                return null;
+              }}
               activeDot={{ r: 8 }} 
               name={`${ticker} ${formatStrategyName(strategy)} ($${strike} Strike, $${premium} Premium)`} 
             />

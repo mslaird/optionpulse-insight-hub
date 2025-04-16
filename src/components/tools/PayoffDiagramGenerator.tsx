@@ -21,9 +21,23 @@ const PayoffDiagramGenerator = () => {
     const freshData = generatePayoffData(strike, premium, strategy);
     setPayoffData(freshData);
     
-    // For debugging purposes
-    console.log("Generated payoff data:", freshData);
-    console.log("Break-even point should be visible at:", strategy === "call" ? strike + premium : strike - premium);
+    // Enhanced debugging
+    console.log(`Generating ${strategy} payoff data with ${freshData.length} data points`);
+    console.log(`Strike: $${strike}, Premium: $${premium}`);
+    
+    const breakEven = strategy === "call" ? strike + premium : strike - premium;
+    console.log(`Break-even point at: $${breakEven.toFixed(2)}`);
+    
+    // Find if there's a data point exactly at break-even
+    const breakEvenPoint = freshData.find(point => 
+      Math.abs(point.stockPrice - breakEven) < 0.01
+    );
+    
+    if (breakEvenPoint) {
+      console.log("Break-even point included in data:", breakEvenPoint);
+    } else {
+      console.log("Warning: No exact break-even point found in dataset");
+    }
   };
 
   const enhancedPayoffData = enhancePayoffData(payoffData);
