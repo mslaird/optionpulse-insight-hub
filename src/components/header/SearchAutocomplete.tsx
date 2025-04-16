@@ -12,9 +12,10 @@ import strategyDefinitions from "@/data/strategyDefinitions";
 
 interface SearchAutocompleteProps {
   className?: string;
+  onSelect?: () => void;
 }
 
-const SearchAutocomplete = ({ className }: SearchAutocompleteProps) => {
+const SearchAutocomplete = ({ className, onSelect }: SearchAutocompleteProps) => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [isOpen, setIsOpen] = useState(false);
@@ -50,6 +51,10 @@ const SearchAutocomplete = ({ className }: SearchAutocompleteProps) => {
     } else {
       // Navigate to stock detail page for non-strategy items
       navigate(`/stock/${stock.ticker}`);
+      // Call the onSelect callback if provided
+      if (onSelect) {
+        onSelect();
+      }
     }
   };
 
@@ -151,7 +156,13 @@ const SearchAutocomplete = ({ className }: SearchAutocompleteProps) => {
       )}
 
       {/* Strategy Information Dialog */}
-      <Dialog open={showStrategyDialog} onOpenChange={setShowStrategyDialog}>
+      <Dialog open={showStrategyDialog} onOpenChange={(open) => {
+        setShowStrategyDialog(open);
+        // Call the onSelect callback when closing dialog
+        if (!open && onSelect) {
+          onSelect();
+        }
+      }}>
         <DialogContent className="sm:max-w-md bg-sidebar-background border-border">
           <DialogHeader>
             <DialogTitle className="text-foreground text-xl flex items-center gap-2">

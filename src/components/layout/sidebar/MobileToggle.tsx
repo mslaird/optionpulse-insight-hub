@@ -11,8 +11,9 @@ export const MobileToggle = ({
   isMobileOpen, 
   toggleMobileSidebar 
 }: MobileToggleProps) => {
+  // Don't show the toggle when sidebar is open
   if (isMobileOpen) {
-    return null; // Remove the toggle when sidebar is open
+    return null;
   }
 
   return (

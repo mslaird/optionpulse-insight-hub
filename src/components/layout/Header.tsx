@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { Bell, User, Menu } from "lucide-react";
+import { Bell, User, Menu, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -14,9 +14,13 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Link, useNavigate } from "react-router-dom";
 import SearchAutocomplete from "@/components/header/SearchAutocomplete";
 import Logo from "@/components/brand/Logo";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 const Header = () => {
   const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [showMobileSearch, setShowMobileSearch] = useState(false);
+  const isMobile = useIsMobile();
   const navigate = useNavigate();
   
   // Load profile image from localStorage when component mounts
@@ -58,11 +62,25 @@ const Header = () => {
           <Logo />
         </div>
         
+        {/* Desktop search bar */}
         <div className="relative max-w-md w-full hidden md:block">
           <SearchAutocomplete />
         </div>
         
-        <div className="flex items-center gap-2 ml-auto">
+        {/* Mobile search icon */}
+        <div className="md:hidden ml-auto mr-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="text-muted-foreground hover:text-foreground transition-colors"
+            onClick={() => setShowMobileSearch(true)}
+            aria-label="Search"
+          >
+            <Search size={20} />
+          </Button>
+        </div>
+        
+        <div className="flex items-center gap-2 ml-auto md:ml-0">
           <Button 
             variant="ghost" 
             size="icon" 
@@ -102,6 +120,21 @@ const Header = () => {
           </DropdownMenu>
         </div>
       </div>
+      
+      {/* Mobile search dialog */}
+      <Dialog open={showMobileSearch} onOpenChange={setShowMobileSearch}>
+        <DialogContent className="top-4 p-4 max-w-md mx-auto">
+          <DialogHeader>
+            <DialogTitle className="text-lg">Search</DialogTitle>
+          </DialogHeader>
+          <div className="mt-2">
+            <SearchAutocomplete 
+              className="w-full"
+              onSelect={() => setShowMobileSearch(false)}
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
     </header>
   );
 };
