@@ -42,30 +42,23 @@ export const generatePayoffData = (strike: number, premium: number, strategy: st
       profit = Math.max(0, Math.min(strike - price, strike - lowerStrike)) - premium;
     }
     
-    // Set the breakeven flag for the exact breakeven point
-    const isBreakEven = Math.abs(price - breakEvenPoint) < step/2;
-    
+    // We don't set breakeven flag on the regular data points anymore
     data.push({
       stockPrice: parseFloat(price.toFixed(2)),
       profit: parseFloat(profit.toFixed(2)),
-      breakeven: isBreakEven ? 0 : null
+      breakeven: null
     });
   }
   
-  // Always ensure we have a specific data point exactly at the breakeven
-  // First check if we already have it
-  const hasBreakEvenPoint = data.some(point => Math.abs(point.stockPrice - breakEvenPoint) < 0.01);
+  // Add a single, specific data point exactly at the breakeven
+  // Calculate profit at breakeven - should be very close to zero
+  let breakEvenProfit = 0;
   
-  if (!hasBreakEvenPoint) {
-    // Calculate profit at breakeven - should be close to zero
-    let breakEvenProfit = 0;
-    
-    data.push({
-      stockPrice: parseFloat(breakEvenPoint.toFixed(2)),
-      profit: breakEvenProfit,
-      breakeven: 0
-    });
-  }
+  data.push({
+    stockPrice: parseFloat(breakEvenPoint.toFixed(2)),
+    profit: breakEvenProfit,
+    breakeven: 0
+  });
   
   // Sort to ensure the breakeven point is in the right position
   return data.sort((a, b) => a.stockPrice - b.stockPrice);
