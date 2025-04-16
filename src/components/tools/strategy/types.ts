@@ -47,7 +47,11 @@ export interface StrategyHeaderProps {
 }
 
 export interface PayoffChartProps {
-  payoffData: any[];
+  payoffData: Array<{
+    stockPrice: number;
+    profit: number;
+    [key: string]: any;
+  }>;
 }
 
 export interface MetricsCardProps {
