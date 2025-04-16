@@ -126,7 +126,7 @@ const AIAlertsList = () => {
               <div className="mt-4">
                 <p className="text-sm font-medium">AI Prediction Summary:</p>
                 <p className="text-sm mt-1">
-                  {alert.symbol} {alert.type === 'call' ? 'call option' : 'put option'} at strike ${alert.strikePrice} 
+                  {alert.symbol} {alert.type === 'call' ? 'call option' : 'put option'} at strike ${alert.strikePrice} {' '}
                   has a {alert.itmProbability}% probability of being in-the-money by {alert.expiryDate}. 
                   Market sentiment is {alert.sentiment.percentage}% {alert.sentiment.direction}.
                   {alert.isLeaps && " This is a long-term LEAPS option."}
