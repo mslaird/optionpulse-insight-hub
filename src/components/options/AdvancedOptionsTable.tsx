@@ -82,8 +82,8 @@ const AdvancedOptionsTable: React.FC<AdvancedOptionsTableProps> = ({
         valB = b.isCredit ? b.netCreditDebit : -b.netCreditDebit;
         break;
       case "maxProfit":
-        valA = a.maxProfit === "Unlimited" ? Infinity : a.maxProfit;
-        valB = b.maxProfit === "Unlimited" ? Infinity : b.maxProfit;
+        valA = typeof a.maxProfit === "string" ? Infinity : a.maxProfit;
+        valB = typeof b.maxProfit === "string" ? Infinity : b.maxProfit;
         break;
       case "maxLoss":
         valA = a.maxLoss;

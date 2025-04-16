@@ -28,7 +28,7 @@ export interface OptionStrategy {
   legs: OptionContract[];
   netCreditDebit: number;
   isCredit: boolean;
-  maxProfit: number;
+  maxProfit: number | string;
   maxLoss: number;
   breakEven: number[];
   itmProbability?: number;
