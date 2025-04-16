@@ -13,9 +13,12 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  DialogClose,
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { X } from "lucide-react";
 
 interface ExplanationTooltipProps {
   title: string;
@@ -75,9 +78,15 @@ const ExplanationTooltip = ({
               Detailed explanation
             </DialogDescription>
           </DialogHeader>
-          <div className="prose prose-invert max-w-none">
-            <p className="text-foreground whitespace-pre-line">{content}</p>
-          </div>
+          <DialogClose className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
+            <X className="h-4 w-4" />
+            <span className="sr-only">Close</span>
+          </DialogClose>
+          <ScrollArea className="max-h-[70vh]">
+            <div className="prose prose-invert max-w-none px-1">
+              <p className="text-foreground whitespace-pre-line">{content}</p>
+            </div>
+          </ScrollArea>
         </DialogContent>
       </Dialog>
     </>
