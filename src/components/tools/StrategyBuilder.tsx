@@ -36,7 +36,7 @@ const generatePayoffData = (legs: OptionLeg[], ticker: string, currentPrice: num
   const range = 0.3; // 30% range around current price
   const minPrice = currentPrice * (1 - range);
   const maxPrice = currentPrice * (1 + range);
-  const step = (maxPrice - minPrice) / 20;
+  const step = (maxPrice - minPrice) / 30; // Increased from 20 to 30 data points for smoother line
 
   for (let price = minPrice; price <= maxPrice; price += step) {
     let totalProfit = 0;

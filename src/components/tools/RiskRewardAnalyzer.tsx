@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import {
   Select,
@@ -127,7 +126,7 @@ const generatePayoffData = (strategy, params) => {
     minPrice = strike * 0.7;
     maxPrice = strike * 1.3;
     
-    for (let price = minPrice; price <= maxPrice; price += (maxPrice - minPrice) / 20) {
+    for (let price = minPrice; price <= maxPrice; price += (maxPrice - minPrice) / 30) {
       let profit;
       if (strategy === "long-call") {
         profit = strategyData["long-call"].payoff(price, strike, premium);
@@ -147,7 +146,7 @@ const generatePayoffData = (strategy, params) => {
       minPrice = strike * 0.7;
       maxPrice = highStrike * 1.3;
       
-      for (let price = minPrice; price <= maxPrice; price += (maxPrice - minPrice) / 20) {
+      for (let price = minPrice; price <= maxPrice; price += (maxPrice - minPrice) / 30) {
         const profit = strategyData["bull-call-spread"].payoff(price, strike, premium, highStrike, soldPremium);
         data.push({
           stockPrice: parseFloat(price.toFixed(2)),
@@ -158,7 +157,7 @@ const generatePayoffData = (strategy, params) => {
       minPrice = lowStrike * 0.7;
       maxPrice = strike * 1.3;
       
-      for (let price = minPrice; price <= maxPrice; price += (maxPrice - minPrice) / 20) {
+      for (let price = minPrice; price <= maxPrice; price += (maxPrice - minPrice) / 30) {
         const profit = strategyData["bear-put-spread"].payoff(price, strike, premium, lowStrike, soldPremium);
         data.push({
           stockPrice: parseFloat(price.toFixed(2)),
@@ -172,7 +171,7 @@ const generatePayoffData = (strategy, params) => {
     minPrice = putLowStrike * 0.7;
     maxPrice = callHighStrike * 1.3;
     
-    for (let price = minPrice; price <= maxPrice; price += (maxPrice - minPrice) / 20) {
+    for (let price = minPrice; price <= maxPrice; price += (maxPrice - minPrice) / 30) {
       const profit = strategyData["iron-condor"].payoff(
         price, putStrike, putLowStrike, callStrike, callHighStrike, netPremium
       );
