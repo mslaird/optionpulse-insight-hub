@@ -97,11 +97,9 @@ const PayoffChart: React.FC<PayoffChartProps> = ({
               type="monotone" 
               dataKey="profit" 
               stroke="#1EAEDB" 
-              dot={false} 
               activeDot={{ r: 8 }} 
               name={`${ticker} ${formatStrategyName(strategy)} ($${strike} Strike, $${premium} Premium)`} 
             />
-            {/* Only render breakeven points when they exist */}
             <Line 
               type="monotone" 
               dataKey="breakeven" 
