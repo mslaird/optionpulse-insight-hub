@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Bell, User, Menu, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -23,14 +22,12 @@ const Header = () => {
   const isMobile = useIsMobile();
   const navigate = useNavigate();
   
-  // Load profile image from localStorage when component mounts
   useEffect(() => {
     const savedImage = localStorage.getItem("userProfileImage");
     if (savedImage) {
       setProfileImage(savedImage);
     }
     
-    // Listen for storage events to update the profile image in real-time across tabs
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === "userProfileImage") {
         setProfileImage(e.newValue);
@@ -50,7 +47,6 @@ const Header = () => {
   return (
     <header className="fixed top-0 right-0 left-0 z-30 md:left-64 h-16 bg-optionpulse-navy border-b border-border flex items-center px-4 md:px-6">
       <div className="flex items-center w-full">
-        {/* Logo and Menu icon for mobile view */}
         <div className="md:hidden flex items-center gap-2">
           <Button 
             variant="ghost" 
@@ -62,25 +58,21 @@ const Header = () => {
           <Logo />
         </div>
         
-        {/* Desktop search bar */}
         <div className="relative max-w-md w-full hidden md:block">
           <SearchAutocomplete />
         </div>
         
-        {/* Mobile search icon */}
-        <div className="md:hidden ml-auto mr-2">
+        <div className="flex items-center gap-2 ml-auto">
           <Button
             variant="ghost"
             size="icon"
-            className="text-muted-foreground hover:text-foreground transition-colors"
+            className="md:hidden text-muted-foreground hover:text-foreground transition-colors mr-1"
             onClick={() => setShowMobileSearch(true)}
             aria-label="Search"
           >
             <Search size={20} />
           </Button>
-        </div>
-        
-        <div className="flex items-center gap-2 ml-auto md:ml-0">
+          
           <Button 
             variant="ghost" 
             size="icon" 
@@ -121,7 +113,6 @@ const Header = () => {
         </div>
       </div>
       
-      {/* Mobile search dialog */}
       <Dialog open={showMobileSearch} onOpenChange={setShowMobileSearch}>
         <DialogContent className="top-4 p-4 max-w-md mx-auto">
           <DialogHeader>
