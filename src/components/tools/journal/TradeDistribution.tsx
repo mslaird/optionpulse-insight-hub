@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { PieChart as RechartsPieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import { StrategyCount, ProfitByTicker } from "./types";
 
 interface TradeDistributionProps {
@@ -19,9 +19,6 @@ const TradeDistribution: React.FC<TradeDistributionProps> = ({
   const validStrategyData = tradesByStrategy?.length > 0 ? tradesByStrategy : [];
   const validTickerData = profitByTicker?.length > 0 ? profitByTicker : [];
 
-  // Force render of profit chart with simpler configuration
-  const chartHeight = 180;
-
   return (
     <Card className="bg-card/30 backdrop-blur-sm border-border/50">
       <CardHeader className="pb-2">
@@ -33,14 +30,13 @@ const TradeDistribution: React.FC<TradeDistributionProps> = ({
           <div className="flex flex-col items-center">
             <div className="h-[180px] w-full mb-2">
               <ResponsiveContainer width="100%" height="100%">
-                <RechartsPieChart>
+                <PieChart>
                   <Tooltip formatter={(value: number) => [`${value} trades`]} />
                   <Pie
                     data={validStrategyData}
                     cx="50%"
                     cy="50%"
                     outerRadius={60}
-                    fill="#8884d8"
                     dataKey="count"
                     nameKey="strategy"
                     label={false}
@@ -49,7 +45,7 @@ const TradeDistribution: React.FC<TradeDistributionProps> = ({
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
-                </RechartsPieChart>
+                </PieChart>
               </ResponsiveContainer>
             </div>
             <div className="w-full overflow-x-auto">
@@ -69,38 +65,31 @@ const TradeDistribution: React.FC<TradeDistributionProps> = ({
             </div>
           </div>
           
-          {/* Second chart - Profit by Ticker - Using simplified approach */}
+          {/* Second chart - Profit by Ticker */}
           <div className="flex flex-col items-center">
-            <div style={{ height: `${chartHeight}px`, width: '100%' }} className="mb-2 relative">
-              {validTickerData.length > 0 && (
-                <div style={{ width: '100%', height: '100%' }}>
-                  <ResponsiveContainer>
-                    <RechartsPieChart>
-                      <Tooltip 
-                        formatter={(value: number) => [`${value > 0 ? '+' : ''}$${value.toFixed(2)}`]} 
+            <div className="h-[180px] w-full mb-2">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Tooltip formatter={(value: number) => [`${value > 0 ? '+' : ''}$${value.toFixed(2)}`]} />
+                  <Pie
+                    data={validTickerData}
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={60}
+                    dataKey="profit"
+                    nameKey="ticker"
+                    label={false}
+                    isAnimationActive={false}
+                  >
+                    {validTickerData.map((entry, index) => (
+                      <Cell 
+                        key={`profit-cell-${index}`} 
+                        fill={entry.profit >= 0 ? COLORS[0] : COLORS[2]} 
                       />
-                      <Pie
-                        data={validTickerData}
-                        cx="50%"
-                        cy="50%"
-                        outerRadius={60}
-                        dataKey="profit"
-                        nameKey="ticker"
-                        label={false}
-                        animationDuration={0}
-                        isAnimationActive={false}
-                      >
-                        {validTickerData.map((entry, index) => (
-                          <Cell 
-                            key={`profit-cell-${index}`} 
-                            fill={entry.profit >= 0 ? COLORS[0] : COLORS[2]} 
-                          />
-                        ))}
-                      </Pie>
-                    </RechartsPieChart>
-                  </ResponsiveContainer>
-                </div>
-              )}
+                    ))}
+                  </Pie>
+                </PieChart>
+              </ResponsiveContainer>
             </div>
             <div className="w-full overflow-x-auto">
               <div className="flex flex-wrap justify-center gap-2 min-w-min">
