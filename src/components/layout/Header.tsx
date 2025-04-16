@@ -40,8 +40,10 @@ const Header = ({ toggleSidebar }: HeaderProps) => {
     };
   }, []);
 
+  // Create a handler that checks if the function exists before calling it
   const handleToggleSidebar = () => {
     if (toggleSidebar) {
+      console.log("Header: Toggle button clicked");
       toggleSidebar();
     }
   };

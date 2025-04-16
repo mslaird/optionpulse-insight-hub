@@ -10,6 +10,14 @@ interface SidebarHeaderProps {
 }
 
 export const SidebarHeader = ({ isCollapsed, toggleSidebar }: SidebarHeaderProps) => {
+  // Create a handler that checks if the function exists
+  const handleToggle = () => {
+    if (toggleSidebar) {
+      console.log("SidebarHeader: Toggle button clicked");
+      toggleSidebar();
+    }
+  };
+
   return (
     <div className="flex items-center justify-between p-4 h-16 bg-[#1C2526]">
       {!isCollapsed ? (
@@ -21,7 +29,7 @@ export const SidebarHeader = ({ isCollapsed, toggleSidebar }: SidebarHeaderProps
           <Button 
             variant="ghost" 
             size="icon" 
-            onClick={toggleSidebar}
+            onClick={handleToggle}
             className="text-gray-400 hover:text-white"
           >
             <ChevronLeft size={20} />

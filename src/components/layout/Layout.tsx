@@ -11,10 +11,13 @@ interface LayoutProps {
 const Layout = ({ children }: LayoutProps) => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   
-  // Create a direct toggle function that updates state and will be passed to components
+  // Simplify the toggle function
   const toggleSidebar = () => {
-    setIsSidebarCollapsed(prev => !prev);
-    console.log("Toggling sidebar, new state:", !isSidebarCollapsed);
+    setIsSidebarCollapsed((prevState) => {
+      const newState = !prevState;
+      console.log("Toggling sidebar, new state:", newState);
+      return newState;
+    });
   };
 
   return (
