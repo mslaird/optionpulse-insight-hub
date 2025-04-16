@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import Layout from "@/components/layout/Layout";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -15,7 +14,6 @@ import TopStrategies from "@/components/community/TopStrategies";
 import TimelineTab from "@/components/community/TimelineTab";
 import { initialSavedPosts } from "@/data/savedPosts";
 
-// Strategy explanations
 const strategyExplanations = {
   nakedCall: {
     title: "Naked Call",
@@ -35,14 +33,12 @@ const strategyExplanations = {
   }
 };
 
-// Strategy lessons mapping
 const strategyLessons = {
   "Iron Condor": "iron-condor",
   "Covered Calls": "covered-calls",
   "Bull Put Spread": "cash-secured-puts"
 };
 
-// Mock data for community posts
 const initialPosts: Post[] = [
   {
     id: 1,
@@ -208,7 +204,7 @@ const Community = () => {
         </div>
         
         <Tabs defaultValue="feed" value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="glass-card w-full justify-start mb-6">
+          <TabsList className="glass-card w-full justify-start mb-6 flex-wrap h-auto min-h-10 py-1">
             <TabsTrigger value="feed">Feed</TabsTrigger>
             <TabsTrigger value="timeline">Timeline</TabsTrigger>
             <TabsTrigger value="trending">Trending</TabsTrigger>
@@ -217,16 +213,13 @@ const Community = () => {
           </TabsList>
           
           <TabsContent value="feed" className="space-y-6">
-            {/* Post composer */}
             <PostComposer onPostSubmit={handlePostSubmit} />
             
-            {/* Top Strategies Section */}
             <TopStrategies 
               strategyExplanations={strategyExplanations} 
               strategyLessons={strategyLessons} 
             />
             
-            {/* Community feed */}
             <div className="space-y-4">
               {posts.map((post) => (
                 <CommunityPost 
