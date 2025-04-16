@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from "recharts";
 import { StrategyCount, ProfitByTicker } from "./types";
 
 interface TradeDistributionProps {
@@ -17,10 +17,25 @@ const TradeDistribution: React.FC<TradeDistributionProps> = ({
 
   // Ensure we have non-empty data arrays with valid property values
   const validStrategyData = tradesByStrategy?.length > 0 ? tradesByStrategy : [];
-  const validTickerData = profitByTicker?.length > 0 ? profitByTicker : [];
+  
+  // Create a fallback dataset for the profit chart when empty
+  const fallbackProfitData = profitByTicker?.length > 0 
+    ? profitByTicker 
+    : [{ ticker: 'No Data', profit: 100 }]; // Using 100 to ensure it shows up visually
 
-  // Force a minimal dataset if none exists
-  const fallbackTickerData = validTickerData.length === 0 ? [{ ticker: 'No Data', profit: 0 }] : validTickerData;
+  // Create simple chart configs
+  const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }) => {
+    const RADIAN = Math.PI / 180;
+    const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+    const x = cx + radius * Math.cos(-midAngle * RADIAN);
+    const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+    return percent > 0.15 ? (
+      <text x={x} y={y} fill="white" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central">
+        {`${(percent * 100).toFixed(0)}%`}
+      </text>
+    ) : null;
+  };
 
   return (
     <Card className="bg-card/30 backdrop-blur-sm border-border/50">
@@ -29,87 +44,90 @@ const TradeDistribution: React.FC<TradeDistributionProps> = ({
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          {/* First chart - Trades by Strategy */}
-          <div className="flex flex-col items-center">
-            <h4 className="text-sm font-medium mb-2">Trades by Strategy</h4>
-            <div className="h-[200px] w-full" data-testid="strategy-chart">
+          {/* Strategy chart */}
+          <div className="flex flex-col space-y-2">
+            <h3 className="text-sm font-medium text-center">Trades by Strategy</h3>
+            <div className="h-[220px] w-full" id="strategy-chart">
               <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Tooltip formatter={(value: number) => [`${value} trades`]} />
+                <PieChart margin={{ top: 10, right: 10, bottom: 10, left: 10 }}>
                   <Pie
                     data={validStrategyData}
                     cx="50%"
                     cy="50%"
-                    outerRadius={70}
+                    outerRadius={80}
                     dataKey="count"
                     nameKey="strategy"
-                    label={false}
+                    fill="#8884d8"
+                    label={renderCustomizedLabel}
                   >
-                    {validStrategyData.map((_, index) => (
+                    {validStrategyData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
+                  <Tooltip formatter={(value) => [`${value} trades`]} />
                 </PieChart>
               </ResponsiveContainer>
             </div>
-            <div className="w-full overflow-x-auto mt-2">
-              <div className="flex flex-wrap justify-center gap-2 min-w-min">
-                {validStrategyData.map((item, index) => (
-                  <div key={index} className="flex items-center gap-1 min-w-max">
-                    <div
-                      className="h-2.5 w-2.5 shrink-0 rounded-sm"
-                      style={{ backgroundColor: COLORS[index % COLORS.length] }}
-                    />
-                    <span className="text-xs whitespace-nowrap">
-                      {item.strategy}: {item.count} trades
-                    </span>
-                  </div>
-                ))}
-              </div>
+            <div className="flex flex-wrap justify-center gap-2">
+              {validStrategyData.map((item, index) => (
+                <div key={index} className="flex items-center gap-1">
+                  <div
+                    className="h-3 w-3 rounded-full"
+                    style={{ backgroundColor: COLORS[index % COLORS.length] }}
+                  />
+                  <span className="text-xs">
+                    {item.strategy}: {item.count} trades
+                  </span>
+                </div>
+              ))}
             </div>
           </div>
-          
-          {/* Second chart - Profit by Ticker */}
-          <div className="flex flex-col items-center">
-            <h4 className="text-sm font-medium mb-2">Profit by Ticker</h4>
-            <div className="h-[200px] w-full" data-testid="profit-chart">
+
+          {/* Profit chart */}
+          <div className="flex flex-col space-y-2">
+            <h3 className="text-sm font-medium text-center">Profit by Ticker</h3>
+            <div className="h-[220px] w-full" id="profit-chart">
               <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Tooltip formatter={(value: number) => [`${value > 0 ? '+' : ''}$${value.toFixed(2)}`]} />
+                <PieChart margin={{ top: 10, right: 10, bottom: 10, left: 10 }}>
                   <Pie
-                    data={fallbackTickerData}
+                    data={fallbackProfitData}
                     cx="50%"
                     cy="50%"
-                    outerRadius={70}
+                    outerRadius={80}
                     dataKey="profit"
                     nameKey="ticker"
-                    label={false}
+                    fill="#8884d8"
+                    label={renderCustomizedLabel}
                     isAnimationActive={false}
+                    // Ensure absolute values are used for sizing the pie segments
+                    // but colors still reflect profit/loss
+                    valueKey={(entry) => Math.abs(entry.profit)}
                   >
-                    {fallbackTickerData.map((entry, index) => (
+                    {fallbackProfitData.map((entry, index) => (
                       <Cell 
-                        key={`profit-cell-${index}`} 
-                        fill={entry.profit >= 0 ? COLORS[0] : COLORS[2]} 
+                        key={`cell-${index}`} 
+                        fill={entry.profit >= 0 ? '#1EAEDB' : '#F87171'} 
                       />
                     ))}
                   </Pie>
+                  <Tooltip 
+                    formatter={(value) => [`${value >= 0 ? '+' : ''}$${Math.abs(value).toFixed(2)}`]} 
+                  />
                 </PieChart>
               </ResponsiveContainer>
             </div>
-            <div className="w-full overflow-x-auto mt-2">
-              <div className="flex flex-wrap justify-center gap-2 min-w-min">
-                {fallbackTickerData.map((item, index) => (
-                  <div key={index} className="flex items-center gap-1 min-w-max">
-                    <div
-                      className="h-2.5 w-2.5 shrink-0 rounded-sm"
-                      style={{ backgroundColor: item.profit >= 0 ? COLORS[0] : COLORS[2] }}
-                    />
-                    <span className="text-xs whitespace-nowrap">
-                      {item.ticker}: ${item.profit.toFixed(2)}
-                    </span>
-                  </div>
-                ))}
-              </div>
+            <div className="flex flex-wrap justify-center gap-2">
+              {fallbackProfitData.map((item, index) => (
+                <div key={index} className="flex items-center gap-1">
+                  <div
+                    className="h-3 w-3 rounded-full"
+                    style={{ backgroundColor: item.profit >= 0 ? '#1EAEDB' : '#F87171' }}
+                  />
+                  <span className="text-xs">
+                    {item.ticker}: ${item.profit.toFixed(2)}
+                  </span>
+                </div>
+              ))}
             </div>
           </div>
         </div>
