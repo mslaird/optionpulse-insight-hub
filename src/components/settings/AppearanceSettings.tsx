@@ -8,22 +8,27 @@ import { Separator } from "@/components/ui/separator";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Palette, Sun, Moon, Monitor, Info, LayoutGrid, List, ArrowRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useTheme } from "@/contexts/ThemeContext";
 
 const AppearanceSettings = () => {
   const { toast } = useToast();
+  const { theme, setTheme } = useTheme();
   const [loading, setLoading] = useState(false);
   
   const [settings, setSettings] = useState({
-    theme: "dark",
     dataDisplayMode: "detailed",
     chartStyle: "candlestick"
   });
   
   const handleSettingChange = (key: string, value: string) => {
-    setSettings(prev => ({
-      ...prev,
-      [key]: value
-    }));
+    if (key === 'theme') {
+      setTheme(value as "dark" | "light" | "system");
+    } else {
+      setSettings(prev => ({
+        ...prev,
+        [key]: value
+      }));
+    }
   };
   
   const handleSave = () => {
@@ -57,15 +62,15 @@ const AppearanceSettings = () => {
         </CardHeader>
         <CardContent>
           <RadioGroup 
-            defaultValue={settings.theme}
-            value={settings.theme}
+            defaultValue={theme}
+            value={theme}
             onValueChange={(value) => handleSettingChange('theme', value)}
             className="grid grid-cols-1 md:grid-cols-3 gap-4"
           >
             <Label
               htmlFor="dark"
               className={`flex flex-col items-center justify-between rounded-md border-2 border-muted p-4 hover:border-primary cursor-pointer ${
-                settings.theme === 'dark' ? 'border-optionpulse-blue' : ''
+                theme === 'dark' ? 'border-optionpulse-blue' : ''
               }`}
             >
               <RadioGroupItem value="dark" id="dark" className="sr-only" />
@@ -81,7 +86,7 @@ const AppearanceSettings = () => {
             <Label
               htmlFor="light"
               className={`flex flex-col items-center justify-between rounded-md border-2 border-muted p-4 hover:border-primary cursor-pointer ${
-                settings.theme === 'light' ? 'border-optionpulse-blue' : ''
+                theme === 'light' ? 'border-optionpulse-blue' : ''
               }`}
             >
               <RadioGroupItem value="light" id="light" className="sr-only" />
@@ -97,7 +102,7 @@ const AppearanceSettings = () => {
             <Label
               htmlFor="system"
               className={`flex flex-col items-center justify-between rounded-md border-2 border-muted p-4 hover:border-primary cursor-pointer ${
-                settings.theme === 'system' ? 'border-optionpulse-blue' : ''
+                theme === 'system' ? 'border-optionpulse-blue' : ''
               }`}
             >
               <RadioGroupItem value="system" id="system" className="sr-only" />
