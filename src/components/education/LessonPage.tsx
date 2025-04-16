@@ -1,3 +1,4 @@
+
 import { useParams, useNavigate } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
@@ -8,8 +9,18 @@ import VideoPlayer from "./VideoPlayer";
 import LessonTranscript from "./LessonTranscript";
 import RelatedStrategy from "./RelatedStrategy";
 
+// Lesson interface to ensure type safety
+interface LessonData {
+  title: string;
+  description: string;
+  difficulty: "beginner" | "intermediate" | "advanced";
+  duration: string;
+  videoSrc: string;
+  transcript: string;
+}
+
 // Mock lesson data - In a real app, this would come from an API
-const lessonsData = {
+const lessonsData: Record<string, LessonData> = {
   "covered-calls": {
     title: "Selling Covered Calls",
     description: "Learn how to generate income on stocks you already own by selling call options.",

@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import Layout from "@/components/layout/Layout";
 import { Tabs } from "@/components/ui/tabs";
@@ -6,8 +7,28 @@ import EducationHeader from "@/components/education/EducationHeader";
 import EducationFilters from "@/components/education/EducationFilters";
 import { LessonsContent, ResourcesContent } from "@/components/education/EducationContent";
 
+// Define strong types for our data
+interface Lesson {
+  id: string;
+  title: string;
+  description: string;
+  difficulty: "beginner" | "intermediate" | "advanced";
+  duration: string;
+  completed?: boolean;
+  progress?: number;
+  category: string;
+}
+
+interface Resource {
+  title: string;
+  type: "article" | "video" | "ebook";
+  source: string;
+  url: string;
+  tags: string[];
+}
+
 // Mock data for lessons
-const lessonsData = [
+const lessonsData: Lesson[] = [
   {
     id: "covered-calls",
     title: "Selling Covered Calls",
@@ -86,7 +107,7 @@ const lessonsData = [
 ];
 
 // Mock data for resources
-const resourcesData = [
+const resourcesData: Resource[] = [
   {
     title: "The Wheel Strategy Explained",
     type: "article",
@@ -138,7 +159,7 @@ const Education = () => {
   const isMobile = useIsMobile();
   
   // Filter lessons based on search term and filters
-  const filteredLessons = lessonsData.filter(lesson => {
+  const filteredLessons: Lesson[] = lessonsData.filter(lesson => {
     const matchesSearch = 
       lesson.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       lesson.description.toLowerCase().includes(searchTerm.toLowerCase());
@@ -150,7 +171,7 @@ const Education = () => {
   });
   
   // Filter resources based on search term
-  const filteredResources = resourcesData.filter(resource => 
+  const filteredResources: Resource[] = resourcesData.filter(resource => 
     resource.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     resource.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
   );

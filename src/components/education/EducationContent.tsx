@@ -24,15 +24,6 @@ interface Resource {
   tags: string[];
 }
 
-interface EducationContentProps {
-  activeTab: string;
-  searchTerm: string;
-  filteredLessons: Lesson[];
-  filteredResources: Resource[];
-  clearSearch: () => void;
-  clearAllFilters: () => void;
-}
-
 export const LessonsContent = ({ 
   filteredLessons, 
   searchTerm, 

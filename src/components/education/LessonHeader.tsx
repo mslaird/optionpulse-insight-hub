@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 interface LessonHeaderProps {
   title: string;
   description: string;
-  difficulty: string;
+  difficulty: "beginner" | "intermediate" | "advanced";
   duration: string;
 }
 
@@ -20,7 +20,7 @@ const LessonHeader = ({
 }: LessonHeaderProps) => {
   const navigate = useNavigate();
   
-  const getDifficultyColor = (difficulty: string) => {
+  const getDifficultyColor = (difficulty: "beginner" | "intermediate" | "advanced") => {
     switch (difficulty) {
       case "beginner":
         return "border-optionpulse-green text-optionpulse-green";
