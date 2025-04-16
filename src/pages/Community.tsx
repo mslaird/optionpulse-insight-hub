@@ -12,6 +12,7 @@ import CommunityPost from "@/components/community/CommunityPost";
 import ActivityFeed from "@/components/community/ActivityFeed";
 import PostComposer from "@/components/community/PostComposer";
 import TopStrategies from "@/components/community/TopStrategies";
+import TimelineTab from "@/components/community/TimelineTab";
 import { initialSavedPosts } from "@/data/savedPosts";
 
 // Strategy explanations
@@ -209,6 +210,7 @@ const Community = () => {
         <Tabs defaultValue="feed" value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="glass-card w-full justify-start mb-6">
             <TabsTrigger value="feed">Feed</TabsTrigger>
+            <TabsTrigger value="timeline">Timeline</TabsTrigger>
             <TabsTrigger value="trending">Trending</TabsTrigger>
             <TabsTrigger value="saved-posts">Saved Posts</TabsTrigger>
             <TabsTrigger value="my-activity">My Activity</TabsTrigger>
@@ -237,6 +239,10 @@ const Community = () => {
                 />
               ))}
             </div>
+          </TabsContent>
+          
+          <TabsContent value="timeline" className="space-y-6">
+            <TimelineTab />
           </TabsContent>
           
           <TabsContent value="trending" className="space-y-6">
