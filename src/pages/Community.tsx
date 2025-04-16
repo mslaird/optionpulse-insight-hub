@@ -5,7 +5,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Users } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { Post } from "@/types/community";
+import { Post, PostReactions } from "@/types/community";
 import { SavedPost } from "@/data/savedPosts";
 import SavedPostsList from "@/components/community/SavedPostsList";
 import CommunityPost from "@/components/community/CommunityPost";
@@ -153,9 +153,9 @@ const Community = () => {
       if (post.id === postId) {
         const updatedReactions = { ...post.reactions };
         if (emoji in updatedReactions) {
-          updatedReactions[emoji as keyof PostReactions] = (updatedReactions[emoji as keyof PostReactions] as number) + 1;
+          updatedReactions[emoji] = (updatedReactions[emoji] || 0) + 1;
         } else {
-          updatedReactions[emoji as keyof PostReactions] = 1;
+          updatedReactions[emoji] = 1;
         }
         return { ...post, reactions: updatedReactions };
       }
