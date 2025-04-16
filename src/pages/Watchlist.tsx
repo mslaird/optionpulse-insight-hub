@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import Layout from "@/components/layout/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,8 +8,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import ExplanationTooltip from "@/components/tooltips/ExplanationTooltip";
 
-// Mock data for watchlist items
 type WatchlistItemType = "stock" | "option";
 
 interface WatchlistItem {
@@ -29,7 +28,6 @@ const Watchlist = () => {
   const [activeTab, setActiveTab] = useState<string>("all");
   const [newSymbol, setNewSymbol] = useState("");
   
-  // Mock data for demonstration
   const [watchlistItems, setWatchlistItems] = useState<WatchlistItem[]>([
     {
       id: "1",
@@ -82,7 +80,6 @@ const Watchlist = () => {
   const addToWatchlist = () => {
     if (!newSymbol.trim()) return;
     
-    // For demo purposes, we'll add a mock stock
     const newItem: WatchlistItem = {
       id: Date.now().toString(),
       symbol: newSymbol.toUpperCase(),
@@ -220,12 +217,24 @@ const Watchlist = () => {
         
         <Card className="bg-card/30 backdrop-blur-sm border-border/50">
           <CardHeader>
-            <CardTitle className="text-lg font-medium">Market Movers</CardTitle>
+            <CardTitle className="text-lg font-medium flex items-center gap-2">
+              Market Movers
+              <ExplanationTooltip 
+                title="Market Movers" 
+                content="Market Movers highlight the most significant price changes in the stock market. This section shows top gainers, top losers, and options with high implied volatility (IV). It helps traders quickly identify potential opportunities and market trends." 
+              />
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="p-4 rounded-lg bg-sidebar-accent">
-                <h3 className="text-sm font-medium text-muted-foreground mb-2">Top Gainers</h3>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-sm font-medium text-muted-foreground mb-2">Top Gainers</h3>
+                  <ExplanationTooltip 
+                    title="Top Gainers" 
+                    content="Top Gainers represent stocks that have experienced the most significant percentage increase in price during the trading day. These stocks are showing strong positive momentum and could indicate bullish market sentiment or positive company-specific news." 
+                  />
+                </div>
                 <Separator className="mb-3" />
                 <div className="space-y-2">
                   <div className="flex justify-between items-center">
@@ -253,7 +262,13 @@ const Watchlist = () => {
               </div>
               
               <div className="p-4 rounded-lg bg-sidebar-accent">
-                <h3 className="text-sm font-medium text-muted-foreground mb-2">Top Losers</h3>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-sm font-medium text-muted-foreground mb-2">Top Losers</h3>
+                  <ExplanationTooltip 
+                    title="Top Losers" 
+                    content="Top Losers represent stocks that have experienced the most significant percentage decrease in price during the trading day. These stocks are showing negative price movement and could indicate bearish market sentiment, potential challenges, or negative company-specific news." 
+                  />
+                </div>
                 <Separator className="mb-3" />
                 <div className="space-y-2">
                   <div className="flex justify-between items-center">
@@ -281,7 +296,13 @@ const Watchlist = () => {
               </div>
               
               <div className="p-4 rounded-lg bg-sidebar-accent">
-                <h3 className="text-sm font-medium text-muted-foreground mb-2">High IV Options</h3>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-sm font-medium text-muted-foreground mb-2">High IV Options</h3>
+                  <ExplanationTooltip 
+                    title="High IV Options" 
+                    content="High Implied Volatility (IV) options indicate higher expected price fluctuations. Options with high IV suggest increased market uncertainty or anticipated significant price movements. Traders often use these to assess potential trading opportunities or implement volatility-based strategies." 
+                  />
+                </div>
                 <Separator className="mb-3" />
                 <div className="space-y-2">
                   <div className="flex justify-between items-center">
