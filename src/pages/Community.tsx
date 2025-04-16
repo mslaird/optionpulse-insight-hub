@@ -1,20 +1,18 @@
-import { useState, useEffect } from "react";
+
+import { useState } from "react";
 import Layout from "@/components/layout/Layout";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { MessageCircle, Heart, Share2, MessageSquarePlus, Users, Info, Bookmark, BookmarkCheck } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Separator } from "@/components/ui/separator";
+import { Users } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import ExplanationTooltip from "@/components/tooltips/ExplanationTooltip";
-import { Link, useNavigate } from "react-router-dom";
+import { Post } from "@/types/community";
+import { SavedPost } from "@/data/savedPosts";
 import SavedPostsList from "@/components/community/SavedPostsList";
-import { initialSavedPosts, SavedPost } from "@/data/savedPosts";
+import CommunityPost from "@/components/community/CommunityPost";
+import ActivityFeed from "@/components/community/ActivityFeed";
+import PostComposer from "@/components/community/PostComposer";
+import TopStrategies from "@/components/community/TopStrategies";
+import { initialSavedPosts } from "@/data/savedPosts";
 
 // Strategy explanations
 const strategyExplanations = {
@@ -42,37 +40,6 @@ const strategyLessons = {
   "Covered Calls": "covered-calls",
   "Bull Put Spread": "cash-secured-puts"
 };
-
-// Define the types for our post data
-interface PostAuthor {
-  name: string;
-  avatar: string;
-  username: string;
-}
-
-interface PostReactions {
-  "👍": number;
-  "❤️"?: number;
-  "🔥"?: number;
-  "🚀"?: number;
-  "🧠": number;
-  "💰": number;
-  "🤔"?: number;
-  "👏"?: number;
-}
-
-interface Post {
-  id: number;
-  author: PostAuthor;
-  timestamp: string;
-  content: string;
-  likes: number;
-  comments: number;
-  activity: string;
-  tags: string[];
-  hasLiked: boolean;
-  reactions: PostReactions;
-}
 
 // Mock data for community posts
 const initialPosts: Post[] = [
@@ -145,16 +112,10 @@ const initialPosts: Post[] = [
 const Community = () => {
   const [posts, setPosts] = useState<Post[]>(initialPosts);
   const [savedPosts, setSavedPosts] = useState<SavedPost[]>(initialSavedPosts);
-  const [newPost, setNewPost] = useState("");
   const [activeTab, setActiveTab] = useState("feed");
   const { toast } = useToast();
-  const navigate = useNavigate();
 
-  const handlePostSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!newPost.trim()) return;
-    
+  const handlePostSubmit = (content: string) => {
     const newPostObj: Post = {
       id: posts.length + 1,
       author: {
@@ -163,7 +124,7 @@ const Community = () => {
         username: "you"
       },
       timestamp: "Just now",
-      content: newPost,
+      content: content,
       likes: 0,
       comments: 0,
       activity: "shared a new insight",
@@ -177,12 +138,6 @@ const Community = () => {
     };
     
     setPosts([newPostObj, ...posts]);
-    setNewPost("");
-    
-    toast({
-      title: "Post created",
-      description: "Your post has been published to the community",
-    });
   };
 
   const handleLike = (postId: number) => {
@@ -206,17 +161,6 @@ const Community = () => {
       }
       return post;
     }));
-  };
-
-  const handleStrategyClick = (strategyName: string) => {
-    const lessonId = strategyLessons[strategyName as keyof typeof strategyLessons];
-    if (lessonId) {
-      navigate("/education", { state: { openLesson: lessonId } });
-      toast({
-        title: "Navigating to lesson",
-        description: `Opening the ${strategyName} lesson in the Education Hub`,
-      });
-    }
   };
 
   const handleSavePost = (post: Post) => {
@@ -272,71 +216,13 @@ const Community = () => {
           
           <TabsContent value="feed" className="space-y-6">
             {/* Post composer */}
-            <Card className="bg-card/30 backdrop-blur-sm border-border/50">
-              <CardContent className="pt-6">
-                <form onSubmit={handlePostSubmit}>
-                  <div className="flex gap-3">
-                    <Avatar>
-                      <AvatarImage src="https://i.pravatar.cc/150?img=12" />
-                      <AvatarFallback>OP</AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1">
-                      <Textarea
-                        placeholder="Share your options trading insights..."
-                        className="mb-3 bg-background/50"
-                        value={newPost}
-                        onChange={(e) => setNewPost(e.target.value)}
-                      />
-                      <div className="flex justify-end">
-                        <Button type="submit" className="bg-optionpulse-blue hover:bg-optionpulse-blue/80">
-                          <MessageSquarePlus className="mr-2 h-4 w-4" />
-                          Post
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                </form>
-              </CardContent>
-            </Card>
+            <PostComposer onPostSubmit={handlePostSubmit} />
             
-            {/* Top Strategies Section with Info Icons */}
-            <Card className="bg-card/30 backdrop-blur-sm border-border/50">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  Top Strategies
-                  <div className="flex space-x-1 ml-2">
-                    <ExplanationTooltip 
-                      title={strategyExplanations.nakedCall.title}
-                      content={strategyExplanations.nakedCall.content}
-                      iconClass="text-[#00FF7F]"
-                    />
-                    <ExplanationTooltip 
-                      title={strategyExplanations.nakedPut.title}
-                      content={strategyExplanations.nakedPut.content}
-                      iconClass="text-[#00FF7F]"
-                    />
-                  </div>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {Object.entries(strategyLessons).map(([name, lessonId]) => (
-                    <div 
-                      key={name}
-                      className="p-4 bg-black/20 rounded-lg border border-border/50 cursor-pointer hover:bg-black/30 transition-colors"
-                      onClick={() => handleStrategyClick(name)}
-                    >
-                      <h3 className="font-medium mb-1">{name}</h3>
-                      <p className="text-sm text-muted-foreground">
-                        {name === "Iron Condor" && "Trading range-bound markets with defined risk"}
-                        {name === "Covered Calls" && "Generate income while holding stock positions"}
-                        {name === "Bull Put Spread" && "Bullish strategy with defined risk/reward"}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+            {/* Top Strategies Section */}
+            <TopStrategies 
+              strategyExplanations={strategyExplanations} 
+              strategyLessons={strategyLessons} 
+            />
             
             {/* Community feed */}
             <div className="space-y-4">
@@ -377,204 +263,6 @@ const Community = () => {
         </Tabs>
       </div>
     </Layout>
-  );
-};
-
-interface CommunityPostProps {
-  post: Post;
-  onLike: (postId: number) => void;
-  onReaction: (postId: number, emoji: string) => void;
-  onSave: (post: Post) => void;
-  isSaved: boolean;
-}
-
-const CommunityPost = ({ post, onLike, onReaction, onSave, isSaved }: CommunityPostProps) => {
-  const [showReactions, setShowReactions] = useState(false);
-  
-  const reactionEmojis = ["👍", "❤️", "🔥", "🚀", "🧠", "💰", "🤔", "👏"];
-  
-  return (
-    <Card className="bg-card/30 backdrop-blur-sm border-border/50">
-      <CardContent className="pt-6">
-        <div className="flex items-start gap-3">
-          <Avatar>
-            <AvatarImage src={post.author.avatar} />
-            <AvatarFallback>{post.author.name.substring(0, 2)}</AvatarFallback>
-          </Avatar>
-          <div className="flex-1">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="font-medium">{post.author.name}</h3>
-                <div className="flex items-center space-x-1 text-sm text-muted-foreground">
-                  <span>@{post.author.username}</span>
-                  <span>·</span>
-                  <span>{post.timestamp}</span>
-                </div>
-              </div>
-              <div className="text-sm text-optionpulse-blue/80 italic">
-                {post.activity}
-              </div>
-            </div>
-            
-            <div className="mt-3 space-y-3">
-              <p>{post.content}</p>
-              
-              {post.tags.length > 0 && (
-                <div className="flex flex-wrap gap-2">
-                  {post.tags.map((tag) => (
-                    <Badge key={tag} variant="outline" className="border-optionpulse-blue/30 text-optionpulse-blue">
-                      #{tag}
-                    </Badge>
-                  ))}
-                </div>
-              )}
-              
-              {Object.keys(post.reactions).length > 0 && (
-                <div className="flex flex-wrap gap-2 p-2 bg-background/20 rounded-md">
-                  {Object.entries(post.reactions).map(([emoji, count]) => (
-                    count > 0 && (
-                      <Badge key={emoji} variant="outline" className="bg-background/30 border-background/30">
-                        {emoji} {count}
-                      </Badge>
-                    )
-                  ))}
-                </div>
-              )}
-              
-              <div className="flex items-center space-x-4 pt-2">
-                <button
-                  className={cn(
-                    "flex items-center text-sm gap-1",
-                    post.hasLiked ? "text-optionpulse-blue" : "text-muted-foreground"
-                  )}
-                  onClick={() => onLike(post.id)}
-                >
-                  <Heart size={16} className={post.hasLiked ? "fill-current" : ""} />
-                  <span>{post.likes}</span>
-                </button>
-                
-                <button
-                  className="flex items-center text-sm gap-1 text-muted-foreground"
-                >
-                  <MessageCircle size={16} />
-                  <span>{post.comments}</span>
-                </button>
-                
-                <div className="relative">
-                  <button
-                    className="flex items-center text-sm gap-1 text-muted-foreground"
-                    onClick={() => setShowReactions(!showReactions)}
-                  >
-                    <span>React</span>
-                  </button>
-                  
-                  {showReactions && (
-                    <div className="absolute z-10 top-8 left-0 bg-card border border-border rounded-md p-2 flex space-x-2">
-                      {reactionEmojis.map(emoji => (
-                        <button
-                          key={emoji}
-                          className="hover:bg-muted p-1 rounded"
-                          onClick={() => {
-                            onReaction(post.id, emoji);
-                            setShowReactions(false);
-                          }}
-                        >
-                          {emoji}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-                
-                <button
-                  className={cn(
-                    "flex items-center text-sm gap-1",
-                    isSaved ? "text-optionpulse-green" : "text-muted-foreground"
-                  )}
-                  onClick={() => onSave(post)}
-                >
-                  {isSaved ? (
-                    <BookmarkCheck size={16} className="fill-current" />
-                  ) : (
-                    <Bookmark size={16} />
-                  )}
-                  <span>{isSaved ? "Saved" : "Save"}</span>
-                </button>
-                
-                <button
-                  className="flex items-center text-sm gap-1 text-muted-foreground ml-auto"
-                >
-                  <Share2 size={16} />
-                  <span>Share</span>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  );
-};
-
-const ActivityFeed = () => {
-  const activities = [
-    {
-      id: 1,
-      user: "John Smith",
-      action: "predicted a 20% gain on SPY calls",
-      time: "1h ago"
-    },
-    {
-      id: 2,
-      user: "Emily Chen",
-      action: "shared a new volatility strategy guide",
-      time: "3h ago"
-    },
-    {
-      id: 3,
-      user: "David Wilson",
-      action: "posted about TSLA iron condor success",
-      time: "6h ago"
-    },
-    {
-      id: 4,
-      user: "Rachel Park",
-      action: "analyzed earnings volatility on NVDA",
-      time: "12h ago"
-    },
-    {
-      id: 5,
-      user: "Michael Brown",
-      action: "started a discussion on theta decay tactics",
-      time: "1d ago"
-    }
-  ];
-  
-  return (
-    <Card className="bg-card/30 backdrop-blur-sm border-border/50">
-      <CardHeader>
-        <CardTitle>Trending Activity</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          {activities.map((activity, index) => (
-            <div key={activity.id}>
-              <div className="flex items-center gap-3">
-                <div className="w-2 h-2 rounded-full bg-optionpulse-blue animate-pulse-subtle"></div>
-                <div className="flex-1">
-                  <p>
-                    <span className="font-medium">{activity.user}</span>{" "}
-                    <span className="text-muted-foreground">{activity.action}</span>
-                  </p>
-                  <p className="text-xs text-muted-foreground">{activity.time}</p>
-                </div>
-              </div>
-              {index < activities.length - 1 && <Separator className="my-4" />}
-            </div>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
   );
 };
 
