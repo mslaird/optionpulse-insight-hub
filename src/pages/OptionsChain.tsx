@@ -4,22 +4,80 @@ import Layout from "@/components/layout/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Sliders, BarChart3, TrendingUp, TrendingDown } from "lucide-react";
+import { BarChart3, TrendingUp, TrendingDown, Sliders, Sparkles } from "lucide-react";
+import { Button } from "@/components/ui/button"; 
 import { cn } from "@/lib/utils";
 import OptionsFilter from "@/components/options/OptionsFilter";
 import StockSelector from "@/components/options/StockSelector";
+import AdvancedOptionsFilter from "@/components/options/AdvancedOptionsFilter";
+import AdvancedOptionsTable from "@/components/options/AdvancedOptionsTable";
+import ProModal from "@/components/modals/ProModal";
+import { useToast } from "@/hooks/use-toast";
+import { OptionsChainState } from "@/types/options";
 
 const OptionsChain = () => {
+  const { toast } = useToast();
   const [selectedStock, setSelectedStock] = useState("AAPL");
   const [expirationDate, setExpirationDate] = useState("2025-05-16");
   const [optionType, setOptionType] = useState("all");
   const [showOpportunities, setShowOpportunities] = useState(true);
   const [strategyFilter, setStrategyFilter] = useState("all");
+  
+  // Advanced options state
+  const [state, setState] = useState<OptionsChainState>({
+    isAdvancedView: false,
+    isPro: false,
+    showProModal: false
+  });
+  
+  // Advanced filters state
+  const [expiryFilter, setExpiryFilter] = useState("all");
+  const [ivRange, setIvRange] = useState<[number, number]>([10, 50]);
+  const [itmProbabilityRange, setItmProbabilityRange] = useState<[number, number]>([0, 100]);
 
   // Mock data for stock price and change
   const stockPrice = 178.39;
   const stockChange = 1.25;
   const stockChangePercent = 0.71;
+  
+  const toggleAdvancedView = () => {
+    if (!state.isPro && !state.isAdvancedView) {
+      setState({ ...state, showProModal: true });
+    } else {
+      setState({ ...state, isAdvancedView: !state.isAdvancedView });
+    }
+  };
+  
+  const handleTryPro = () => {
+    setState({
+      isPro: true,
+      isAdvancedView: true,
+      showProModal: false
+    });
+    
+    toast({
+      title: "Pro Trial Activated!",
+      description: "You now have access to advanced options features for 7 days.",
+    });
+  };
+  
+  const handleCloseProModal = () => {
+    setState({ ...state, showProModal: false });
+  };
+  
+  const resetFilters = () => {
+    setOptionType("all");
+    setStrategyFilter("all");
+    setExpiryFilter("all");
+    setIvRange([10, 50]);
+    setItmProbabilityRange([0, 100]);
+    setShowOpportunities(true);
+    
+    toast({
+      title: "Filters Reset",
+      description: "All filters have been reset to default values.",
+    });
+  };
   
   return (
     <Layout>
@@ -32,7 +90,20 @@ const OptionsChain = () => {
             </h1>
             <p className="text-muted-foreground">Analyze options and discover trading opportunities</p>
           </div>
-          <StockSelector selectedStock={selectedStock} onSelectStock={setSelectedStock} />
+          <div className="flex gap-2">
+            <StockSelector selectedStock={selectedStock} onSelectStock={setSelectedStock} />
+            <Button 
+              variant="outline" 
+              onClick={toggleAdvancedView}
+              className={cn(
+                "flex items-center gap-1",
+                state.isAdvancedView && "border-optionpulse-blue text-optionpulse-blue"
+              )}
+            >
+              <Sparkles size={16} className={state.isPro ? "text-yellow-400" : ""} />
+              {state.isAdvancedView ? "Basic View" : "Advanced View"}
+            </Button>
+          </div>
         </div>
         
         <div className="glass-card p-4 rounded-lg flex flex-col sm:flex-row items-center gap-3 justify-between">
@@ -47,32 +118,69 @@ const OptionsChain = () => {
             </span>
           </div>
           
-          <OptionsFilter 
-            expirationDate={expirationDate}
-            setExpirationDate={setExpirationDate}
-            optionType={optionType}
-            setOptionType={setOptionType}
-            showOpportunities={showOpportunities}
-            setShowOpportunities={setShowOpportunities}
-            strategyFilter={strategyFilter}
-            setStrategyFilter={setStrategyFilter}
-          />
+          {!state.isAdvancedView ? (
+            <OptionsFilter 
+              expirationDate={expirationDate}
+              setExpirationDate={setExpirationDate}
+              optionType={optionType}
+              setOptionType={setOptionType}
+              showOpportunities={showOpportunities}
+              setShowOpportunities={setShowOpportunities}
+              strategyFilter={strategyFilter}
+              setStrategyFilter={setStrategyFilter}
+            />
+          ) : null}
         </div>
         
-        <OptionsChainTable 
-          stock={selectedStock} 
-          expirationDate={expirationDate} 
-          optionType={optionType}
-          showOpportunities={showOpportunities}
-          strategyFilter={strategyFilter}
-        />
+        {state.isAdvancedView && (
+          <AdvancedOptionsFilter 
+            optionType={optionType}
+            setOptionType={setOptionType}
+            strategyFilter={strategyFilter}
+            setStrategyFilter={setStrategyFilter}
+            expiryFilter={expiryFilter}
+            setExpiryFilter={setExpiryFilter}
+            ivRange={ivRange}
+            setIvRange={setIvRange}
+            itmProbabilityRange={itmProbabilityRange}
+            setItmProbabilityRange={setItmProbabilityRange}
+            onReset={resetFilters}
+            isPro={state.isPro}
+            onTogglePro={toggleAdvancedView}
+          />
+        )}
+        
+        {!state.isAdvancedView ? (
+          <BasicOptionsChainTable 
+            stock={selectedStock} 
+            expirationDate={expirationDate} 
+            optionType={optionType}
+            showOpportunities={showOpportunities}
+            strategyFilter={strategyFilter}
+          />
+        ) : (
+          <AdvancedOptionsTable 
+            stock={selectedStock}
+            expirationDate={expirationDate}
+            optionType={optionType}
+            strategyFilter={strategyFilter}
+            ivRange={ivRange}
+            itmProbabilityRange={itmProbabilityRange}
+          />
+        )}
       </div>
+      
+      <ProModal 
+        open={state.showProModal} 
+        onClose={handleCloseProModal} 
+        onTryPro={handleTryPro} 
+      />
     </Layout>
   );
 };
 
-// Options Chain Table Component
-const OptionsChainTable = ({ 
+// Basic Options Chain Table Component
+const BasicOptionsChainTable = ({ 
   stock, 
   expirationDate, 
   optionType,
