@@ -34,8 +34,7 @@ const TradeDistribution: React.FC<TradeDistributionProps> = ({
     if (percent < 0.15) return null;
     
     const RADIAN = Math.PI / 180;
-    // Increase the radius to create more space between the line and the label
-    const radius = outerRadius + 40; // Increased from 20 to 40
+    const radius = outerRadius + 20; // Extend the radius to move labels outside
     const x = cx + radius * Math.cos(-midAngle * RADIAN);
     const y = cy + radius * Math.sin(-midAngle * RADIAN);
 
@@ -46,7 +45,7 @@ const TradeDistribution: React.FC<TradeDistributionProps> = ({
         fill="currentColor" 
         textAnchor={x > cx ? 'start' : 'end'} 
         dominantBaseline="middle"
-        className="text-xs font-medium"
+        className="text-xs"
       >
         {`${(percent * 100).toFixed(0)}%`}
       </text>
@@ -114,6 +113,7 @@ const TradeDistribution: React.FC<TradeDistributionProps> = ({
                     cx="50%"
                     cy="50%"
                     outerRadius={80}
+                    // Use absoluteValue for sizing the segments
                     dataKey="absoluteValue"
                     nameKey="ticker"
                     label={renderCustomizedLabel}
@@ -127,6 +127,7 @@ const TradeDistribution: React.FC<TradeDistributionProps> = ({
                   </Pie>
                   <Tooltip 
                     formatter={(value: number, name: string, entry: any) => {
+                      // Use the original profit value for the tooltip, not the absolute value
                       const profit = entry.payload.profit;
                       return [`${profit >= 0 ? '+' : ''}$${Math.abs(profit).toFixed(2)}`];
                     }} 
