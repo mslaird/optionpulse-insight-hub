@@ -3,7 +3,6 @@ import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import ChartTooltip from "@/components/tooltips/ChartTooltip";
-import { formatStrategyName } from "./payoffUtils";
 
 interface PayoffChartProps {
   data: any[];
@@ -26,7 +25,7 @@ const PayoffChart: React.FC<PayoffChartProps> = ({
         <ResponsiveContainer width="100%" height="100%">
           <LineChart
             data={data}
-            margin={{ top: 5, right: 30, left: 0, bottom: 50 }}
+            margin={{ top: 5, right: 30, left: 0, bottom: 50 }} // Reduced left margin from 20 to 0
           >
             <CartesianGrid strokeDasharray="3 3" stroke="#333" />
             <XAxis 
@@ -63,14 +62,13 @@ const PayoffChart: React.FC<PayoffChartProps> = ({
               dataKey="profit" 
               stroke="#1EAEDB" 
               activeDot={{ r: 8 }} 
-              name={`${ticker} ${formatStrategyName(strategy)} ($${strike} Strike, $${premium} Premium)`} 
+              name={`${ticker} ${strategy.toUpperCase()} ($${strike} Strike, $${premium} Premium)`} 
             />
             <Line 
               type="monotone" 
               dataKey="breakeven" 
-              stroke="#D946EF" 
-              strokeDasharray="3 3" 
-              strokeWidth={3}
+              stroke="#34D399" 
+              strokeDasharray="5 5" 
               dot={false} 
               name="Break Even"
             />
