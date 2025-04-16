@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import Layout from "@/components/layout/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,13 +5,14 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { MessageCircle, Heart, ThumbsUp, ThumbsDown, Share2, MessageSquarePlus, Users, Info } from "lucide-react";
+import { MessageCircle, Heart, Share2, MessageSquarePlus, Users, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import ExplanationTooltip from "@/components/tooltips/ExplanationTooltip";
+import { Link, useNavigate } from "react-router-dom";
 
 // Strategy explanations
 const strategyExplanations = {
@@ -32,6 +32,13 @@ const strategyExplanations = {
     title: "Covered Call",
     content: "A covered call is selling a call option while owning the underlying stock, earning a premium but capping upside potential. Example: Own 100 AAPL shares at $150, sell $160 call for $5 premium; if AAPL rises to $170, you sell at $160, missing $10/share but keeping the $5 premium."
   }
+};
+
+// Strategy lessons mapping
+const strategyLessons = {
+  "Iron Condor": "iron-condor",
+  "Covered Calls": "covered-calls",
+  "Bull Put Spread": "cash-secured-puts"
 };
 
 // Define the types for our post data
@@ -138,13 +145,13 @@ const Community = () => {
   const [newPost, setNewPost] = useState("");
   const [activeTab, setActiveTab] = useState("feed");
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handlePostSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!newPost.trim()) return;
     
-    // Create new post with properly initialized reactions object
     const newPostObj: Post = {
       id: posts.length + 1,
       author: {
@@ -196,6 +203,17 @@ const Community = () => {
       }
       return post;
     }));
+  };
+
+  const handleStrategyClick = (strategyName: string) => {
+    const lessonId = strategyLessons[strategyName as keyof typeof strategyLessons];
+    if (lessonId) {
+      navigate("/education", { state: { openLesson: lessonId } });
+      toast({
+        title: "Navigating to lesson",
+        description: `Opening the ${strategyName} lesson in the Education Hub`,
+      });
+    }
   };
 
   return (
@@ -268,18 +286,20 @@ const Community = () => {
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="p-4 bg-black/20 rounded-lg border border-border/50">
-                    <h3 className="font-medium mb-1">Iron Condor</h3>
-                    <p className="text-sm text-muted-foreground">Trading range-bound markets with defined risk</p>
-                  </div>
-                  <div className="p-4 bg-black/20 rounded-lg border border-border/50">
-                    <h3 className="font-medium mb-1">Covered Calls</h3>
-                    <p className="text-sm text-muted-foreground">Generate income while holding stock positions</p>
-                  </div>
-                  <div className="p-4 bg-black/20 rounded-lg border border-border/50">
-                    <h3 className="font-medium mb-1">Bull Put Spread</h3>
-                    <p className="text-sm text-muted-foreground">Bullish strategy with defined risk/reward</p>
-                  </div>
+                  {Object.entries(strategyLessons).map(([name, lessonId]) => (
+                    <div 
+                      key={name}
+                      className="p-4 bg-black/20 rounded-lg border border-border/50 cursor-pointer hover:bg-black/30 transition-colors"
+                      onClick={() => handleStrategyClick(name)}
+                    >
+                      <h3 className="font-medium mb-1">{name}</h3>
+                      <p className="text-sm text-muted-foreground">
+                        {name === "Iron Condor" && "Trading range-bound markets with defined risk"}
+                        {name === "Covered Calls" && "Generate income while holding stock positions"}
+                        {name === "Bull Put Spread" && "Bullish strategy with defined risk/reward"}
+                      </p>
+                    </div>
+                  ))}
                 </div>
               </CardContent>
             </Card>
@@ -323,7 +343,6 @@ interface CommunityPostProps {
   onReaction: (postId: number, emoji: string) => void;
 }
 
-// Community Post Component
 const CommunityPost = ({ post, onLike, onReaction }: CommunityPostProps) => {
   const [showReactions, setShowReactions] = useState(false);
   
@@ -437,7 +456,6 @@ const CommunityPost = ({ post, onLike, onReaction }: CommunityPostProps) => {
   );
 };
 
-// Activity Feed Component
 const ActivityFeed = () => {
   const activities = [
     {
