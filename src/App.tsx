@@ -17,6 +17,7 @@ import Settings from "./pages/Settings";
 import Achievements from "./pages/Achievements";
 import Tools from "./pages/Tools";
 import StockDetail from "./pages/StockDetail";
+import LessonPage from "./components/education/LessonPage";
 import { AIAlertsProvider } from "./contexts/AIAlertsContext";
 
 const queryClient = new QueryClient();
@@ -32,6 +33,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/education" element={<Education />} />
+            <Route path="/education/:id" element={<LessonPage />} />
             <Route path="/options-chain" element={<OptionsChain />} />
             <Route path="/community" element={<Community />} />
             <Route path="/challenges" element={<Challenges />} />
