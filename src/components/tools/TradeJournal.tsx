@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import {
   Card,
@@ -334,7 +333,7 @@ const TradeJournal = () => {
               <CardTitle className="text-lg">Trade Distribution</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
                 <div className="flex flex-col items-center">
                   <div className="h-[180px] w-full mb-2">
                     <ResponsiveContainer width="100%" height="100%">
