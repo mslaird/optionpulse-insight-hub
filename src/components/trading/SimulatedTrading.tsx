@@ -13,7 +13,6 @@ import { mockLeapsAlerts } from "@/data/mockAlertData";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 
-// Mock options data including LEAPS
 const mockOptionsData = {
   AAPL: {
     standard: {
@@ -153,7 +152,6 @@ const mockOptionsData = {
   }
 };
 
-// Option types
 const optionTypes = [{
   value: "call",
   label: "Call"
@@ -162,7 +160,6 @@ const optionTypes = [{
   label: "Put"
 }];
 
-// Expiry types
 const expiryTypes = [{
   value: "standard",
   label: "Standard (30-90 days)"
@@ -171,7 +168,6 @@ const expiryTypes = [{
   label: "LEAPS (Long-term)"
 }];
 
-// LEAPS expiry dates
 const leapsExpiryDates = [{
   value: "Jan 2026",
   label: "January 2026"
@@ -183,7 +179,6 @@ const leapsExpiryDates = [{
   label: "January 2027"
 }];
 
-// Strategy explanations
 const strategyExplanations = {
   nakedCall: {
     title: "Naked Call",
@@ -206,6 +201,7 @@ const strategyExplanations = {
     content: "LEAPS (Long-term Equity Anticipation Securities) are options with expirations longer than a year. They provide leverage to long-term price movements with lower capital requirements than stock ownership. Example: Buy AAPL $250 call LEAPS expiring in Jan 2026 for $32, gaining exposure to $25,000 of stock with just $3,200."
   }
 };
+
 const SimulatedTrading = () => {
   const {
     toast
@@ -214,7 +210,6 @@ const SimulatedTrading = () => {
   const [showTradeSummary, setShowTradeSummary] = useState(false);
   const [accountValue, setAccountValue] = useState(100000);
 
-  // Form state
   const [selectedTicker, setSelectedTicker] = useState("AAPL");
   const [optionType, setOptionType] = useState("call");
   const [expiryType, setExpiryType] = useState("standard");
@@ -223,7 +218,6 @@ const SimulatedTrading = () => {
   const [quantity, setQuantity] = useState("1");
   const [selectedLeapsOption, setSelectedLeapsOption] = useState(null);
 
-  // PnL state for display
   const [estimatedPnL, setEstimatedPnL] = useState({
     value: 0,
     percent: 0,
@@ -233,13 +227,10 @@ const SimulatedTrading = () => {
     }
   });
 
-  // Trading history
   const [tradeHistory, setTradeHistory] = useState([]);
 
-  // Filtered stock list (only stocks, not strategies)
   const stockOptions = mockStocks.filter(stock => stock.type === 'stock' || stock.type === 'etf');
 
-  // Update strike price based on ticker and expiry type
   useEffect(() => {
     if (expiryType === "standard") {
       setStrikePrice(mockOptionsData[selectedTicker]?.standard?.strike.toString() || "150");
@@ -251,7 +242,6 @@ const SimulatedTrading = () => {
     }
   }, [selectedTicker, expiryType]);
 
-  // Update selectedLeapsOption when expiry or strike changes
   useEffect(() => {
     if (expiryType === "leaps") {
       const leapsOptions = mockOptionsData[selectedTicker]?.leaps || [];
@@ -259,7 +249,6 @@ const SimulatedTrading = () => {
       if (matchingOption) {
         setSelectedLeapsOption(matchingOption);
       } else if (leapsOptions.length > 0) {
-        // If no exact match, find closest strike
         const closestOption = leapsOptions.filter(option => option.expiry === leapsExpiry).sort((a, b) => Math.abs(a.strike - parseFloat(strikePrice)) - Math.abs(b.strike - parseFloat(strikePrice)))[0];
         if (closestOption) {
           setSelectedLeapsOption(closestOption);
@@ -269,7 +258,6 @@ const SimulatedTrading = () => {
     }
   }, [leapsExpiry, strikePrice, selectedTicker, expiryType]);
 
-  // Generate available strikes based on ticker and expiry
   const getAvailableStrikes = () => {
     if (expiryType === "standard") {
       const baseStrike = mockOptionsData[selectedTicker]?.standard?.strike || 150;
@@ -281,7 +269,6 @@ const SimulatedTrading = () => {
     }
   };
 
-  // Calculate estimated P&L
   const calculateEstimatedPnL = () => {
     const stockPrice = mockStocks.find(stock => stock.ticker === selectedTicker)?.price || 0;
     let optionPrice = 0;
@@ -289,8 +276,7 @@ const SimulatedTrading = () => {
     let theta = 0;
     if (expiryType === "standard") {
       optionPrice = mockOptionsData[selectedTicker]?.standard?.bid || 0;
-      delta = 0.5; // Default delta for standard options
-      theta = -0.05; // Default theta for standard options
+      delta = 0.5;
     } else if (selectedLeapsOption) {
       optionPrice = selectedLeapsOption.bid;
       delta = selectedLeapsOption.delta;
@@ -310,25 +296,22 @@ const SimulatedTrading = () => {
       }
     };
   };
+
   const handleSimulateTrade = () => {
     setIsSimulating(true);
     setShowTradeSummary(false);
 
-    // Simulate API call delay
     setTimeout(() => {
       setIsSimulating(false);
       setShowTradeSummary(true);
 
-      // Calculate cost and update account value
       const cost = calculateTotalCost();
       const newAccountValue = accountValue - cost;
       setAccountValue(newAccountValue);
 
-      // Calculate estimated P&L
       const pnl = calculateEstimatedPnL();
       setEstimatedPnL(pnl);
 
-      // Add to trade history
       const newTrade = {
         id: Date.now(),
         ticker: selectedTicker,
@@ -342,7 +325,6 @@ const SimulatedTrading = () => {
       };
       setTradeHistory([newTrade, ...tradeHistory]);
 
-      // Show toast notification for trade confirmation
       toast({
         title: `${expiryType === "leaps" ? "LEAPS" : "Standard"} Option Trade Simulated`,
         description: `${quantity} ${selectedTicker} $${strikePrice} ${optionType}, expiry: ${expiryType === "leaps" ? leapsExpiry : "30-90 days"}`,
@@ -352,7 +334,6 @@ const SimulatedTrading = () => {
     }, 1000);
   };
 
-  // Calculate total cost
   const calculateTotalCost = () => {
     let bid = 0;
     if (expiryType === "standard") {
@@ -364,11 +345,11 @@ const SimulatedTrading = () => {
     return bid * 100 * qty;
   };
 
-  // Find a recommended LEAPS alert for the selected ticker
   const getRecommendedLeapsAlert = () => {
     return mockLeapsAlerts.find(alert => alert.symbol === selectedTicker && alert.itmProbability >= 65);
   };
   const recommendedAlert = getRecommendedLeapsAlert();
+
   return (
     <Card className="bg-card/30 backdrop-blur-sm border-border/50">
       <CardHeader className="pb-2">
@@ -384,20 +365,20 @@ const SimulatedTrading = () => {
       </CardHeader>
       <CardContent>
         <div className="flex flex-col gap-6">
-          <div className="flex items-center justify-between mb-1">
-            <div className="flex items-center">
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground mr-2">Account Value:</span>
               <span className="font-semibold text-white">${accountValue.toLocaleString()}</span>
             </div>
-            <div className="flex gap-2">
-              <Link to="/tools/strategy-builder" className="my-0">
-                <Button variant="link" size="sm" className="text-optionpulse-blue p-0 mx-[10px]">
+            <div className="flex gap-2 justify-start">
+              <Link to="/tools/strategy-builder" className="w-full sm:w-auto">
+                <Button variant="link" size="sm" className="text-optionpulse-blue p-0 mx-0 w-full sm:w-auto">
                   Strategy Builder
                   <ArrowRight size={14} className="ml-1" />
                 </Button>
               </Link>
-              <Link to="/journal">
-                <Button variant="link" size="sm" className="text-optionpulse-blue p-0">
+              <Link to="/journal" className="w-full sm:w-auto">
+                <Button variant="link" size="sm" className="text-optionpulse-blue p-0 mx-0 w-full sm:w-auto">
                   <BookMarked size={14} className="mr-1" />
                   Trade Journal
                 </Button>
@@ -436,7 +417,6 @@ const SimulatedTrading = () => {
                       setSelectedTicker(recommendedAlert.symbol);
                       setOptionType(recommendedAlert.type);
                       setStrikePrice(recommendedAlert.strikePrice.toString());
-                      // Find closest expiry date
                       const closestExpiry = leapsExpiryDates.find(exp => exp.label.includes(recommendedAlert.expiryDate.split('/')[2]))?.value || "Jan 2026";
                       setLeapsExpiry(closestExpiry);
                     }}
@@ -505,7 +485,6 @@ const SimulatedTrading = () => {
                 <SelectContent>
                   {leapsExpiryDates
                     .filter(date => {
-                      // Only show expiry dates that have options for this ticker
                       const hasOptions = mockOptionsData[selectedTicker]?.leaps?.some(
                         option => option.expiry === date.value
                       );
@@ -719,4 +698,5 @@ const SimulatedTrading = () => {
     </Card>
   );
 };
+
 export default SimulatedTrading;
