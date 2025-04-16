@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Bell, User, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -53,7 +52,7 @@ const Header = ({ toggleSidebar }: HeaderProps) => {
           <Button 
             variant="ghost" 
             size="icon" 
-            className="mr-auto"
+            className="mr-2"
             onClick={handleToggleSidebar}
           >
             <Menu size={20} />
@@ -96,42 +95,53 @@ const Header = ({ toggleSidebar }: HeaderProps) => {
           </div>
         </div>
         
-        <div className="relative max-w-md w-full hidden md:block">
-          <SearchAutocomplete />
-        </div>
-        
-        <div className="hidden md:flex items-center gap-2 ml-auto">
-          <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
-            <Bell size={20} />
+        <div className="hidden md:flex items-center w-full">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="mr-4"
+            onClick={handleToggleSidebar}
+          >
+            <Menu size={20} />
           </Button>
           
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="rounded-full overflow-hidden p-0 h-10 w-10">
-                <Avatar className="h-10 w-10">
-                  <AvatarImage src={profileImage || ""} alt="Profile" />
-                  <AvatarFallback className="bg-optionpulse-blue text-white">
-                    <User size={18} />
-                  </AvatarFallback>
-                </Avatar>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem asChild>
-                <Link to="/profile">Profile</Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link to="/settings">Settings</Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link to="/watchlist">Watchlist</Link>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>Logout</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="relative max-w-md w-full">
+            <SearchAutocomplete />
+          </div>
+          
+          <div className="flex items-center gap-2 ml-auto">
+            <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
+              <Bell size={20} />
+            </Button>
+            
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="rounded-full overflow-hidden p-0 h-10 w-10">
+                  <Avatar className="h-10 w-10">
+                    <AvatarImage src={profileImage || ""} alt="Profile" />
+                    <AvatarFallback className="bg-optionpulse-blue text-white">
+                      <User size={18} />
+                    </AvatarFallback>
+                  </Avatar>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link to="/profile">Profile</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/settings">Settings</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/watchlist">Watchlist</Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>Logout</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
       </div>
     </header>

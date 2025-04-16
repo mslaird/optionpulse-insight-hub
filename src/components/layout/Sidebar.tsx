@@ -1,6 +1,5 @@
 
 import { useState, useEffect } from "react";
-import { MobileToggle } from "./sidebar/MobileToggle";
 import { DesktopSidebar } from "./sidebar/DesktopSidebar";
 import { MobileSidebar } from "./sidebar/MobileSidebar";
 
@@ -32,11 +31,6 @@ export const Sidebar = ({ onToggle }: SidebarProps) => {
 
   return (
     <>
-      <MobileToggle 
-        isMobileOpen={isMobileOpen} 
-        toggleMobileSidebar={toggleMobileSidebar} 
-      />
-      
       <DesktopSidebar 
         isCollapsed={isCollapsed} 
         toggleSidebar={toggleSidebar} 

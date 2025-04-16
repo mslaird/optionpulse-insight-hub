@@ -21,26 +21,6 @@ export const SidebarHeader = ({ isCollapsed, toggleSidebar }: SidebarHeaderProps
           <Logo collapsed={true} />
         </Link>
       )}
-      {!isCollapsed && (
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={toggleSidebar}
-          className="ml-auto"
-        >
-          <Menu size={20} />
-        </Button>
-      )}
-      {isCollapsed && (
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={toggleSidebar}
-          className="mx-auto"
-        >
-          <Menu size={20} />
-        </Button>
-      )}
     </div>
   );
 };
