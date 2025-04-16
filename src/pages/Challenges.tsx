@@ -11,10 +11,10 @@ import LeaderboardCard from "@/components/challenges/LeaderboardCard";
 import LeaderboardStats from "@/components/challenges/LeaderboardStats";
 import RewardsSection from "@/components/challenges/RewardsSection";
 import { challenges, leaderboard } from "@/data/challengesData";
-import type { Challenge } from "@/components/challenges/ChallengeCard";
+import type { Challenge } from "@/data/challengesData";
 
 const Challenges = () => {
-  const [filter, setFilter] = useState<Challenge["status"] | "all">("all");
+  const [filter, setFilter] = useState<"all" | Challenge["status"]>("all");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
   
   const filteredChallenges = challenges

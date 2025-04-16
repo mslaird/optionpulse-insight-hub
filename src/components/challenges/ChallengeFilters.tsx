@@ -3,12 +3,13 @@ import React from "react";
 import { Badge } from "@/components/ui/badge";
 import { Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Challenge } from "@/data/challengesData";
 
 interface ChallengeFiltersProps {
-  filter: string;
-  setFilter: (filter: string) => void;
+  filter: "all" | Challenge["status"];
+  setFilter: React.Dispatch<React.SetStateAction<"all" | Challenge["status"]>>;
   categoryFilter: string;
-  setCategoryFilter: (filter: string) => void;
+  setCategoryFilter: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const ChallengeFilters: React.FC<ChallengeFiltersProps> = ({
