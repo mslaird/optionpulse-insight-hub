@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine } from "recharts";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import ChartTooltip from "@/components/tooltips/ChartTooltip";
 import ExplanationTooltip from "@/components/tooltips/ExplanationTooltip";
 
@@ -121,19 +121,11 @@ const strategyData = {
 const generatePayoffData = (strategy, params) => {
   const data = [];
   let minPrice, maxPrice;
-  let breakEvenPoint = 0;
   
   if (strategy === "long-call" || strategy === "long-put") {
     const { strike, premium } = params;
     minPrice = strike * 0.7;
     maxPrice = strike * 1.3;
-    
-    // Calculate break-even point
-    if (strategy === "long-call") {
-      breakEvenPoint = strike + premium;
-    } else {
-      breakEvenPoint = strike - premium;
-    }
     
     for (let price = minPrice; price <= maxPrice; price += (maxPrice - minPrice) / 20) {
       let profit;
@@ -154,7 +146,6 @@ const generatePayoffData = (strategy, params) => {
     if (strategy === "bull-call-spread") {
       minPrice = strike * 0.7;
       maxPrice = highStrike * 1.3;
-      breakEvenPoint = strike + (premium - soldPremium);
       
       for (let price = minPrice; price <= maxPrice; price += (maxPrice - minPrice) / 20) {
         const profit = strategyData["bull-call-spread"].payoff(price, strike, premium, highStrike, soldPremium);
@@ -166,7 +157,6 @@ const generatePayoffData = (strategy, params) => {
     } else {
       minPrice = lowStrike * 0.7;
       maxPrice = strike * 1.3;
-      breakEvenPoint = strike - (premium - soldPremium);
       
       for (let price = minPrice; price <= maxPrice; price += (maxPrice - minPrice) / 20) {
         const profit = strategyData["bear-put-spread"].payoff(price, strike, premium, lowStrike, soldPremium);
@@ -181,8 +171,6 @@ const generatePayoffData = (strategy, params) => {
     
     minPrice = putLowStrike * 0.7;
     maxPrice = callHighStrike * 1.3;
-    // Iron condor has two break-even points, using the put side for now
-    breakEvenPoint = putStrike - netPremium;
     
     for (let price = minPrice; price <= maxPrice; price += (maxPrice - minPrice) / 20) {
       const profit = strategyData["iron-condor"].payoff(
@@ -196,7 +184,7 @@ const generatePayoffData = (strategy, params) => {
     }
   }
   
-  return { data, breakEvenPoint: parseFloat(breakEvenPoint.toFixed(2)) };
+  return data;
 };
 
 const RiskRewardAnalyzer = () => {
@@ -207,10 +195,7 @@ const RiskRewardAnalyzer = () => {
   const [highStrike, setHighStrike] = useState(strategyData[selectedStrategy].sampleTrade.highStrike || 0);
   const [lowStrike, setLowStrike] = useState(strategyData[selectedStrategy].sampleTrade.lowStrike || 0);
   const [soldPremium, setSoldPremium] = useState(strategyData[selectedStrategy].sampleTrade.soldPremium || 0);
-  
-  const initialPayoff = generatePayoffData(selectedStrategy, strategyData[selectedStrategy].sampleTrade);
-  const [payoffData, setPayoffData] = useState(initialPayoff.data);
-  const [breakEvenPoint, setBreakEvenPoint] = useState(initialPayoff.breakEvenPoint);
+  const [payoffData, setPayoffData] = useState(generatePayoffData(selectedStrategy, strategyData[selectedStrategy].sampleTrade));
 
   const handleStrategyChange = (value) => {
     setSelectedStrategy(value);
@@ -227,9 +212,7 @@ const RiskRewardAnalyzer = () => {
       setSoldPremium(strategy.sampleTrade.soldPremium);
     }
     
-    const payoffResult = generatePayoffData(value, strategy.sampleTrade);
-    setPayoffData(payoffResult.data);
-    setBreakEvenPoint(payoffResult.breakEvenPoint);
+    setPayoffData(generatePayoffData(value, strategy.sampleTrade));
   };
 
   const handleCalculate = () => {
@@ -251,9 +234,7 @@ const RiskRewardAnalyzer = () => {
       };
     }
     
-    const payoffResult = generatePayoffData(selectedStrategy, params);
-    setPayoffData(payoffResult.data);
-    setBreakEvenPoint(payoffResult.breakEvenPoint);
+    setPayoffData(generatePayoffData(selectedStrategy, params));
   };
 
   const enhancedPayoffData = payoffData.map(point => ({
@@ -445,21 +426,6 @@ const RiskRewardAnalyzer = () => {
                   verticalAlign="bottom" 
                   align="center"
                 />
-                
-                {/* Display break-even point */}
-                <ReferenceLine 
-                  x={breakEvenPoint} 
-                  stroke="#34D399" 
-                  strokeWidth={2} 
-                  strokeDasharray="5 5" 
-                  label={{
-                    value: `Break Even: $${breakEvenPoint.toFixed(2)}`,
-                    position: 'top',
-                    fill: '#34D399',
-                    fontSize: 12
-                  }}
-                />
-                
                 <Line 
                   type="monotone" 
                   dataKey="profit" 
@@ -467,6 +433,14 @@ const RiskRewardAnalyzer = () => {
                   strokeWidth={2}
                   dot={false}
                   name={`${strategyData[selectedStrategy].name} P/L`} 
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="breakeven" 
+                  stroke="#34D399" 
+                  strokeDasharray="5 5" 
+                  dot={false} 
+                  name="Break Even"
                 />
               </LineChart>
             </ResponsiveContainer>
