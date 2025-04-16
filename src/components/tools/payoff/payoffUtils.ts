@@ -11,7 +11,19 @@ export const generatePayoffData = (strike: number, premium: number, strategy: st
   const range = 0.3; // 30% range around strike price
   const minPrice = strike * (1 - range);
   const maxPrice = strike * (1 + range);
-  const step = (maxPrice - minPrice) / 10;
+  const step = (maxPrice - minPrice) / 20; // Increased data points for smoother curve
+  
+  // Calculate breakeven point
+  let breakEvenPoint = strike;
+  if (strategy === "call") {
+    breakEvenPoint = strike + premium;
+  } else if (strategy === "put") {
+    breakEvenPoint = strike - premium;
+  } else if (strategy === "call-spread") {
+    breakEvenPoint = strike + premium;
+  } else if (strategy === "put-spread") {
+    breakEvenPoint = strike - premium;
+  }
 
   for (let price = minPrice; price <= maxPrice; price += step) {
     let profit = 0;
@@ -30,13 +42,25 @@ export const generatePayoffData = (strike: number, premium: number, strategy: st
       profit = Math.max(0, Math.min(strike - price, strike - lowerStrike)) - premium;
     }
     
+    // Set the breakeven flag for the exact breakeven point
+    const breakeven = Math.abs(price - breakEvenPoint) < step/2 ? profit : null;
+    
     data.push({
       stockPrice: parseFloat(price.toFixed(2)),
-      profit: parseFloat(profit.toFixed(2))
+      profit: parseFloat(profit.toFixed(2)),
+      breakeven: breakeven
     });
   }
   
-  return data;
+  // Ensure we have a specific data point exactly at the breakeven
+  data.push({
+    stockPrice: parseFloat(breakEvenPoint.toFixed(2)),
+    profit: 0,
+    breakeven: 0
+  });
+  
+  // Sort to ensure the breakeven point is in the right position
+  return data.sort((a, b) => a.stockPrice - b.stockPrice);
 };
 
 /**

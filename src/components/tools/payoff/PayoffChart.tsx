@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine } from "recharts";
 import ChartTooltip from "@/components/tooltips/ChartTooltip";
 import { formatStrategyName } from "./payoffUtils";
 
@@ -20,6 +20,26 @@ const PayoffChart: React.FC<PayoffChartProps> = ({
   strike, 
   premium 
 }) => {
+  // Calculate break-even point based on strategy
+  const calculateBreakEven = () => {
+    switch(strategy) {
+      case "call":
+        return strike + premium;
+      case "put":
+        return strike - premium;
+      case "call-spread":
+        // Simplified for a basic call spread
+        return strike + premium;
+      case "put-spread":
+        // Simplified for a basic put spread
+        return strike - premium;
+      default:
+        return strike;
+    }
+  };
+
+  const breakEvenPoint = calculateBreakEven();
+
   return (
     <Card className="w-full h-[400px] p-4">
       <CardContent className="p-0 h-full">
@@ -58,6 +78,21 @@ const PayoffChart: React.FC<PayoffChartProps> = ({
               verticalAlign="bottom" 
               align="center"
             />
+            
+            {/* Display clear reference line for break-even point */}
+            <ReferenceLine 
+              x={breakEvenPoint} 
+              stroke="#34D399" 
+              strokeWidth={2} 
+              strokeDasharray="5 5" 
+              label={{
+                value: `Break Even: $${breakEvenPoint.toFixed(2)}`,
+                position: 'top',
+                fill: '#34D399',
+                fontSize: 12
+              }}
+            />
+            
             <Line 
               type="monotone" 
               dataKey="profit" 
@@ -70,7 +105,7 @@ const PayoffChart: React.FC<PayoffChartProps> = ({
               dataKey="breakeven" 
               stroke="#34D399" 
               strokeDasharray="5 5" 
-              strokeWidth={3}  // Increased stroke width
+              strokeWidth={3}
               dot={false} 
               name="Break Even"
             />
