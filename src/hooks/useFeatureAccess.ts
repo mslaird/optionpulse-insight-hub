@@ -20,10 +20,16 @@ export const useFeatureAccess = () => {
     setRequiredTier(tier);
     setFeatureName(feature);
     setShowPaywallModal(true);
+    
+    // Log the blocked access attempt
+    console.log(`Access to ${feature} (${tier} tier) blocked - showing paywall`);
     return false;
   };
 
   const handleStartTrial = () => {
+    // Log the trial start
+    console.log(`Starting free trial for Pro tier`);
+    
     startFreeTrial();
     setShowPaywallModal(false);
     

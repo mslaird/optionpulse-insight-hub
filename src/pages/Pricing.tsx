@@ -1,5 +1,4 @@
-
-import React from "react";
+import React, { useState } from "react";
 import Layout from "@/components/layout/Layout";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle2, ChevronRight, Lock, BookOpen, Bell, Calculator, LineChart, BarChart3, Sparkles } from "lucide-react";
@@ -10,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 const PricingPage = () => {
   const { user, upgradeToTier, startFreeTrial } = useAuth();
   const { toast } = useToast();
+  const [processing, setProcessing] = useState<string | null>(null);
 
   const handleUpgrade = (tier: 'Free' | 'Lite' | 'Pro') => {
     if (tier === 'Pro') {
@@ -28,6 +28,40 @@ const PricingPage = () => {
     });
   };
 
+  const handleSubscribe = async (tier: 'Lite' | 'Pro', price: string) => {
+    if (processing) return;
+    
+    setProcessing(tier);
+    
+    try {
+      console.log(`Subscribed to ${tier} plan for ${price}/month`);
+      
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      if (tier === 'Pro') {
+        startFreeTrial();
+      } else {
+        upgradeToTier(tier);
+      }
+      
+      toast({
+        title: `Successfully subscribed to ${tier}`,
+        description: tier === 'Pro' 
+          ? "You now have access to all Pro features!" 
+          : "You now have access to all Lite features!",
+        variant: "default",
+      });
+    } catch (error) {
+      toast({
+        title: "Subscription failed",
+        description: "There was an error processing your payment",
+        variant: "destructive",
+      });
+    } finally {
+      setProcessing(null);
+    }
+  };
+
   return (
     <Layout>
       <div className="flex flex-col gap-6 animate-fade-in">
@@ -39,7 +73,6 @@ const PricingPage = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Free Plan */}
           <Card className="bg-card/30 backdrop-blur-sm border-border/50 flex flex-col">
             <CardHeader>
               <CardTitle className="text-xl">Free</CardTitle>
@@ -97,7 +130,6 @@ const PricingPage = () => {
             </CardFooter>
           </Card>
 
-          {/* Lite Plan */}
           <Card className="bg-card/30 backdrop-blur-sm border-border/50 flex flex-col border-optionpulse-blue">
             <CardHeader>
               <div className="flex justify-between items-center">
@@ -149,18 +181,33 @@ const PricingPage = () => {
               </ul>
             </CardContent>
             <CardFooter>
-              <Button 
-                variant="outline" 
-                className="w-full text-optionpulse-blue border-optionpulse-blue"
-                onClick={() => handleUpgrade('Lite')}
-                disabled={!user || user.tier === 'Lite'}
-              >
-                {!user ? "Select Plan" : user.tier === 'Lite' ? "Current Plan" : user.tier === 'Pro' ? "Downgrade" : "Upgrade"}
-              </Button>
+              {user && user.tier === 'Lite' ? (
+                <Button 
+                  variant="outline" 
+                  className="w-full text-optionpulse-blue border-optionpulse-blue"
+                  disabled
+                >
+                  Current Plan
+                </Button>
+              ) : (
+                <Button 
+                  variant="outline" 
+                  className="w-full text-optionpulse-blue border-optionpulse-blue hover:bg-optionpulse-blue/10"
+                  onClick={() => handleSubscribe('Lite', '$19.99')}
+                  disabled={processing !== null}
+                >
+                  {processing === 'Lite' ? (
+                    <span className="flex items-center">
+                      <span className="animate-pulse mr-2">Processing...</span>
+                    </span>
+                  ) : (
+                    <>Sign Up</>
+                  )}
+                </Button>
+              )}
             </CardFooter>
           </Card>
 
-          {/* Pro Plan */}
           <Card className="bg-card/30 backdrop-blur-sm border-border/50 flex flex-col border-yellow-400 bg-gradient-to-b from-card/30 to-card/80">
             <CardHeader>
               <div className="flex justify-between items-center">
@@ -215,14 +262,28 @@ const PricingPage = () => {
               </ul>
             </CardContent>
             <CardFooter>
-              <Button 
-                className="w-full bg-gradient-to-r from-optionpulse-blue to-optionpulse-blue-dark hover:from-optionpulse-blue-light hover:to-optionpulse-blue text-white"
-                onClick={() => handleUpgrade('Pro')}
-                disabled={!user || user.tier === 'Pro'}
-              >
-                {!user ? "Start Free Trial" : user.tier === 'Pro' ? "Current Plan" : "Upgrade"}
-                <ChevronRight size={16} />
-              </Button>
+              {user && user.tier === 'Pro' ? (
+                <Button 
+                  className="w-full bg-gradient-to-r from-optionpulse-blue to-optionpulse-blue-dark hover:from-optionpulse-blue-light hover:to-optionpulse-blue text-white"
+                  disabled
+                >
+                  Current Plan
+                </Button>
+              ) : (
+                <Button 
+                  className="w-full bg-gradient-to-r from-optionpulse-blue to-optionpulse-blue-dark hover:from-optionpulse-blue-light hover:to-optionpulse-blue text-white"
+                  onClick={() => handleSubscribe('Pro', '$39.99')}
+                  disabled={processing !== null}
+                >
+                  {processing === 'Pro' ? (
+                    <span className="flex items-center">
+                      <span className="animate-pulse mr-2">Processing...</span>
+                    </span>
+                  ) : (
+                    <>Start Free Trial <ChevronRight size={16} /></>
+                  )}
+                </Button>
+              )}
             </CardFooter>
           </Card>
         </div>
