@@ -4,7 +4,7 @@ import { useTradeJournal } from "./useTradeJournal";
 import JournalFilters from "./JournalFilters";
 import PerformanceMetrics from "./PerformanceMetrics";
 import TradeDistribution from "./TradeDistribution";
-import AlertSuggestions from "./AlertSuggestions";
+import AlertSuggestions from "./alerts/AlertSuggestions";
 import AddTradeForm from "./AddTradeForm";
 import TradesTable from "./TradesTable";
 import { NewTradeFormData } from "./types";
