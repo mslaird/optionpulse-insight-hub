@@ -22,6 +22,7 @@ const TradeDistribution: React.FC<TradeDistributionProps> = ({
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
+          {/* First chart - Trades by Strategy */}
           <div className="flex flex-col items-center">
             <div className="h-[180px] w-full mb-2">
               <ResponsiveContainer width="100%" height="100%">
@@ -61,6 +62,7 @@ const TradeDistribution: React.FC<TradeDistributionProps> = ({
             </div>
           </div>
           
+          {/* Second chart - Profit by Ticker */}
           <div className="flex flex-col items-center">
             <div className="h-[180px] w-full mb-2">
               <ResponsiveContainer width="100%" height="100%">
