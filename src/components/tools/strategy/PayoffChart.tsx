@@ -17,7 +17,7 @@ import {
 import ChartTooltip from "@/components/tooltips/ChartTooltip";
 import { PayoffChartProps } from "./types";
 
-const PayoffChart: React.FC<PayoffChartProps> = ({ payoffData }) => {
+const PayoffChart: React.FC<PayoffChartProps> = ({ payoffData, showLeaps = false }) => {
   // Find the break-even points where profit crosses zero
   const breakEvenPoints: number[] = [];
   for (let i = 1; i < payoffData.length; i++) {
@@ -47,7 +47,9 @@ const PayoffChart: React.FC<PayoffChartProps> = ({ payoffData }) => {
   return (
     <Card className="lg:col-span-2 h-[400px]">
       <CardHeader>
-        <CardTitle className="text-lg">Payoff Diagram</CardTitle>
+        <CardTitle className="text-lg">
+          {showLeaps ? "LEAPS Payoff Diagram" : "Payoff Diagram"}
+        </CardTitle>
       </CardHeader>
       <CardContent className="p-0 h-[320px]">
         <ResponsiveContainer width="100%" height="100%">
@@ -94,12 +96,12 @@ const PayoffChart: React.FC<PayoffChartProps> = ({ payoffData }) => {
               <ReferenceLine 
                 key={`breakeven-${index}`}
                 x={point} 
-                stroke="#34D399" 
+                stroke={showLeaps ? "#34D399" : "#1EAEDB"} 
                 strokeDasharray="5 5"
                 label={{ 
                   value: `BE: $${point}`,
                   position: 'top',
-                  fill: '#34D399',
+                  fill: showLeaps ? "#34D399" : "#1EAEDB",
                   fontSize: 12
                 }}
               />
@@ -109,7 +111,7 @@ const PayoffChart: React.FC<PayoffChartProps> = ({ payoffData }) => {
             <Area 
               type="monotone" 
               dataKey="positiveProfit" 
-              fill="#34D399" 
+              fill={showLeaps ? "#34D399" : "#1EAEDB"} 
               fillOpacity={0.3}
               stroke="none"
               name="Profit Region"
@@ -129,11 +131,11 @@ const PayoffChart: React.FC<PayoffChartProps> = ({ payoffData }) => {
             <Line 
               type="monotone" 
               dataKey="profit" 
-              stroke="#1EAEDB" 
+              stroke={showLeaps ? "#34D399" : "#1EAEDB"} 
               strokeWidth={2}
               dot={false}
-              name="Strategy P/L" 
-              activeDot={{ r: 6, fill: "#1EAEDB" }}
+              name={showLeaps ? "LEAPS Strategy P/L" : "Strategy P/L"} 
+              activeDot={{ r: 6, fill: showLeaps ? "#34D399" : "#1EAEDB" }}
             />
           </ComposedChart>
         </ResponsiveContainer>

@@ -137,4 +137,3 @@ export const calculateDefaultPremium = (strike: number, currentPrice: number, ty
   
   return parseFloat(premium.toFixed(2));
 };
-

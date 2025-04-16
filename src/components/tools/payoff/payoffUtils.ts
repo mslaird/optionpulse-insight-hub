@@ -6,12 +6,12 @@
 /**
  * Generates payoff data points for various option strategies
  */
-export const generatePayoffData = (strike: number, premium: number, strategy: string) => {
+export const generatePayoffData = (strike: number, premium: number, strategy: string, showLeaps = false) => {
   const data = [];
-  const range = 0.3; // 30% range around strike price
+  const range = showLeaps ? 0.5 : 0.3; // 50% range for LEAPS, 30% for standard options
   const minPrice = strike * (1 - range);
   const maxPrice = strike * (1 + range);
-  const step = (maxPrice - minPrice) / 15; // Reduced to 15 data points for cleaner visuals
+  const step = (maxPrice - minPrice) / (showLeaps ? 20 : 15); // More data points for LEAPS
   
   // Calculate breakeven point
   let breakEvenPoint = strike;
@@ -40,6 +40,12 @@ export const generatePayoffData = (strike: number, premium: number, strategy: st
       // Bear put spread (long higher strike, short lower strike)
       const lowerStrike = strike * 0.9;
       profit = Math.max(0, Math.min(strike - price, strike - lowerStrike)) - premium;
+    }
+    
+    // Scale profit for LEAPS (they typically have larger movements)
+    if (showLeaps) {
+      // LEAPS will have more dramatic profit/loss due to larger premiums
+      profit = profit * (strategy === "call" || strategy === "call-spread" ? 1.5 : 1.2);
     }
     
     // We don't set breakeven flag on the regular data points anymore
@@ -84,5 +90,38 @@ export const formatStrategyName = (strategy: string): string => {
     case "call-spread": return "Bull Call Spread";
     case "put-spread": return "Bear Put Spread";
     default: return strategy.toUpperCase();
+  }
+};
+
+/**
+ * Gets mock LEAPS data for a specific ticker
+ */
+export const getLeapsData = (ticker: string) => {
+  // Simplified LEAPS data with high strikes, long expiries and high premiums
+  switch (ticker) {
+    case "AAPL":
+      return {
+        strikes: [200, 250, 300],
+        expirations: ["01/15/2026", "06/18/2026", "01/21/2027"],
+        premiums: [32.5, 25.8, 20.4]
+      };
+    case "SPY":
+      return {
+        strikes: [450, 500, 550, 600, 650, 700],
+        expirations: ["01/15/2026", "06/18/2026", "01/21/2027"],
+        premiums: [48.7, 42.3, 38.1, 31.5, 25.2, 19.8]
+      };
+    case "QQQ":
+      return {
+        strikes: [380, 400, 450, 500, 550],
+        expirations: ["01/15/2026", "06/18/2026", "01/21/2027"],
+        premiums: [42.6, 38.9, 32.7, 26.4, 21.2]
+      };
+    default:
+      return {
+        strikes: [250, 300, 350],
+        expirations: ["01/15/2026", "06/18/2026", "01/21/2027"],
+        premiums: [30.0, 25.0, 20.0]
+      };
   }
 };
