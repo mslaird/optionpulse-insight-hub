@@ -82,7 +82,7 @@ const TradeDistribution: React.FC<TradeDistributionProps> = ({
                     ))}
                   </Pie>
                   <Tooltip 
-                    formatter={(value) => [`${value} trades`]} 
+                    formatter={(value: number) => [`${value} trades`]} 
                   />
                 </PieChart>
               </ResponsiveContainer>
@@ -126,7 +126,7 @@ const TradeDistribution: React.FC<TradeDistributionProps> = ({
                     ))}
                   </Pie>
                   <Tooltip 
-                    formatter={(value, name, entry) => {
+                    formatter={(value: number, name: string, entry: any) => {
                       // Use the original profit value for the tooltip, not the absolute value
                       const profit = entry.payload.profit;
                       return [`${profit >= 0 ? '+' : ''}$${Math.abs(profit).toFixed(2)}`];
@@ -143,7 +143,7 @@ const TradeDistribution: React.FC<TradeDistributionProps> = ({
                     style={{ backgroundColor: item.profit >= 0 ? '#1EAEDB' : '#F87171' }}
                   />
                   <span className="text-xs">
-                    {item.ticker}: {item.profit >= 0 ? '+' : ''}${item.profit.toFixed(2)}
+                    {item.ticker}: {item.profit >= 0 ? '+' : ''}${Math.abs(item.profit).toFixed(2)}
                   </span>
                 </div>
               ))}
@@ -156,3 +156,4 @@ const TradeDistribution: React.FC<TradeDistributionProps> = ({
 };
 
 export default TradeDistribution;
+
