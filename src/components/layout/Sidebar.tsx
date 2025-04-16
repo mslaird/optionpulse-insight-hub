@@ -18,11 +18,6 @@ export const Sidebar = ({ onToggle }: SidebarProps) => {
     if (onToggle) {
       onToggle(newCollapsedState);
     }
-    
-    const event = new CustomEvent('sidebar-toggle', { 
-      detail: { collapsed: newCollapsedState } 
-    });
-    window.dispatchEvent(event);
   };
   
   const toggleMobileSidebar = () => {
