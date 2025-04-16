@@ -1,10 +1,11 @@
-import { useState } from "react";
+
+import { useState, useCallback } from "react";
 import Layout from "@/components/layout/Layout";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Users } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { Post, PostReactions } from "@/types/community";
+import { Post, PostReactions, CommentThread } from "@/types/community";
 import { SavedPost } from "@/data/savedPosts";
 import SavedPostsList from "@/components/community/SavedPostsList";
 import CommunityPost from "@/components/community/CommunityPost";
@@ -12,7 +13,9 @@ import ActivityFeed from "@/components/community/ActivityFeed";
 import PostComposer from "@/components/community/PostComposer";
 import TopStrategies from "@/components/community/TopStrategies";
 import TimelineTab from "@/components/community/TimelineTab";
+import FollowingTab from "@/components/community/FollowingTab";
 import { initialSavedPosts } from "@/data/savedPosts";
+import { initialFollowedUsers, FollowedUser } from "@/data/followedUsers";
 
 const strategyExplanations = {
   nakedCall: {
@@ -109,6 +112,7 @@ const initialPosts: Post[] = [
 const Community = () => {
   const [posts, setPosts] = useState<Post[]>(initialPosts);
   const [savedPosts, setSavedPosts] = useState<SavedPost[]>(initialSavedPosts);
+  const [followedUsers, setFollowedUsers] = useState<FollowedUser[]>(initialFollowedUsers);
   const [activeTab, setActiveTab] = useState("feed");
   const { toast } = useToast();
 
@@ -131,7 +135,8 @@ const Community = () => {
         "👍": 0,
         "🧠": 0,
         "💰": 0
-      }
+      },
+      commentThreads: []
     };
     
     setPosts([newPostObj, ...posts]);
@@ -190,6 +195,56 @@ const Community = () => {
     return savedPosts.some(savedPost => savedPost.id === postId);
   };
 
+  const getSavedPostIds = useCallback(() => {
+    return savedPosts.map(post => post.id);
+  }, [savedPosts]);
+
+  const handleFollowUser = (username: string) => {
+    const isAlreadyFollowing = followedUsers.some(user => user.username === username);
+    
+    if (isAlreadyFollowing) {
+      setFollowedUsers(followedUsers.filter(user => user.username !== username));
+      toast({
+        title: "Unfollowed",
+        description: `You are no longer following @${username}.`,
+      });
+    } else {
+      const newFollowedUser: FollowedUser = {
+        username,
+        followedAt: new Date().toISOString()
+      };
+      setFollowedUsers([...followedUsers, newFollowedUser]);
+      toast({
+        title: "Following",
+        description: `You are now following @${username}.`,
+      });
+    }
+  };
+
+  const handleComment = (postId: number, commentText: string) => {
+    setPosts(posts.map(post => {
+      if (post.id === postId) {
+        const newComment: CommentThread = {
+          name: "You",
+          username: "current_user",
+          avatar: "https://i.pravatar.cc/150?img=12",
+          text: commentText
+        };
+        
+        return {
+          ...post,
+          comments: post.comments + 1,
+          commentThreads: [...(post.commentThreads || []), newComment]
+        };
+      }
+      return post;
+    }));
+  };
+
+  const isUserFollowing = useCallback((username: string) => {
+    return followedUsers.some(user => user.username === username);
+  }, [followedUsers]);
+
   return (
     <Layout>
       <div className="space-y-6">
@@ -206,6 +261,7 @@ const Community = () => {
         <Tabs defaultValue="feed" value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="glass-card w-full justify-start mb-6 flex-wrap h-auto min-h-10 py-1">
             <TabsTrigger value="feed">Feed</TabsTrigger>
+            <TabsTrigger value="following">Following</TabsTrigger>
             <TabsTrigger value="timeline">Timeline</TabsTrigger>
             <TabsTrigger value="trending">Trending</TabsTrigger>
             <TabsTrigger value="saved-posts">Saved Posts</TabsTrigger>
@@ -228,14 +284,36 @@ const Community = () => {
                   onLike={handleLike} 
                   onReaction={handleReaction} 
                   onSave={handleSavePost}
+                  onFollow={handleFollowUser}
+                  onComment={handleComment}
                   isSaved={isPostSaved(post.id)}
+                  isFollowing={isUserFollowing(post.author.username)}
                 />
               ))}
             </div>
           </TabsContent>
+
+          <TabsContent value="following" className="space-y-6">
+            <FollowingTab 
+              followedUsers={followedUsers}
+              savedPostIds={getSavedPostIds()}
+              onLike={handleLike}
+              onReaction={handleReaction}
+              onSave={handleSavePost}
+              onFollow={handleFollowUser}
+              onComment={handleComment}
+            />
+          </TabsContent>
           
           <TabsContent value="timeline" className="space-y-6">
-            <TimelineTab />
+            <TimelineTab 
+              followedUsers={followedUsers}
+              savedPostIds={getSavedPostIds()}
+              onLike={handleLike}
+              onSave={handleSavePost}
+              onFollow={handleFollowUser}
+              onComment={handleComment}
+            />
           </TabsContent>
           
           <TabsContent value="trending" className="space-y-6">

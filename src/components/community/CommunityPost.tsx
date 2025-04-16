@@ -4,7 +4,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Heart, MessageCircle, Share2, Bookmark, BookmarkCheck } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { Heart, MessageCircle, Share2, Bookmark, BookmarkCheck, UserPlus, UserCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Post } from "@/types/community";
 
@@ -13,13 +14,35 @@ interface CommunityPostProps {
   onLike: (postId: number) => void;
   onReaction: (postId: number, emoji: string) => void;
   onSave: (post: Post) => void;
+  onFollow: (username: string) => void;
+  onComment: (postId: number, comment: string) => void;
   isSaved: boolean;
+  isFollowing: boolean;
 }
 
-const CommunityPost = ({ post, onLike, onReaction, onSave, isSaved }: CommunityPostProps) => {
+const CommunityPost = ({ 
+  post, 
+  onLike, 
+  onReaction, 
+  onSave, 
+  onFollow,
+  onComment,
+  isSaved, 
+  isFollowing 
+}: CommunityPostProps) => {
   const [showReactions, setShowReactions] = useState(false);
+  const [showCommentBox, setShowCommentBox] = useState(false);
+  const [commentText, setCommentText] = useState("");
   
   const reactionEmojis = ["👍", "❤️", "🔥", "🚀", "🧠", "💰", "🤔", "👏"];
+  
+  const handleSubmitComment = () => {
+    if (commentText.trim()) {
+      onComment(post.id, commentText);
+      setCommentText("");
+      setShowCommentBox(false);
+    }
+  };
   
   return (
     <Card className="bg-card/30 backdrop-blur-sm border-border/50">
@@ -32,7 +55,32 @@ const CommunityPost = ({ post, onLike, onReaction, onSave, isSaved }: CommunityP
           <div className="flex-1 min-w-0">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div className="min-w-0">
-                <h3 className="font-medium truncate">{post.author.name}</h3>
+                <div className="flex items-center gap-2">
+                  <h3 className="font-medium truncate">{post.author.name}</h3>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className={cn(
+                      "h-8 px-3 text-xs gap-1 ml-2",
+                      isFollowing 
+                        ? "bg-optionpulse-blue/20 text-optionpulse-blue border-optionpulse-blue/30" 
+                        : "bg-background/30 hover:bg-optionpulse-blue/10 hover:text-optionpulse-blue"
+                    )}
+                    onClick={() => onFollow(post.author.username)}
+                  >
+                    {isFollowing ? (
+                      <>
+                        <UserCheck size={14} />
+                        <span>Following</span>
+                      </>
+                    ) : (
+                      <>
+                        <UserPlus size={14} />
+                        <span>Follow</span>
+                      </>
+                    )}
+                  </Button>
+                </div>
                 <div className="flex items-center flex-wrap space-x-1 text-sm text-muted-foreground">
                   <span className="truncate">@{post.author.username}</span>
                   <span>·</span>
@@ -68,6 +116,27 @@ const CommunityPost = ({ post, onLike, onReaction, onSave, isSaved }: CommunityP
                   ))}
                 </div>
               )}
+
+              {post.comments > 0 && post.commentThreads && post.commentThreads.length > 0 && (
+                <div className="mt-4 space-y-3 bg-background/20 p-3 rounded-md">
+                  <h4 className="text-sm font-medium">Comments</h4>
+                  {post.commentThreads.map((comment, index) => (
+                    <div key={index} className="flex items-start gap-2">
+                      <Avatar className="h-6 w-6">
+                        <AvatarImage src={comment.avatar} />
+                        <AvatarFallback>{comment.name.substring(0, 2)}</AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-medium">{comment.name}</span>
+                          <span className="text-xs text-muted-foreground">@{comment.username}</span>
+                        </div>
+                        <p className="text-sm mt-1">{comment.text}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
               
               <div className="flex flex-wrap items-center gap-2 pt-2">
                 <button
@@ -83,6 +152,7 @@ const CommunityPost = ({ post, onLike, onReaction, onSave, isSaved }: CommunityP
                 
                 <button
                   className="flex items-center text-sm gap-1 text-muted-foreground"
+                  onClick={() => setShowCommentBox(!showCommentBox)}
                 >
                   <MessageCircle size={16} />
                   <span>{post.comments}</span>
@@ -136,6 +206,33 @@ const CommunityPost = ({ post, onLike, onReaction, onSave, isSaved }: CommunityP
                   <span>Share</span>
                 </button>
               </div>
+
+              {showCommentBox && (
+                <div className="mt-3 space-y-2">
+                  <Textarea 
+                    placeholder="Write a comment..." 
+                    className="min-h-[80px] bg-background/30"
+                    value={commentText}
+                    onChange={(e) => setCommentText(e.target.value)}
+                  />
+                  <div className="flex justify-end gap-2">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => setShowCommentBox(false)}
+                    >
+                      Cancel
+                    </Button>
+                    <Button 
+                      size="sm"
+                      onClick={handleSubmitComment}
+                      disabled={!commentText.trim()}
+                    >
+                      Post
+                    </Button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>

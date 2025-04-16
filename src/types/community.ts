@@ -17,6 +17,13 @@ export interface PostReactions {
   [key: string]: number | undefined;
 }
 
+export interface CommentThread {
+  name: string;
+  username: string;
+  avatar: string;
+  text: string;
+}
+
 export interface Post {
   id: number;
   author: PostAuthor;
@@ -28,4 +35,5 @@ export interface Post {
   tags: string[];
   hasLiked: boolean;
   reactions: PostReactions;
+  commentThreads?: CommentThread[];
 }

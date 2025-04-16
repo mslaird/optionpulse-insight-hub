@@ -5,12 +5,44 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { RefreshCcw } from "lucide-react";
+import { RefreshCcw, Heart, MessageCircle, Bookmark, UserPlus, UserCheck } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { TimelinePost, mockTimelinePosts } from "@/data/timelinePosts";
+import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
+import { FollowedUser } from "@/data/followedUsers";
 
-const TimelineTab = () => {
-  const [posts, setPosts] = useState<TimelinePost[]>([]);
+interface TimelineTabProps {
+  followedUsers: FollowedUser[];
+  savedPostIds: number[];
+  onLike: (postId: number) => void;
+  onSave: (post: any) => void;
+  onFollow: (username: string) => void;
+  onComment: (postId: number, comment: string) => void;
+}
+
+interface EnhancedTimelinePost extends TimelinePost {
+  hasLiked: boolean;
+  comments: number;
+  commentThreads?: Array<{
+    name: string;
+    username: string;
+    avatar: string;
+    text: string;
+  }>;
+}
+
+const TimelineTab = ({ 
+  followedUsers, 
+  savedPostIds, 
+  onLike, 
+  onSave, 
+  onFollow,
+  onComment
+}: TimelineTabProps) => {
+  const [posts, setPosts] = useState<EnhancedTimelinePost[]>([]);
+  const [commentingPostId, setCommentingPostId] = useState<number | null>(null);
+  const [commentText, setCommentText] = useState("");
   
   // Function to sort posts based on recency and interaction score
   const sortPosts = (postsToSort: TimelinePost[]) => {
@@ -26,7 +58,9 @@ const TimelineTab = () => {
     // Calculate interaction score for each post (likes + 2*comments)
     const withScores = sortedByTime.map(post => ({
       ...post,
-      interactionScore: post.likes + (post.comments * 2)
+      interactionScore: post.likes + (post.comments * 2),
+      hasLiked: false, // Initialize hasLiked property
+      commentThreads: [] // Initialize commentThreads property
     }));
     
     // Identify the top 20% posts by interaction score
@@ -59,6 +93,8 @@ const TimelineTab = () => {
         id: index + 1,
         likes: Math.floor(Math.random() * 50) + 5,
         comments: Math.floor(Math.random() * 15) + 1,
+        hasLiked: false,
+        commentThreads: []
       }));
       
     setPosts(sortPosts(shuffled));
@@ -71,6 +107,70 @@ const TimelineTab = () => {
     } catch (error) {
       return timestamp;
     }
+  };
+
+  // Handle like button click
+  const handleLike = (postId: number) => {
+    setPosts(posts.map(post => 
+      post.id === postId 
+        ? { 
+            ...post, 
+            likes: post.hasLiked ? post.likes - 1 : post.likes + 1, 
+            hasLiked: !post.hasLiked 
+          } 
+        : post
+    ));
+    
+    onLike(postId);
+  };
+
+  // Handle comment submission
+  const handleCommentSubmit = (postId: number) => {
+    if (commentText.trim()) {
+      setPosts(posts.map(post =>
+        post.id === postId
+          ? {
+              ...post,
+              comments: post.comments + 1,
+              commentThreads: [
+                ...(post.commentThreads || []),
+                {
+                  name: "You",
+                  username: "current_user",
+                  avatar: "https://i.pravatar.cc/150?img=50",
+                  text: commentText
+                }
+              ]
+            }
+          : post
+      ));
+      
+      onComment(postId, commentText);
+      setCommentText("");
+      setCommentingPostId(null);
+    }
+  };
+
+  // Check if a user is being followed
+  const isFollowing = (username: string) => {
+    return followedUsers.some(user => user.username === username);
+  };
+
+  // Convert timeline post to savable format
+  const convertToSavablePost = (post: EnhancedTimelinePost) => {
+    return {
+      id: post.id,
+      author: post.author,
+      timestamp: formatTimestamp(post.timestamp),
+      content: post.content,
+      likes: post.likes,
+      comments: post.comments,
+      activity: `shared insights on ${post.tags.join(", ")}`,
+      tags: post.tags,
+      hasLiked: post.hasLiked,
+      reactions: { "👍": 0, "❤️": 0, "🔥": 0, "🚀": 0, "🧠": 0, "💰": 0 },
+      commentThreads: post.commentThreads || []
+    };
   };
 
   return (
@@ -99,27 +199,36 @@ const TimelineTab = () => {
                   </Avatar>
                   <div className="flex-1">
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-1">
-                      <div>
+                      <div className="flex items-center gap-2">
                         <h3 className="font-medium">{post.author.name}</h3>
-                        <div className="flex items-center space-x-1 text-sm text-muted-foreground">
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className={cn(
+                            "h-8 px-3 text-xs gap-1",
+                            isFollowing(post.author.username) 
+                              ? "bg-optionpulse-blue/20 text-optionpulse-blue border-optionpulse-blue/30" 
+                              : "bg-background/30 hover:bg-optionpulse-blue/10 hover:text-optionpulse-blue"
+                          )}
+                          onClick={() => onFollow(post.author.username)}
+                        >
+                          {isFollowing(post.author.username) ? (
+                            <>
+                              <UserCheck size={14} />
+                              <span>Following</span>
+                            </>
+                          ) : (
+                            <>
+                              <UserPlus size={14} />
+                              <span>Follow</span>
+                            </>
+                          )}
+                        </Button>
+                        <div className="text-sm text-muted-foreground">
                           <span>@{post.author.username}</span>
-                          <span>·</span>
+                          <span className="mx-1">·</span>
                           <span>{formatTimestamp(post.timestamp)}</span>
                         </div>
-                      </div>
-                      <div className="flex items-center space-x-3 text-sm">
-                        <span className="flex items-center text-optionpulse-green">
-                          <svg className="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
-                          </svg>
-                          {post.likes}
-                        </span>
-                        <span className="flex items-center text-optionpulse-blue">
-                          <svg className="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                          </svg>
-                          {post.comments}
-                        </span>
                       </div>
                     </div>
                     
@@ -133,6 +242,80 @@ const TimelineTab = () => {
                               #{tag}
                             </Badge>
                           ))}
+                        </div>
+                      )}
+
+                      {post.commentThreads && post.commentThreads.length > 0 && (
+                        <div className="mt-4 space-y-3 bg-background/20 p-3 rounded-md">
+                          <h4 className="text-sm font-medium">Comments</h4>
+                          {post.commentThreads.map((comment, index) => (
+                            <div key={index} className="flex items-start gap-2">
+                              <Avatar className="h-6 w-6">
+                                <AvatarImage src={comment.avatar} />
+                                <AvatarFallback>{comment.name.substring(0, 2)}</AvatarFallback>
+                              </Avatar>
+                              <div className="flex-1">
+                                <div className="flex items-center gap-2">
+                                  <span className="text-xs font-medium">{comment.name}</span>
+                                  <span className="text-xs text-muted-foreground">@{comment.username}</span>
+                                </div>
+                                <p className="text-sm mt-1">{comment.text}</p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      
+                      <div className="flex items-center space-x-4 mt-4">
+                        <button 
+                          className={`flex items-center gap-1 ${post.hasLiked ? 'text-optionpulse-blue' : 'text-muted-foreground'} hover:text-optionpulse-blue transition-colors`}
+                          onClick={() => handleLike(post.id)}
+                        >
+                          <Heart size={18} className={post.hasLiked ? 'fill-current' : ''} />
+                          <span>{post.likes}</span>
+                        </button>
+                        
+                        <button 
+                          className="flex items-center gap-1 text-muted-foreground hover:text-optionpulse-blue transition-colors"
+                          onClick={() => setCommentingPostId(commentingPostId === post.id ? null : post.id)}
+                        >
+                          <MessageCircle size={18} />
+                          <span>{post.comments}</span>
+                        </button>
+                        
+                        <button 
+                          className={`flex items-center gap-1 ${savedPostIds.includes(post.id) ? 'text-optionpulse-green' : 'text-muted-foreground'} hover:text-optionpulse-green transition-colors`}
+                          onClick={() => onSave(convertToSavablePost(post))}
+                        >
+                          <Bookmark size={18} className={savedPostIds.includes(post.id) ? 'fill-current' : ''} />
+                          <span>{savedPostIds.includes(post.id) ? 'Saved' : 'Save'}</span>
+                        </button>
+                      </div>
+
+                      {commentingPostId === post.id && (
+                        <div className="mt-3 space-y-2">
+                          <Textarea 
+                            placeholder="Write a comment..." 
+                            className="min-h-[80px] bg-background/30"
+                            value={commentText}
+                            onChange={(e) => setCommentText(e.target.value)}
+                          />
+                          <div className="flex justify-end gap-2">
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => setCommentingPostId(null)}
+                            >
+                              Cancel
+                            </Button>
+                            <Button 
+                              size="sm"
+                              onClick={() => handleCommentSubmit(post.id)}
+                              disabled={!commentText.trim()}
+                            >
+                              Post
+                            </Button>
+                          </div>
                         </div>
                       )}
                     </div>
