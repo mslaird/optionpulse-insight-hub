@@ -75,10 +75,12 @@ const GreeksChart = () => {
   return (
     <Card className="bg-card/30 backdrop-blur-sm border-border/50">
       <CardHeader className="pb-2">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col items-center justify-center space-y-2">
           <CardTitle className="text-lg font-medium flex items-center gap-2">
-            <AreaChart size={18} className="text-optionpulse-blue" />
-            Greeks Analysis (AAPL $180 Call)
+            <div className="flex items-center space-x-2">
+              <AreaChart size={18} className="text-optionpulse-blue" />
+              <span>Greeks Analysis (AAPL $180 Call)</span>
+            </div>
           </CardTitle>
           <Dialog>
             <DialogTrigger asChild>
@@ -224,3 +226,4 @@ const GreeksChart = () => {
 };
 
 export default GreeksChart;
+
