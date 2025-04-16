@@ -1,40 +1,30 @@
 
 import React from "react";
 import { Link } from "react-router-dom";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import { Trophy, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-export interface LeaderboardUser {
-  id: number;
-  name: string;
-  username: string;
-  avatar: string;
-  points: number;
-  rank: number;
-  badge: string;
-  completedChallenges: number;
-}
+import { LeaderboardEntry } from "@/data/challengesData";
 
 interface LeaderboardCardProps {
-  leaderboard: LeaderboardUser[];
+  leaderboard: LeaderboardEntry[];
 }
 
-const getBadgeColor = (badge: string) => {
-  switch (badge) {
-    case "Diamond":
-      return "bg-gradient-to-r from-blue-400 to-cyan-300 text-white";
-    case "Platinum":
-      return "bg-gradient-to-r from-slate-300 to-slate-400 text-white";
-    case "Gold":
-      return "bg-gradient-to-r from-yellow-400 to-amber-300 text-black";
-    default:
-      return "bg-muted";
-  }
+const getBadgeColor = (level: number) => {
+  if (level >= 10) return "bg-gradient-to-r from-blue-400 to-cyan-300 text-white";
+  if (level >= 8) return "bg-gradient-to-r from-slate-300 to-slate-400 text-white";
+  if (level >= 5) return "bg-gradient-to-r from-yellow-400 to-amber-300 text-black";
+  return "bg-muted";
+};
+
+const getBadgeLabel = (level: number) => {
+  if (level >= 10) return "Diamond";
+  if (level >= 8) return "Platinum";
+  if (level >= 5) return "Gold";
+  return "Silver";
 };
 
 const LeaderboardCard: React.FC<LeaderboardCardProps> = ({ leaderboard }) => {
@@ -51,34 +41,33 @@ const LeaderboardCard: React.FC<LeaderboardCardProps> = ({ leaderboard }) => {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {leaderboard.map((user) => (
+          {leaderboard.map((user, index) => (
             <div key={user.id} className="flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <div className="flex items-center justify-center w-8 font-bold">
-                  {user.rank === 1 ? (
+                  {index === 0 ? (
                     <Trophy size={20} className="text-yellow-500" />
-                  ) : user.rank === 2 ? (
+                  ) : index === 1 ? (
                     <Trophy size={20} className="text-gray-400" />
-                  ) : user.rank === 3 ? (
+                  ) : index === 2 ? (
                     <Trophy size={20} className="text-amber-700" />
                   ) : (
-                    <span className="text-muted-foreground">{user.rank}</span>
+                    <span className="text-muted-foreground">{index + 1}</span>
                   )}
                 </div>
                 <Avatar>
-                  <AvatarImage src={user.avatar} alt={user.name} />
                   <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
                 </Avatar>
                 <div>
                   <div className="font-medium">{user.name}</div>
-                  <div className="text-sm text-muted-foreground">@{user.username}</div>
+                  <div className="text-sm text-muted-foreground">Level {user.level}</div>
                 </div>
               </div>
               <div className="text-right">
                 <div className="font-bold text-primary">{user.points.toLocaleString()} pts</div>
                 <Link to="/achievements">
-                  <Badge className={cn("mt-1 cursor-pointer hover:opacity-80", getBadgeColor(user.badge))}>
-                    {user.badge}
+                  <Badge className={cn("mt-1 cursor-pointer hover:opacity-80", getBadgeColor(user.level))}>
+                    {getBadgeLabel(user.level)}
                   </Badge>
                 </Link>
               </div>
