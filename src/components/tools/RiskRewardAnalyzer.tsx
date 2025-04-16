@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import {
   Select,
@@ -393,18 +394,38 @@ const RiskRewardAnalyzer = () => {
             <ResponsiveContainer width="100%" height="100%">
               <LineChart
                 data={enhancedPayoffData}
-                margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                margin={{ top: 5, right: 30, left: 20, bottom: 50 }}
               >
                 <CartesianGrid strokeDasharray="3 3" stroke="#333" />
                 <XAxis 
                   dataKey="stockPrice" 
-                  label={{ value: 'Stock Price ($)', position: 'insideBottomRight', offset: -10 }} 
+                  label={{ 
+                    value: 'Stock Price ($)', 
+                    position: 'insideBottom', 
+                    offset: -20,
+                    style: { 
+                      textAnchor: 'middle', 
+                      fontSize: '0.75rem' 
+                    } 
+                  }} 
                 />
                 <YAxis 
-                  label={{ value: 'Profit/Loss ($)', angle: -90, position: 'insideLeft' }} 
+                  label={{ 
+                    value: 'Profit/Loss ($)', 
+                    angle: -90, 
+                    position: 'insideLeft',
+                    style: { 
+                      textAnchor: 'middle', 
+                      fontSize: '0.75rem' 
+                    } 
+                  }} 
                 />
                 <Tooltip content={<ChartTooltip />} />
-                <Legend />
+                <Legend 
+                  wrapperStyle={{ bottom: 0, left: 0, right: 0 }} 
+                  verticalAlign="bottom" 
+                  align="center"
+                />
                 <Line 
                   type="monotone" 
                   dataKey="profit" 
