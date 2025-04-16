@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
@@ -34,7 +35,7 @@ const TradeDistribution: React.FC<TradeDistributionProps> = ({
     if (percent < 0.15) return null;
     
     const RADIAN = Math.PI / 180;
-    const radius = outerRadius + 20; // Extend the radius to move labels outside
+    const radius = outerRadius + 25; // Increased from 20 to 25
     const x = cx + radius * Math.cos(-midAngle * RADIAN);
     const y = cy + radius * Math.sin(-midAngle * RADIAN);
 
