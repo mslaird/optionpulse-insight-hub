@@ -30,11 +30,34 @@ const TradeDistribution: React.FC<TradeDistributionProps> = ({
     : [{ ticker: 'No Data', profit: 100, absoluteValue: 100 }];
   
   // Create simple chart label renderer
-  const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }) => {
+  const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, payload }) => {
+    // For QQQ with zero value or very small values, we'll still show label
+    // Remove the percent threshold check for zero values
+    if (payload && payload.ticker === 'QQQ' && payload.profit === 0) {
+      const RADIAN = Math.PI / 180;
+      const radius = outerRadius + 25;
+      const x = cx + radius * Math.cos(-midAngle * RADIAN);
+      const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+      return (
+        <text 
+          x={x} 
+          y={y} 
+          fill="currentColor" 
+          textAnchor={x > cx ? 'start' : 'end'} 
+          dominantBaseline="middle"
+          className="text-xs font-medium"
+        >
+          {`${(percent * 100).toFixed(0)}%`}
+        </text>
+      );
+    }
+    
+    // For other items, keep the original threshold
     if (percent < 0.15) return null;
     
     const RADIAN = Math.PI / 180;
-    const radius = outerRadius + 25; // Keep the increased radius
+    const radius = outerRadius + 25;
     const x = cx + radius * Math.cos(-midAngle * RADIAN);
     const y = cy + radius * Math.sin(-midAngle * RADIAN);
 
