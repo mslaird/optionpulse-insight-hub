@@ -15,7 +15,11 @@ import { Link } from "react-router-dom";
 import SearchAutocomplete from "@/components/header/SearchAutocomplete";
 import Logo from "@/components/brand/Logo";
 
-const Header = () => {
+interface HeaderProps {
+  toggleSidebar?: () => void;
+}
+
+const Header = ({ toggleSidebar }: HeaderProps) => {
   const [profileImage, setProfileImage] = useState<string | null>(null);
   
   useEffect(() => {
@@ -36,6 +40,12 @@ const Header = () => {
     };
   }, []);
 
+  const handleToggleSidebar = () => {
+    if (toggleSidebar) {
+      toggleSidebar();
+    }
+  };
+
   return (
     <header className="fixed top-0 right-0 left-0 z-30 md:left-64 h-16 bg-optionpulse-navy border-b border-border flex items-center px-4 md:px-6">
       <div className="flex items-center w-full">
@@ -44,6 +54,7 @@ const Header = () => {
             variant="ghost" 
             size="icon" 
             className="mr-auto"
+            onClick={handleToggleSidebar}
           >
             <Menu size={20} />
           </Button>

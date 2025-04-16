@@ -10,6 +10,18 @@ interface LayoutProps {
 
 const Layout = ({ children }: LayoutProps) => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  
+  // Function to toggle sidebar that will be passed to both Sidebar and Header
+  const toggleSidebar = () => {
+    const newState = !isSidebarCollapsed;
+    setIsSidebarCollapsed(newState);
+    
+    // Dispatch the event for other components that need to know about the sidebar state
+    const event = new CustomEvent('sidebar-toggle', { 
+      detail: { collapsed: newState } 
+    });
+    window.dispatchEvent(event);
+  };
 
   // Listen for sidebar state changes
   useEffect(() => {
@@ -28,8 +40,8 @@ const Layout = ({ children }: LayoutProps) => {
 
   return (
     <div className="min-h-screen bg-optionpulse-navy text-foreground">
-      <Sidebar onToggle={(collapsed) => setIsSidebarCollapsed(collapsed)} />
-      <Header />
+      <Sidebar onToggle={toggleSidebar} />
+      <Header toggleSidebar={toggleSidebar} />
       <main className={cn(
         "pt-16 min-h-screen transition-all duration-300",
         isSidebarCollapsed ? "md:pl-16" : "md:pl-64"
