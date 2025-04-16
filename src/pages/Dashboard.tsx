@@ -1,5 +1,4 @@
-
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import MarketOverview from "@/components/dashboard/MarketOverview";
 import OptionsChainPreview from "@/components/dashboard/OptionsChainPreview";
@@ -84,8 +83,24 @@ const Dashboard = () => {
               <OptionsChainPreview />
               <div className="absolute top-4 right-4">
                 <ExplanationTooltip 
-                  title={explanations.greeks.title}
-                  content={explanations.greeks.content}
+                  title="Understanding Option Chains"
+                  content="An option chain is a comprehensive list of all available option contracts for a specific stock. It displays:
+
+1. Call and Put Options: Contracts to buy (call) or sell (put) a stock at a predetermined price.
+2. Strike Prices: The price at which the option can be exercised.
+3. Expiration Dates: When the option contract expires.
+4. Bid and Ask Prices: The buying and selling prices for each option.
+5. Volume and Open Interest: Trading activity and number of outstanding contracts.
+
+Key Columns Explained:
+- Type: Whether it's a Call or Put option
+- Strike: The predetermined stock price of the option
+- Last: Most recent trading price of the option
+- Bid/Ask: Prices you can buy or sell the option
+- Volume: Number of contracts traded
+- Open Interest: Total number of outstanding contracts
+
+Option chains help traders analyze potential strategies, assess market sentiment, and identify trading opportunities."
                 />
               </div>
             </div>
