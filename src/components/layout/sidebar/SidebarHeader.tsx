@@ -4,7 +4,7 @@ import Logo from "@/components/brand/Logo";
 
 interface SidebarHeaderProps {
   isCollapsed: boolean;
-  toggleSidebar: () => void;
+  toggleSidebar?: () => void;
 }
 
 export const SidebarHeader = ({ isCollapsed }: SidebarHeaderProps) => {

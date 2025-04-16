@@ -5,7 +5,7 @@ import { SidebarNavigation } from "./SidebarNavigation";
 
 interface DesktopSidebarProps {
   isCollapsed: boolean;
-  toggleSidebar: () => void;
+  toggleSidebar?: () => void;
 }
 
 export const DesktopSidebar = ({ 
