@@ -1,11 +1,13 @@
+
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 
 interface LogoProps {
   collapsed?: boolean;
+  className?: string;
 }
 
-const Logo = ({ collapsed = false }: LogoProps) => {
+const Logo = ({ collapsed = false, className }: LogoProps) => {
   const [animated, setAnimated] = useState(false);
   
   useEffect(() => {
@@ -18,14 +20,14 @@ const Logo = ({ collapsed = false }: LogoProps) => {
   
   if (collapsed) {
     return (
-      <div className="w-10 h-10 rounded-full bg-optionpulse-blue flex items-center justify-center text-white font-bold text-lg">
+      <div className={cn("w-10 h-10 rounded-full bg-optionpulse-blue flex items-center justify-center text-white font-bold text-lg", className)}>
         OP
       </div>
     );
   }
   
   return (
-    <div className="flex flex-col items-start">
+    <div className={cn("flex flex-col items-start", className)}>
       <div className="flex items-end relative">
         <span className="text-[20px] font-bold relative">
           <span className="text-[#00B7EB]">Option</span>
