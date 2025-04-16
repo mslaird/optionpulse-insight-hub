@@ -38,16 +38,16 @@ const SavedPostsList = ({ savedPosts, onRemove }: SavedPostsListProps) => {
           <Card key={post.id} className="bg-card/30 backdrop-blur-sm border-border/50">
             <CardContent className="pt-6">
               <div className="flex items-start gap-3">
-                <Avatar>
+                <Avatar className="flex-shrink-0">
                   <AvatarImage src={post.author.avatar} />
                   <AvatarFallback>{post.author.name.substring(0, 2)}</AvatarFallback>
                 </Avatar>
-                <div className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="font-medium">{post.author.name}</h3>
-                      <div className="flex items-center space-x-1 text-sm text-muted-foreground">
-                        <span>@{post.author.username}</span>
+                <div className="flex-1 min-w-0">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div className="min-w-0">
+                      <h3 className="font-medium truncate">{post.author.name}</h3>
+                      <div className="flex items-center flex-wrap space-x-1 text-sm text-muted-foreground">
+                        <span className="truncate">@{post.author.username}</span>
                         <span>·</span>
                         <span>{post.timestamp}</span>
                       </div>
@@ -56,7 +56,7 @@ const SavedPostsList = ({ savedPosts, onRemove }: SavedPostsListProps) => {
                       variant="ghost"
                       size="sm"
                       onClick={() => onRemove(post.id)}
-                      className="text-optionpulse-red hover:text-optionpulse-red/90 hover:bg-optionpulse-red/10"
+                      className="text-optionpulse-red hover:text-optionpulse-red/90 hover:bg-optionpulse-red/10 flex-shrink-0"
                     >
                       <BookmarkX className="h-4 w-4 mr-1" />
                       <span className="text-sm">Remove</span>
@@ -64,7 +64,7 @@ const SavedPostsList = ({ savedPosts, onRemove }: SavedPostsListProps) => {
                   </div>
                   
                   <div className="mt-3 space-y-3">
-                    <p>{post.content}</p>
+                    <p className="break-words whitespace-pre-wrap">{post.content}</p>
                     
                     {post.tags.length > 0 && (
                       <div className="flex flex-wrap gap-2">
