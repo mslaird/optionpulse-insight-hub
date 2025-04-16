@@ -1,14 +1,14 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { Palette, LayoutGrid, List } from "lucide-react";
+import { Palette, LayoutGrid, List, Brush } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 import SettingsCard from "./appearance/SettingsCard";
 import ThemeSelector from "./appearance/ThemeSelector";
 import DataDisplaySelector from "./appearance/DataDisplaySelector";
 import ChartStyleSelector from "./appearance/ChartStyleSelector";
+import ColorCustomizer from "./appearance/ColorCustomizer";
 
 const AppearanceSettings = () => {
   const { toast } = useToast();
@@ -53,6 +53,14 @@ const AppearanceSettings = () => {
         description="Choose your preferred color theme"
       >
         <ThemeSelector />
+      </SettingsCard>
+      
+      <SettingsCard 
+        icon={Brush}
+        title="Color Theme"
+        description="Personalize the application colors"
+      >
+        <ColorCustomizer />
       </SettingsCard>
       
       <SettingsCard 
