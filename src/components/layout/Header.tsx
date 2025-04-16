@@ -40,6 +40,12 @@ const Header = ({ toggleSidebar }: HeaderProps) => {
     };
   }, []);
 
+  const handleToggleSidebar = () => {
+    if (toggleSidebar) {
+      toggleSidebar();
+    }
+  };
+
   return (
     <header className="fixed top-0 right-0 left-0 z-30 md:left-64 h-16 bg-optionpulse-navy border-b border-border flex items-center px-4 md:px-6">
       <div className="flex items-center w-full">
@@ -48,7 +54,7 @@ const Header = ({ toggleSidebar }: HeaderProps) => {
             variant="ghost" 
             size="icon" 
             className="mr-2"
-            onClick={toggleSidebar}
+            onClick={handleToggleSidebar}
           >
             <Menu size={20} />
           </Button>
@@ -95,7 +101,7 @@ const Header = ({ toggleSidebar }: HeaderProps) => {
             variant="ghost" 
             size="icon" 
             className="mr-4"
-            onClick={toggleSidebar}
+            onClick={handleToggleSidebar}
           >
             <Menu size={20} />
           </Button>

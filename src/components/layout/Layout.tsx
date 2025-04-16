@@ -1,5 +1,5 @@
 
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useState } from "react";
 import { cn } from "@/lib/utils";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
@@ -14,6 +14,7 @@ const Layout = ({ children }: LayoutProps) => {
   // Create a direct toggle function that updates state and will be passed to components
   const toggleSidebar = () => {
     setIsSidebarCollapsed(prev => !prev);
+    console.log("Toggling sidebar, new state:", !isSidebarCollapsed);
   };
 
   return (
