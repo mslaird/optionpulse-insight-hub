@@ -7,6 +7,7 @@ import { useTradeActions } from "./utils/tradeActions";
 import { loadTradesFromStorage, saveTradeToStorage } from "./utils/localStorage";
 
 export const useTradeJournal = () => {
+  // All useState calls must come before any useEffect calls
   const [trades, setTrades] = useState<Trade[]>(initialTrades);
   const [filters, setFilters] = useState<TradeFilterOptions>({
     ticker: "all",
@@ -30,6 +31,9 @@ export const useTradeJournal = () => {
     notes: ''
   });
 
+  // Get trade actions - must be called before useEffect to maintain hook order
+  const { handleAddTrade, handleDeleteTrade } = useTradeActions(trades, setTrades);
+
   // Load trades from localStorage on mount
   useEffect(() => {
     const savedTrades = loadTradesFromStorage();
@@ -42,9 +46,6 @@ export const useTradeJournal = () => {
   useEffect(() => {
     saveTradeToStorage(trades);
   }, [trades]);
-
-  // Get trade actions
-  const { handleAddTrade, handleDeleteTrade } = useTradeActions(trades, setTrades);
 
   // Filter trades based on current filter settings
   const filteredTrades = trades.filter(trade => {

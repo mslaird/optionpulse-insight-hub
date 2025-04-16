@@ -2,10 +2,19 @@
 import { Trade } from "../types";
 
 export const loadTradesFromStorage = (): Trade[] | null => {
-  const savedTrades = localStorage.getItem('tradeJournal');
-  return savedTrades ? JSON.parse(savedTrades) : null;
+  try {
+    const savedTrades = localStorage.getItem('tradeJournal');
+    return savedTrades ? JSON.parse(savedTrades) : null;
+  } catch (error) {
+    console.error("Error loading trades from storage:", error);
+    return null;
+  }
 };
 
 export const saveTradeToStorage = (trades: Trade[]): void => {
-  localStorage.setItem('tradeJournal', JSON.stringify(trades));
+  try {
+    localStorage.setItem('tradeJournal', JSON.stringify(trades));
+  } catch (error) {
+    console.error("Error saving trades to storage:", error);
+  }
 };

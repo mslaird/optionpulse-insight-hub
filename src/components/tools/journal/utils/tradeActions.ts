@@ -11,13 +11,14 @@ export const useTradeActions = (trades: Trade[], setTrades: React.Dispatch<React
       id: Date.now().toString()
     };
     
-    setTrades([newTradeWithId, ...trades]);
+    setTrades(prevTrades => [newTradeWithId, ...prevTrades]);
     
     toast({
       title: "Trade Added",
       description: `${newTrade.action === 'buy' ? 'Bought' : 'Sold'} ${newTrade.ticker} ${newTrade.strategy}`,
     });
     
+    // Return default values for resetting the form
     return {
       date: new Date().toISOString().slice(0, 10),
       ticker: 'AAPL',
@@ -34,7 +35,7 @@ export const useTradeActions = (trades: Trade[], setTrades: React.Dispatch<React
   };
 
   const handleDeleteTrade = (id: string) => {
-    setTrades(trades.filter(trade => trade.id !== id));
+    setTrades(prevTrades => prevTrades.filter(trade => trade.id !== id));
     
     toast({
       title: "Trade Removed",
