@@ -53,7 +53,7 @@ const StrategyActions: React.FC<StrategyActionsProps> = ({ strategy }) => {
         className="h-8 px-2 text-xs"
         asChild
       >
-        <Link to="/tools">
+        <Link to="/tools?tab=strategy">
           <BarChart3 size={14} className="mr-1" />
           Build
         </Link>

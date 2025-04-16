@@ -23,43 +23,45 @@ export type SidebarItem = {
 
 export const useSidebarItems = () => {
   const location = useLocation();
+  const pathname = location.pathname;
+  const search = location.search;
   
   const sidebarItems: SidebarItem[] = [
     {
       path: "/",
       label: "Dashboard",
       icon: <Home size={20} />,
-      active: location.pathname === "/"
+      active: pathname === "/"
     },
     {
       path: "/options-chain",
       label: "Options Chain",
       icon: <BarChart3 size={20} />,
-      active: location.pathname === "/options-chain"
+      active: pathname === "/options-chain"
     },
     {
       path: "/tools",
       label: "Tools",
       icon: <Calculator size={20} />,
-      active: location.pathname === "/tools"
+      active: pathname === "/tools"
     },
     {
       path: "/education",
       label: "Education Hub",
       icon: <BookOpen size={20} />,
-      active: location.pathname === "/education"
+      active: pathname === "/education"
     },
     {
       path: "/community",
       label: "Community",
       icon: <Users size={20} />,
-      active: location.pathname === "/community"
+      active: pathname === "/community"
     },
     {
       path: "/challenges",
       label: "Challenges",
       icon: <Trophy size={20} />,
-      active: location.pathname === "/challenges"
+      active: pathname === "/challenges"
     }
   ];
 
@@ -68,19 +70,19 @@ export const useSidebarItems = () => {
       path: "/alerts",
       label: "Alerts",
       icon: <Bell size={20} />,
-      active: location.pathname === "/alerts"
+      active: pathname === "/alerts"
     },
     {
-      path: "/watchlist",
-      label: "Watchlist",
+      path: "/tools?tab=journal",
+      label: "Trade Journal",
       icon: <BookMarked size={20} />,
-      active: location.pathname === "/watchlist"
+      active: pathname === "/tools" && search.includes("tab=journal")
     },
     {
       path: "/settings",
       label: "Settings",
       icon: <Settings size={20} />,
-      active: location.pathname === "/settings"
+      active: pathname === "/settings"
     }
   ];
 

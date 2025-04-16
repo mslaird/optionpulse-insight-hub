@@ -1,8 +1,8 @@
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useLocation } from "react-router-dom";
 import PayoffDiagramGenerator from "@/components/tools/PayoffDiagramGenerator";
 import GreeksCalculator from "@/components/tools/GreeksCalculator";
 import RiskRewardAnalyzer from "@/components/tools/RiskRewardAnalyzer";
@@ -15,6 +15,26 @@ import { Badge } from "@/components/ui/badge";
 
 const Tools = () => {
   const [showLeaps, setShowLeaps] = useState(false);
+  const location = useLocation();
+  const [activeTab, setActiveTab] = useState("strategy-trader");
+  
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const tabParam = params.get('tab');
+    
+    if (tabParam) {
+      switch (tabParam) {
+        case 'journal':
+          setActiveTab('journal');
+          break;
+        case 'strategy':
+          setActiveTab('strategy');
+          break;
+        default:
+          break;
+      }
+    }
+  }, [location]);
   
   return (
     <Layout>
@@ -34,7 +54,7 @@ const Tools = () => {
           </p>
         </div>
 
-        <Tabs defaultValue="strategy-trader" className="w-full">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-7 mb-6">
             <TabsTrigger value="strategy-trader" className="flex items-center gap-2">
               <DollarSign size={16} />

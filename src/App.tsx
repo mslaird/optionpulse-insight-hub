@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
 import Education from "./pages/Education";
@@ -43,6 +43,8 @@ const App = () => (
             <Route path="/achievements" element={<Achievements />} />
             <Route path="/tools" element={<Tools />} />
             <Route path="/stock/:ticker" element={<StockDetail />} />
+            {/* Add redirect for journal route */}
+            <Route path="/journal" element={<Navigate to="/tools?tab=journal" />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
