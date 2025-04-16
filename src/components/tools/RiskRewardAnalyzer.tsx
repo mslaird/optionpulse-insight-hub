@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import {
   Select,
@@ -10,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine } from "recharts";
 import ChartTooltip from "@/components/tooltips/ChartTooltip";
 import ExplanationTooltip from "@/components/tooltips/ExplanationTooltip";
 
@@ -183,7 +184,35 @@ const generatePayoffData = (strategy, params) => {
     }
   }
   
-  return data;
+  // Ensure we have a break-even point by calculating it
+  const breakEvenValue = calculateBreakEven(strategy, params);
+  if (breakEvenValue) {
+    // Add a specific data point for the break-even
+    data.push({
+      stockPrice: parseFloat(breakEvenValue.toFixed(2)),
+      profit: 0,
+      breakeven: 0
+    });
+  }
+  
+  return data.sort((a, b) => a.stockPrice - b.stockPrice);
+};
+
+// Helper function to calculate break-even point
+const calculateBreakEven = (strategy, params) => {
+  if (strategy === "long-call") {
+    return params.strike + params.premium;
+  } else if (strategy === "long-put") {
+    return params.strike - params.premium;
+  } else if (strategy === "bull-call-spread") {
+    return params.strike + (params.premium - params.soldPremium);
+  } else if (strategy === "bear-put-spread") {
+    return params.strike - (params.premium - params.soldPremium);
+  } else if (strategy === "iron-condor") {
+    // For iron condor, could have two break-even points
+    return params.putStrike; // Simplified for example
+  }
+  return null;
 };
 
 const RiskRewardAnalyzer = () => {
@@ -240,6 +269,18 @@ const RiskRewardAnalyzer = () => {
     ...point,
     parentData: payoffData
   }));
+
+  // Calculate break-even for reference line
+  let breakEvenPoint = null;
+  if (selectedStrategy === "long-call") {
+    breakEvenPoint = strike + premium;
+  } else if (selectedStrategy === "long-put") {
+    breakEvenPoint = strike - premium;
+  } else if (selectedStrategy === "bull-call-spread") {
+    breakEvenPoint = strike + (premium - soldPremium);
+  } else if (selectedStrategy === "bear-put-spread") {
+    breakEvenPoint = strike - (premium - soldPremium);
+  }
 
   return (
     <div className="flex flex-col space-y-6">
@@ -425,21 +466,39 @@ const RiskRewardAnalyzer = () => {
                   verticalAlign="bottom" 
                   align="center"
                 />
+                
+                {breakEvenPoint && (
+                  <ReferenceLine 
+                    x={breakEvenPoint} 
+                    stroke="#34D399" 
+                    strokeWidth={2} 
+                    strokeDasharray="5 5" 
+                    label={{
+                      value: `Break Even: $${breakEvenPoint.toFixed(2)}`,
+                      position: 'top',
+                      fill: '#34D399',
+                      fontSize: 12
+                    }}
+                  />
+                )}
+                
                 <Line 
                   type="monotone" 
                   dataKey="profit" 
                   stroke="#1EAEDB" 
                   strokeWidth={2}
-                  dot={false}
+                  activeDot={{ r: 8 }}
                   name={`${strategyData[selectedStrategy].name} P/L`} 
                 />
                 <Line 
                   type="monotone" 
                   dataKey="breakeven" 
                   stroke="#34D399" 
+                  strokeWidth={3}
                   strokeDasharray="5 5" 
-                  dot={false} 
+                  dot={{ r: 6, strokeWidth: 3 }} 
                   name="Break Even"
+                  activeDot={{ r: 8, stroke: "#34D399", strokeWidth: 2 }}
                 />
               </LineChart>
             </ResponsiveContainer>
