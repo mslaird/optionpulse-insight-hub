@@ -9,10 +9,22 @@ interface FeedTabProps {
   posts: Post[];
   onPostSubmit: (content: string) => void;
   strategyExplanations: {
-    [key: string]: {
+    nakedCall: {
       title: string;
       content: string;
-    }
+    };
+    nakedPut: {
+      title: string;
+      content: string;
+    };
+    cashSecuredPut: {
+      title: string;
+      content: string;
+    };
+    coveredCall: {
+      title: string;
+      content: string;
+    };
   };
   strategyLessons: {
     [key: string]: string;
