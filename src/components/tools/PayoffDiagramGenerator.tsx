@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import {
   Card,
@@ -138,7 +139,7 @@ const PayoffDiagramGenerator = () => {
           <ResponsiveContainer width="100%" height="100%">
             <LineChart
               data={enhancedPayoffData}
-              margin={{ top: 5, right: 30, left: 20, bottom: 20 }}
+              margin={{ top: 5, right: 30, left: 20, bottom: 50 }} // Increased bottom margin
             >
               <CartesianGrid strokeDasharray="3 3" stroke="#333" />
               <XAxis 
@@ -146,7 +147,7 @@ const PayoffDiagramGenerator = () => {
                 label={{ 
                   value: 'Stock Price ($)', 
                   position: 'insideBottom', 
-                  offset: -10,
+                  offset: -20, // Increased offset to move label down
                   style: { 
                     textAnchor: 'middle', 
                     fontSize: '0.75rem' 
@@ -165,7 +166,11 @@ const PayoffDiagramGenerator = () => {
                 }} 
               />
               <Tooltip content={<ChartTooltip />} />
-              <Legend />
+              <Legend 
+                wrapperStyle={{ bottom: 0, left: 0, right: 0 }} // Position legend at bottom
+                verticalAlign="bottom" 
+                align="center"
+              />
               <Line 
                 type="monotone" 
                 dataKey="profit" 
@@ -217,3 +222,4 @@ const PayoffDiagramGenerator = () => {
 };
 
 export default PayoffDiagramGenerator;
+
