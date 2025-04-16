@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Bell, User, Menu, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -67,7 +66,7 @@ const Header = () => {
           <Button
             variant="ghost"
             size="icon"
-            className="md:hidden text-muted-foreground hover:text-foreground transition-colors mr-0.5"
+            className="md:hidden text-muted-foreground hover:text-foreground transition-colors mr-0"
             onClick={() => setShowMobileSearch(true)}
             aria-label="Search"
           >
@@ -132,4 +131,3 @@ const Header = () => {
 };
 
 export default Header;
-
