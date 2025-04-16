@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { BellRing, ChevronDown } from "lucide-react";
+import { BellRing, ChevronDown, Lock } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import CustomAlertsForm from "./CustomAlertsForm";
@@ -46,7 +46,11 @@ const initialAlerts: CustomAlert[] = [
   }
 ];
 
-const CustomAlerts = () => {
+interface CustomAlertsProps {
+  checkAccess: () => boolean;
+}
+
+const CustomAlerts = ({ checkAccess }: CustomAlertsProps) => {
   const [alerts, setAlerts] = useState<CustomAlert[]>(initialAlerts);
   const [isOpen, setIsOpen] = useState(true);
 
@@ -57,15 +61,25 @@ const CustomAlerts = () => {
   const handleDeleteAlert = (id: string) => {
     setAlerts((prev) => prev.filter((alert) => alert.id !== id));
   };
+  
+  const handleCustomAlertsClick = () => {
+    const hasAccess = checkAccess();
+    if (hasAccess) {
+      setIsOpen(!isOpen);
+    }
+  };
 
   return (
     <Card className="bg-card/30 backdrop-blur-sm border-border/50 mt-6 mb-8">
-      <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+      <Collapsible open={isOpen} onOpenChange={handleCustomAlertsClick}>
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
             <CardTitle className="text-lg font-medium flex items-center gap-2">
               <BellRing size={18} className="text-optionpulse-blue" />
               Custom Alerts
+              <span className="ml-2 bg-yellow-400/20 text-yellow-400 text-xs px-2 py-0.5 rounded-full font-normal">
+                Pro
+              </span>
             </CardTitle>
             <CollapsibleTrigger asChild>
               <Button variant="ghost" size="sm">

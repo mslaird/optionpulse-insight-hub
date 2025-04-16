@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -10,13 +11,26 @@ import VolatilityScanner from "@/components/tools/VolatilityScanner";
 import StrategyBuilder from "@/components/tools/StrategyBuilder";
 import TradeJournal from "@/components/tools/TradeJournal";
 import OptionStrategyTrader from "@/components/trading/OptionStrategyTrader";
-import { Calculator, LineChart, BarChart3, TrendingUp, Maximize2, BookMarked, DollarSign, Zap } from "lucide-react";
+import { Calculator, LineChart, BarChart3, TrendingUp, Maximize2, BookMarked, DollarSign, Zap, Lock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { useFeatureAccess } from "@/hooks/useFeatureAccess";
+import PaywallModal from "@/components/modals/PaywallModal";
 
 const Tools = () => {
   const [showLeaps, setShowLeaps] = useState(false);
   const location = useLocation();
   const [activeTab, setActiveTab] = useState("strategy-trader");
+  
+  const { 
+    canAccessLite,
+    canAccessPro,
+    checkAccess, 
+    showPaywallModal, 
+    requiredTier, 
+    featureName, 
+    handleStartTrial, 
+    handleClosePaywall 
+  } = useFeatureAccess();
   
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -28,13 +42,41 @@ const Tools = () => {
           setActiveTab('journal');
           break;
         case 'strategy':
-          setActiveTab('strategy');
+          // Check if user can access strategy builder
+          if (canAccessPro) {
+            setActiveTab('strategy');
+          } else {
+            checkAccess('Pro', 'Strategy Builder');
+          }
           break;
         default:
           break;
       }
     }
-  }, [location]);
+  }, [location, canAccessPro]);
+  
+  const handleTabChange = (value: string) => {
+    // Check access based on the tab
+    let canAccess = true;
+    
+    switch (value) {
+      case 'payoff':
+      case 'greeks':
+      case 'risk':
+        // These features require at least Lite subscription
+        canAccess = checkAccess('Lite', value === 'payoff' ? 'Payoff Diagram' : 
+                               value === 'greeks' ? 'Greeks Calculator' : 'Risk/Reward Analyzer');
+        break;
+      case 'strategy':
+        // Strategy builder requires Pro
+        canAccess = checkAccess('Pro', 'Strategy Builder');
+        break;
+    }
+    
+    if (canAccess) {
+      setActiveTab(value);
+    }
+  };
   
   return (
     <Layout>
@@ -54,7 +96,7 @@ const Tools = () => {
           </p>
         </div>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
           <TabsList className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-7 mb-6">
             <TabsTrigger value="strategy-trader" className="flex items-center gap-2">
               <DollarSign size={16} />
@@ -65,15 +107,18 @@ const Tools = () => {
               <LineChart size={16} />
               <span className="hidden md:inline">Payoff Diagram</span>
               <span className="md:hidden">Payoff</span>
+              {!canAccessLite && <Lock size={12} className="ml-1" />}
             </TabsTrigger>
             <TabsTrigger value="greeks" className="flex items-center gap-2">
               <Calculator size={16} />
               <span>Greeks</span>
+              {!canAccessLite && <Lock size={12} className="ml-1" />}
             </TabsTrigger>
             <TabsTrigger value="risk" className="flex items-center gap-2">
               <TrendingUp size={16} />
               <span className="hidden md:inline">Risk/Reward</span>
               <span className="md:hidden">Risk</span>
+              {!canAccessLite && <Lock size={12} className="ml-1" />}
             </TabsTrigger>
             <TabsTrigger value="volatility" className="flex items-center gap-2">
               <BarChart3 size={16} />
@@ -84,6 +129,7 @@ const Tools = () => {
               <Maximize2 size={16} />
               <span className="hidden md:inline">Strategy Builder</span>
               <span className="md:hidden">Strategy</span>
+              {!canAccessPro && <Lock size={12} className="ml-1" />}
             </TabsTrigger>
             <TabsTrigger value="journal" className="flex items-center gap-2">
               <BookMarked size={16} />
@@ -200,6 +246,35 @@ const Tools = () => {
           </TabsContent>
         </Tabs>
       </div>
+      
+      <PaywallModal
+        open={showPaywallModal}
+        onClose={handleClosePaywall}
+        onStartTrial={handleStartTrial}
+        requiredTier={requiredTier}
+        featureName={featureName}
+        features={[
+          {
+            title: "Advanced Analysis Tools",
+            tier: requiredTier,
+            description: `Access to ${featureName.toLowerCase()} and other professional trading tools`
+          },
+          {
+            title: requiredTier === 'Pro' ? "Custom Strategy Builder" : "Enhanced Analytics",
+            tier: requiredTier,
+            description: requiredTier === 'Pro' 
+              ? "Create and analyze complex multi-leg option strategies" 
+              : "Detailed Greeks analysis and risk/reward calculations"
+          },
+          {
+            title: requiredTier === 'Pro' ? "LEAPS Trading Support" : "Payoff Diagrams",
+            tier: requiredTier,
+            description: requiredTier === 'Pro'
+              ? "Advanced tools for long-term equity anticipation securities"
+              : "Visualize potential profits and losses for any option strategy"
+          }
+        ]}
+      />
     </Layout>
   );
 };

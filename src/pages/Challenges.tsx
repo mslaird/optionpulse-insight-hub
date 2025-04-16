@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
-import { Trophy, Dumbbell, BookOpen } from "lucide-react";
+import { Trophy, Dumbbell, BookOpen, Lock } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import ChallengeCard from "@/components/challenges/ChallengeCard";
@@ -12,14 +12,48 @@ import LeaderboardStats from "@/components/challenges/LeaderboardStats";
 import RewardsSection from "@/components/challenges/RewardsSection";
 import { challenges, leaderboard } from "@/data/challengesData";
 import type { Challenge } from "@/data/challengesData";
+import { useFeatureAccess } from "@/hooks/useFeatureAccess";
+import PaywallModal from "@/components/modals/PaywallModal";
 
 const Challenges = () => {
   const [filter, setFilter] = useState<"all" | Challenge["status"]>("all");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
   
+  const { 
+    canAccessLite,
+    canAccessPro,
+    checkAccess, 
+    showPaywallModal, 
+    requiredTier, 
+    featureName, 
+    handleStartTrial, 
+    handleClosePaywall 
+  } = useFeatureAccess();
+  
+  // Filter challenges based on subscription tier as well
   const filteredChallenges = challenges
-    .filter(challenge => filter === "all" || challenge.status === filter)
-    .filter(challenge => categoryFilter === "all" || challenge.category === categoryFilter);
+    .filter(challenge => {
+      // First apply the user's explicit filters
+      const statusMatch = filter === "all" || challenge.status === filter;
+      const categoryMatch = categoryFilter === "all" || challenge.category === categoryFilter;
+      
+      // Then filter based on subscription tier
+      const tierMatch = 
+        challenge.tier === "Free" || 
+        (challenge.tier === "Lite" && canAccessLite) || 
+        (challenge.tier === "Pro" && canAccessPro);
+      
+      return statusMatch && categoryMatch && tierMatch;
+    });
+  
+  const handleChallengeClick = (challenge: Challenge) => {
+    if (challenge.tier === "Free") return true;
+    if (challenge.tier === "Lite" && canAccessLite) return true;
+    if (challenge.tier === "Pro" && canAccessPro) return true;
+    
+    checkAccess(challenge.tier as "Lite" | "Pro", `${challenge.category} Challenges`);
+    return false;
+  };
   
   return (
     <Layout>
@@ -62,7 +96,34 @@ const Challenges = () => {
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {filteredChallenges.map(challenge => (
-                <ChallengeCard key={challenge.id} challenge={challenge} />
+                <div 
+                  key={challenge.id} 
+                  onClick={() => handleChallengeClick(challenge)}
+                  className={`relative ${
+                    challenge.tier !== "Free" && 
+                    ((challenge.tier === "Lite" && !canAccessLite) || 
+                    (challenge.tier === "Pro" && !canAccessPro)) 
+                      ? "cursor-pointer" 
+                      : ""
+                  }`}
+                >
+                  <ChallengeCard challenge={challenge} />
+                  
+                  {/* Overlay for locked challenges */}
+                  {challenge.tier !== "Free" && 
+                   ((challenge.tier === "Lite" && !canAccessLite) || 
+                   (challenge.tier === "Pro" && !canAccessPro)) && (
+                    <div className="absolute inset-0 bg-black/70 rounded-lg flex flex-col items-center justify-center backdrop-blur-sm">
+                      <Lock size={24} className="text-optionpulse-blue mb-2" />
+                      <p className="text-white font-medium text-center px-4">
+                        {challenge.tier} subscription required
+                      </p>
+                      <div className="bg-optionpulse-blue/20 text-optionpulse-blue text-xs px-2 py-1 rounded-full mt-2">
+                        Unlock with {challenge.tier}
+                      </div>
+                    </div>
+                  )}
+                </div>
               ))}
             </div>
             
@@ -85,6 +146,33 @@ const Challenges = () => {
           </TabsContent>
         </Tabs>
       </div>
+      
+      <PaywallModal
+        open={showPaywallModal}
+        onClose={handleClosePaywall}
+        onStartTrial={handleStartTrial}
+        requiredTier={requiredTier}
+        featureName={featureName}
+        features={[
+          {
+            title: `${requiredTier} Challenges`,
+            tier: requiredTier,
+            description: `Access to advanced ${featureName.toLowerCase()}`
+          },
+          {
+            title: requiredTier === "Pro" ? "LEAPS Trading Challenges" : "Intermediate Strategies",
+            tier: requiredTier,
+            description: requiredTier === "Pro" 
+              ? "Practice long-term options strategies and earn rewards" 
+              : "Practice spreads and multi-leg strategies with guided challenges"
+          },
+          {
+            title: "Exclusive Rewards",
+            tier: requiredTier,
+            description: "Earn badges and points only available to subscribers"
+          }
+        ]}
+      />
     </Layout>
   );
 };

@@ -10,8 +10,10 @@ import AdvancedOptionsFilter from "@/components/options/AdvancedOptionsFilter";
 import AdvancedOptionsTable from "@/components/options/AdvancedOptionsTable";
 import BasicOptionsChainTable from "@/components/options/BasicOptionsChainTable";
 import ProModal from "@/components/modals/ProModal";
+import PaywallModal from "@/components/modals/PaywallModal";
 import StockPriceDisplay from "@/components/options/StockPriceDisplay";
 import { useOptionsChainState } from "@/hooks/useOptionsChainState";
+import { useFeatureAccess } from "@/hooks/useFeatureAccess";
 
 const OptionsChain = () => {
   const {
@@ -41,6 +43,22 @@ const OptionsChain = () => {
     resetFilters
   } = useOptionsChainState();
   
+  const { 
+    canAccessPro, 
+    checkAccess, 
+    showPaywallModal, 
+    requiredTier, 
+    featureName, 
+    handleStartTrial, 
+    handleClosePaywall 
+  } = useFeatureAccess();
+  
+  const handleAdvancedView = () => {
+    if (state.isAdvancedView || checkAccess('Pro', 'Advanced Options Chain')) {
+      toggleAdvancedView();
+    }
+  };
+  
   return (
     <Layout>
       <div className="space-y-6">
@@ -56,13 +74,13 @@ const OptionsChain = () => {
             <StockSelector selectedStock={selectedStock} onSelectStock={setSelectedStock} />
             <Button 
               variant="outline" 
-              onClick={toggleAdvancedView}
+              onClick={handleAdvancedView}
               className={cn(
                 "flex items-center gap-1",
                 state.isAdvancedView && "border-optionpulse-blue text-optionpulse-blue"
               )}
             >
-              <Sparkles size={16} className={state.isPro ? "text-yellow-400" : ""} />
+              <Sparkles size={16} className={canAccessPro ? "text-yellow-400" : ""} />
               {state.isAdvancedView ? "Basic View" : "Advanced View"}
             </Button>
           </div>
@@ -102,7 +120,7 @@ const OptionsChain = () => {
             itmProbabilityRange={itmProbabilityRange}
             setItmProbabilityRange={setItmProbabilityRange}
             onReset={resetFilters}
-            isPro={state.isPro}
+            isPro={canAccessPro}
             onTogglePro={toggleAdvancedView}
           />
         )}
@@ -131,6 +149,31 @@ const OptionsChain = () => {
         open={state.showProModal} 
         onClose={handleCloseProModal} 
         onTryPro={handleTryPro} 
+      />
+      
+      <PaywallModal
+        open={showPaywallModal}
+        onClose={handleClosePaywall}
+        onStartTrial={handleStartTrial}
+        requiredTier={requiredTier}
+        featureName={featureName}
+        features={[
+          {
+            title: "Advanced Options Chain",
+            tier: "Pro",
+            description: "View complex options data with Greeks and advanced analytics"
+          },
+          {
+            title: "Multi-leg Strategy Builder",
+            tier: "Pro", 
+            description: "Create and analyze complex options strategies"
+          },
+          {
+            title: "LEAPS Trading Support",
+            tier: "Pro",
+            description: "Long-term equity anticipation securities with extended expiries"
+          }
+        ]}
       />
     </Layout>
   );

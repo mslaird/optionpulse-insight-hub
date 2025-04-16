@@ -10,12 +10,28 @@ import { useState } from "react";
 import { AIAlertsProvider } from "@/contexts/AIAlertsContext";
 import { Bell, TrendingUp } from "lucide-react";
 import CustomAlerts from "@/components/alerts/CustomAlerts";
+import { useFeatureAccess } from "@/hooks/useFeatureAccess";
+import PaywallModal from "@/components/modals/PaywallModal";
 
 export type AlertType = "volatility" | "prediction" | "all";
 
 const Alerts = () => {
   const [filterType, setFilterType] = useState<AlertType>("all");
   const [activeTab, setActiveTab] = useState<string>("traditional");
+  
+  const { 
+    checkAccess, 
+    showPaywallModal, 
+    requiredTier, 
+    featureName, 
+    handleStartTrial, 
+    handleClosePaywall 
+  } = useFeatureAccess();
+  
+  // Check if user can access custom alerts
+  const canAccessCustomAlerts = () => {
+    return checkAccess('Pro', 'Custom Alerts');
+  };
 
   return (
     <AIAlertsProvider>
@@ -28,8 +44,8 @@ const Alerts = () => {
             </p>
           </div>
 
-          {/* Custom Alerts Section - Always visible on top */}
-          <CustomAlerts />
+          {/* Custom Alerts Section - With paywall check */}
+          <CustomAlerts checkAccess={canAccessCustomAlerts} />
 
           <Tabs defaultValue="traditional" onValueChange={setActiveTab}>
             <TabsList className="grid w-full md:w-auto grid-cols-2 mb-6">
@@ -68,6 +84,31 @@ const Alerts = () => {
             </TabsContent>
           </Tabs>
         </div>
+        
+        <PaywallModal
+          open={showPaywallModal}
+          onClose={handleClosePaywall}
+          onStartTrial={handleStartTrial}
+          requiredTier={requiredTier}
+          featureName={featureName}
+          features={[
+            {
+              title: "Custom Alerts",
+              tier: "Pro",
+              description: "Create personalized alerts for any options strategy"
+            },
+            {
+              title: "Unlimited Alert Volume",
+              tier: "Pro", 
+              description: "Set as many alerts as you need with no restrictions"
+            },
+            {
+              title: "Advanced Alert Conditions",
+              tier: "Pro",
+              description: "Set complex conditions based on price, volatility, and more"
+            }
+          ]}
+        />
       </Layout>
     </AIAlertsProvider>
   );

@@ -11,20 +11,28 @@ import {
   BookMarked,
   Bell,
   Settings,
-  Calculator
+  Calculator,
+  CreditCard,
+  Sparkles
 } from "lucide-react";
+import { useAuth } from "@/utils/auth";
 
 export type SidebarItem = {
   path: string;
   label: string;
   icon: ReactNode;
   active?: boolean;
+  badge?: {
+    text: string;
+    variant: "green" | "blue" | "yellow";
+  };
 };
 
 export const useSidebarItems = () => {
   const location = useLocation();
   const pathname = location.pathname;
   const search = location.search;
+  const { user } = useAuth();
   
   const sidebarItems: SidebarItem[] = [
     {
@@ -43,7 +51,7 @@ export const useSidebarItems = () => {
       path: "/tools",
       label: "Tools",
       icon: <Calculator size={20} />,
-      active: pathname === "/tools"
+      active: pathname === "/tools" && !search.includes("tab=journal")
     },
     {
       path: "/education",
@@ -79,6 +87,16 @@ export const useSidebarItems = () => {
       active: pathname === "/tools" && search.includes("tab=journal")
     },
     {
+      path: "/pricing",
+      label: "Pricing",
+      icon: <CreditCard size={20} />,
+      active: pathname === "/pricing",
+      badge: user && user.tier !== 'Free' ? {
+        text: user.tier,
+        variant: user.tier === 'Pro' ? 'yellow' : 'blue'
+      } : undefined
+    },
+    {
       path: "/settings",
       label: "Settings",
       icon: <Settings size={20} />,
@@ -107,7 +125,28 @@ export const SidebarLink = ({ item, isCollapsed }: { item: SidebarItem, isCollap
         {item.icon}
       </div>
       {!isCollapsed && (
-        <span className="ml-3 truncate">{item.label}</span>
+        <div className="ml-3 flex items-center justify-between w-full">
+          <span className="truncate">{item.label}</span>
+          {item.badge && (
+            <span className={cn(
+              "text-xs px-1.5 py-0.5 rounded-full ml-2",
+              item.badge.variant === 'green' && "bg-optionpulse-green/20 text-optionpulse-green",
+              item.badge.variant === 'blue' && "bg-optionpulse-blue/20 text-optionpulse-blue",
+              item.badge.variant === 'yellow' && "bg-yellow-400/20 text-yellow-400 flex items-center"
+            )}>
+              {item.badge.variant === 'yellow' && <Sparkles size={10} className="mr-1" />}
+              {item.badge.text}
+            </span>
+          )}
+        </div>
+      )}
+      {isCollapsed && item.badge && (
+        <span className={cn(
+          "absolute top-0 right-0 h-2 w-2 rounded-full",
+          item.badge.variant === 'green' && "bg-optionpulse-green",
+          item.badge.variant === 'blue' && "bg-optionpulse-blue",
+          item.badge.variant === 'yellow' && "bg-yellow-400"
+        )} />
       )}
     </Link>
   );
