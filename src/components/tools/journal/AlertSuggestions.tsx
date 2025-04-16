@@ -37,7 +37,10 @@ const AlertSuggestions: React.FC<AlertSuggestionsProps> = ({ onCreateTradeFromAl
               <CardContent className="p-4">
                 <div className="flex justify-between items-start mb-2">
                   <div className="font-medium">{alert.symbol} ${alert.strikePrice} {alert.type}</div>
-                  <Badge variant="outline" className="bg-optionpulse-blue text-white">
+                  <Badge 
+                    variant="outline" 
+                    className="bg-optionpulse-blue text-white flex items-center justify-center h-6 px-2"
+                  >
                     {Math.round(alert.itmProbability * 100)}% ITM
                   </Badge>
                 </div>
