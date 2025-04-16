@@ -13,6 +13,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Link } from "react-router-dom";
 import SearchAutocomplete from "@/components/header/SearchAutocomplete";
+import Logo from "@/components/brand/Logo";
 
 const Header = () => {
   const [profileImage, setProfileImage] = useState<string | null>(null);
@@ -39,8 +40,12 @@ const Header = () => {
 
   return (
     <header className="fixed top-0 right-0 left-0 z-30 md:left-64 h-16 bg-optionpulse-navy border-b border-border flex items-center px-4 md:px-6">
-      <div className="md:hidden w-8"></div>
-      <div className="flex-1 flex items-center justify-between">
+      <div className="flex items-center w-full">
+        {/* Logo for mobile view */}
+        <div className="md:hidden mr-auto">
+          <Logo />
+        </div>
+        
         <div className="relative max-w-md w-full hidden md:block">
           <SearchAutocomplete />
         </div>
