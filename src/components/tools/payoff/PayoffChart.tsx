@@ -104,10 +104,11 @@ const PayoffChart: React.FC<PayoffChartProps> = ({
               type="monotone" 
               dataKey="breakeven" 
               stroke="#34D399" 
-              strokeDasharray="5 5" 
               strokeWidth={3}
-              dot={false} 
+              strokeDasharray="5 5" 
+              dot={{ r: 6, strokeWidth: 3 }} 
               name="Break Even"
+              activeDot={{ r: 8, stroke: "#34D399", strokeWidth: 2 }}
             />
           </LineChart>
         </ResponsiveContainer>

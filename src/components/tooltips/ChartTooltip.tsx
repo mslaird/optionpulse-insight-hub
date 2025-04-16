@@ -45,29 +45,51 @@ const ChartTooltip = ({
 
     // Regular tooltip handling
     const stockPrice = labelFormatter ? labelFormatter(label) : `Stock Price: $${label}`;
-    const value = payload[0].value;
-    const lineColor = payload[0].color; // Get the color of the current line
     
-    let percentageDisplay = null;
-    
-    if (showPercentage && payload[0].payload.parentData) {
-      const maxValue = Math.max(...payload[0].payload.parentData.map((d: any) => Math.abs(d[payload[0].dataKey])));
-      if (maxValue > 0) {
-        const percentage = ((Math.abs(value) / maxValue) * 100).toFixed(2);
-        percentageDisplay = ` (${percentage}%)`;
-      }
-    }
+    // Check if the data point is at the break even
+    const isBreakEven = payload.some(p => p.dataKey === 'breakeven' && p.value !== null);
     
     return (
       <div className="bg-background border border-border/50 rounded-lg p-2 text-sm shadow-lg">
         <p className="font-medium">{stockPrice}</p>
-        <p 
-          className="text-primary" 
-          style={{ color: lineColor }} // Use the line's original color for the tooltip text
-        >
-          {valueLabel}: {valuePrefix}{value.toFixed(2)}{valueSuffix}
-          {percentageDisplay}
-        </p>
+        {payload.map((entry, index) => {
+          if (entry.dataKey === 'breakeven' && entry.value !== null) {
+            return (
+              <p 
+                key={`break-even-${index}`} 
+                className="text-primary font-bold" 
+                style={{ color: '#34D399' }} 
+              >
+                Break Even Point
+              </p>
+            );
+          } else if (entry.dataKey === 'profit') {
+            let percentageDisplay = null;
+            const value = entry.value;
+            const lineColor = entry.color; // Get the color of the current line
+            
+            if (showPercentage && entry.payload.parentData) {
+              const maxValue = Math.max(...entry.payload.parentData.map((d: any) => Math.abs(d[entry.dataKey])));
+              if (maxValue > 0) {
+                const percentage = ((Math.abs(value) / maxValue) * 100).toFixed(2);
+                percentageDisplay = ` (${percentage}%)`;
+              }
+            }
+            
+            return (
+              <p 
+                key={`profit-${index}`} 
+                className="text-primary" 
+                style={{ color: isBreakEven ? '#34D399' : lineColor }} 
+              >
+                {valueLabel}: {valuePrefix}{value.toFixed(2)}{valueSuffix}
+                {percentageDisplay}
+                {isBreakEven && " (Break Even)"}
+              </p>
+            );
+          }
+          return null;
+        })}
       </div>
     );
   }

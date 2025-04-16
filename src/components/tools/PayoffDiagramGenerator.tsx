@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import PayoffControls from "./payoff/PayoffControls";
 import PayoffChart from "./payoff/PayoffChart";
 import PayoffStats from "./payoff/PayoffStats";
@@ -10,10 +10,20 @@ const PayoffDiagramGenerator = () => {
   const [strike, setStrike] = useState(250);
   const [premium, setPremium] = useState(5);
   const [strategy, setStrategy] = useState("call");
-  const [payoffData, setPayoffData] = useState(generatePayoffData(250, 5, "call"));
+  const [payoffData, setPayoffData] = useState(() => generatePayoffData(250, 5, "call"));
+
+  // Regenerate data when component mounts to ensure fresh data
+  useEffect(() => {
+    handleGeneratePayoff();
+  }, []);
 
   const handleGeneratePayoff = () => {
-    setPayoffData(generatePayoffData(strike, premium, strategy));
+    const freshData = generatePayoffData(strike, premium, strategy);
+    setPayoffData(freshData);
+    
+    // For debugging purposes
+    console.log("Generated payoff data:", freshData);
+    console.log("Break-even point should be visible at:", strategy === "call" ? strike + premium : strike - premium);
   };
 
   const enhancedPayoffData = enhancePayoffData(payoffData);
