@@ -369,18 +369,21 @@ const SimulatedTrading = () => {
     return mockLeapsAlerts.find(alert => alert.symbol === selectedTicker && alert.itmProbability >= 65);
   };
   const recommendedAlert = getRecommendedLeapsAlert();
-  return <Card className="bg-card/30 backdrop-blur-sm border-border/50">
+  return (
+    <Card className="bg-card/30 backdrop-blur-sm border-border/50">
       <CardHeader className="pb-2">
         <CardTitle className="text-lg font-medium flex items-center gap-2">
           <DollarSign size={18} className="text-optionpulse-blue" />
           Simulated Trading
-          {expiryType === "leaps" && <Badge className="ml-2 bg-emerald-500/20 text-emerald-400 border-emerald-500/40">
+          {expiryType === "leaps" && (
+            <Badge className="ml-2 bg-emerald-500/20 text-emerald-400 border-emerald-500/40">
               LEAPS
-            </Badge>}
+            </Badge>
+          )}
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
+        <div className="flex flex-col gap-6">
           <div className="flex items-center justify-between mb-1">
             <div className="flex items-center">
               <span className="text-sm text-muted-foreground mr-2">Account Value:</span>
@@ -416,7 +419,8 @@ const SimulatedTrading = () => {
             </div>
           </div>
           
-          {expiryType === "leaps" && recommendedAlert && <div className="mb-4 p-3 rounded-lg border border-emerald-500/30 bg-emerald-500/10">
+          {expiryType === "leaps" && recommendedAlert && (
+            <div className="mb-4 p-3 rounded-lg border border-emerald-500/30 bg-emerald-500/10">
               <div className="flex items-start">
                 <Zap size={18} className="mr-2 text-emerald-400 mt-0.5 flex-shrink-0" />
                 <div>
@@ -425,19 +429,24 @@ const SimulatedTrading = () => {
                     {recommendedAlert.symbol} ${recommendedAlert.strikePrice} {recommendedAlert.type},&nbsp;
                     <span className="text-emerald-400">{recommendedAlert.itmProbability}% ITM</span> by {recommendedAlert.expiryDate}
                   </p>
-                  <Button variant="link" className="h-auto p-0 text-xs text-emerald-400" onClick={() => {
-                setSelectedTicker(recommendedAlert.symbol);
-                setOptionType(recommendedAlert.type);
-                setStrikePrice(recommendedAlert.strikePrice.toString());
-                // Find closest expiry date
-                const closestExpiry = leapsExpiryDates.find(exp => exp.label.includes(recommendedAlert.expiryDate.split('/')[2]))?.value || "Jan 2026";
-                setLeapsExpiry(closestExpiry);
-              }}>
+                  <Button
+                    variant="link"
+                    className="h-auto p-0 text-xs text-emerald-400"
+                    onClick={() => {
+                      setSelectedTicker(recommendedAlert.symbol);
+                      setOptionType(recommendedAlert.type);
+                      setStrikePrice(recommendedAlert.strikePrice.toString());
+                      // Find closest expiry date
+                      const closestExpiry = leapsExpiryDates.find(exp => exp.label.includes(recommendedAlert.expiryDate.split('/')[2]))?.value || "Jan 2026";
+                      setLeapsExpiry(closestExpiry);
+                    }}
+                  >
                     Test this alert
                   </Button>
                 </div>
               </div>
-            </div>}
+            </div>
+          )}
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
@@ -449,9 +458,18 @@ const SimulatedTrading = () => {
                   <SelectValue placeholder="Select Ticker" />
                 </SelectTrigger>
                 <SelectContent>
-                  {stockOptions.filter(stock => expiryType !== "leaps" || Object.keys(mockOptionsData).includes(stock.ticker) && mockOptionsData[stock.ticker]?.leaps?.length > 0).map(stock => <SelectItem key={stock.id} value={stock.ticker}>
+                  {stockOptions
+                    .filter(
+                      stock =>
+                        expiryType !== "leaps" ||
+                        (Object.keys(mockOptionsData).includes(stock.ticker) &&
+                          mockOptionsData[stock.ticker]?.leaps?.length > 0)
+                    )
+                    .map(stock => (
+                      <SelectItem key={stock.id} value={stock.ticker}>
                         {stock.ticker} - {stock.name}
-                      </SelectItem>)}
+                      </SelectItem>
+                    ))}
                 </SelectContent>
               </Select>
             </div>
@@ -465,15 +483,18 @@ const SimulatedTrading = () => {
                   <SelectValue placeholder="Select Option Type" />
                 </SelectTrigger>
                 <SelectContent>
-                  {optionTypes.map(type => <SelectItem key={type.value} value={type.value}>
+                  {optionTypes.map(type => (
+                    <SelectItem key={type.value} value={type.value}>
                       {type.label}
-                    </SelectItem>)}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
           </div>
           
-          {expiryType === "leaps" && <div className="space-y-2">
+          {expiryType === "leaps" && (
+            <div className="space-y-2">
               <Label htmlFor="expiry" className="text-sm text-muted-foreground">
                 LEAPS Expiration
               </Label>
@@ -482,43 +503,70 @@ const SimulatedTrading = () => {
                   <SelectValue placeholder="Select Expiration" />
                 </SelectTrigger>
                 <SelectContent>
-                  {leapsExpiryDates.filter(date => {
-                // Only show expiry dates that have options for this ticker
-                const hasOptions = mockOptionsData[selectedTicker]?.leaps?.some(option => option.expiry === date.value);
-                return hasOptions;
-              }).map(date => <SelectItem key={date.value} value={date.value}>
+                  {leapsExpiryDates
+                    .filter(date => {
+                      // Only show expiry dates that have options for this ticker
+                      const hasOptions = mockOptionsData[selectedTicker]?.leaps?.some(
+                        option => option.expiry === date.value
+                      );
+                      return hasOptions;
+                    })
+                    .map(date => (
+                      <SelectItem key={date.value} value={date.value}>
                         {date.label}
-                      </SelectItem>)}
+                      </SelectItem>
+                    ))}
                 </SelectContent>
               </Select>
-            </div>}
+            </div>
+          )}
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="strike" className="text-sm text-muted-foreground">
                 Strike Price ($)
               </Label>
-              {expiryType === "leaps" ? <Select value={strikePrice} onValueChange={value => setStrikePrice(value)}>
+              {expiryType === "leaps" ? (
+                <Select value={strikePrice} onValueChange={value => setStrikePrice(value)}>
                   <SelectTrigger id="strike" className="w-full bg-background/50">
                     <SelectValue placeholder="Select Strike" />
                   </SelectTrigger>
                   <SelectContent>
-                    {getAvailableStrikes().map(strike => <SelectItem key={strike} value={strike.toString()}>
+                    {getAvailableStrikes().map(strike => (
+                      <SelectItem key={strike} value={strike.toString()}>
                         ${strike}
-                      </SelectItem>)}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
-                </Select> : <Input id="strike" type="number" value={strikePrice} onChange={e => setStrikePrice(e.target.value)} className="bg-background/50" />}
+                </Select>
+              ) : (
+                <Input
+                  id="strike"
+                  type="number"
+                  value={strikePrice}
+                  onChange={e => setStrikePrice(e.target.value)}
+                  className="bg-background/50"
+                />
+              )}
             </div>
             
             <div className="space-y-2">
               <Label htmlFor="quantity" className="text-sm text-muted-foreground">
                 Quantity (Contracts)
               </Label>
-              <Input id="quantity" type="number" min="1" value={quantity} onChange={e => setQuantity(e.target.value)} className="bg-background/50" />
+              <Input
+                id="quantity"
+                type="number"
+                min="1"
+                value={quantity}
+                onChange={e => setQuantity(e.target.value)}
+                className="bg-background/50"
+              />
             </div>
           </div>
           
-          {expiryType === "leaps" && selectedLeapsOption && <div className="mt-2 p-3 rounded-lg bg-optionpulse-navy/50 border border-optionpulse-blue/20">
+          {expiryType === "leaps" && selectedLeapsOption && (
+            <div className="mt-2 p-3 rounded-lg bg-optionpulse-navy/50 border border-optionpulse-blue/20">
               <h4 className="text-sm font-medium mb-2">LEAPS Option Details</h4>
               <div className="grid grid-cols-2 gap-x-6 gap-y-1">
                 <div className="flex justify-between">
@@ -541,29 +589,50 @@ const SimulatedTrading = () => {
               <div className="mt-2 text-xs text-muted-foreground">
                 <span className="text-optionpulse-blue">Tip:</span> LEAPS provide leverage for long-term market moves with lower capital requirements.
               </div>
-            </div>}
+            </div>
+          )}
           
           <div className="pt-2">
-            <Button onClick={handleSimulateTrade} disabled={isSimulating} className="w-full bg-optionpulse-blue hover:bg-optionpulse-blue/80 text-white transition-colors">
+            <Button
+              onClick={handleSimulateTrade}
+              disabled={isSimulating}
+              className="w-full bg-optionpulse-blue hover:bg-optionpulse-blue/80 text-white transition-colors"
+            >
               <Wallet size={18} className="mr-2" />
               {isSimulating ? "Processing..." : "Simulate Trade"}
             </Button>
           </div>
           
-          {showTradeSummary && <div className={cn("mt-4 p-4 rounded-lg border bg-black/30 transition-all duration-300 animate-in fade-in", expiryType === "leaps" ? "border-emerald-500/30" : "border-optionpulse-blue/30")}>
-              <h3 className={cn("text-sm font-semibold mb-2", expiryType === "leaps" ? "text-emerald-400" : "text-optionpulse-blue")}>Trade Summary</h3>
+          {showTradeSummary && (
+            <div
+              className={cn(
+                "mt-4 p-4 rounded-lg border bg-black/30 transition-all duration-300 animate-in fade-in",
+                expiryType === "leaps" ? "border-emerald-500/30" : "border-optionpulse-blue/30"
+              )}
+            >
+              <h3
+                className={cn(
+                  "text-sm font-semibold mb-2",
+                  expiryType === "leaps" ? "text-emerald-400" : "text-optionpulse-blue"
+                )}
+              >
+                Trade Summary
+              </h3>
               <div className="space-y-1 text-sm">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Instrument:</span>
                   <span className="font-medium">
-                    {selectedTicker} ${strikePrice} {optionType} 
+                    {selectedTicker} ${strikePrice} {optionType}
                     {expiryType === "leaps" && ` (${leapsExpiry})`}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Premium:</span>
                   <span className="font-medium">
-                    ${expiryType === "leaps" && selectedLeapsOption ? selectedLeapsOption.bid : mockOptionsData[selectedTicker]?.standard?.bid || 0} per share
+                    $
+                    {expiryType === "leaps" && selectedLeapsOption
+                      ? selectedLeapsOption.bid
+                      : mockOptionsData[selectedTicker]?.standard?.bid || 0} per share
                   </span>
                 </div>
                 <div className="flex justify-between">
@@ -573,17 +642,28 @@ const SimulatedTrading = () => {
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Greeks:</span>
                   <span className="font-medium">
-                    Δ: {estimatedPnL.greeks.delta.toFixed(2)}, 
-                    θ: {estimatedPnL.greeks.theta.toFixed(3)}
+                    Δ: {estimatedPnL.greeks.delta.toFixed(2)}, θ: {estimatedPnL.greeks.theta.toFixed(3)}
                   </span>
                 </div>
                 <div className="flex justify-between pt-2 border-t border-muted/20">
                   <span className="text-muted-foreground">Total Cost:</span>
-                  <span className={cn("font-semibold", expiryType === "leaps" ? "text-emerald-400" : "text-optionpulse-blue")}>${calculateTotalCost().toLocaleString()}</span>
+                  <span
+                    className={cn(
+                      "font-semibold",
+                      expiryType === "leaps" ? "text-emerald-400" : "text-optionpulse-blue"
+                    )}
+                  >
+                    ${calculateTotalCost().toLocaleString()}
+                  </span>
                 </div>
                 <div className="flex justify-between pt-2 border-t border-muted/20">
                   <span className="text-muted-foreground">Est. P&L:</span>
-                  <span className={cn("font-semibold", estimatedPnL.value >= 0 ? "text-green-400" : "text-red-400")}>
+                  <span
+                    className={cn(
+                      "font-semibold",
+                      estimatedPnL.value >= 0 ? "text-green-400" : "text-red-400"
+                    )}
+                  >
                     ${estimatedPnL.value.toFixed(2)} ({estimatedPnL.percent.toFixed(1)}%)
                   </span>
                 </div>
@@ -599,18 +679,29 @@ const SimulatedTrading = () => {
                   </Link>
                 </div>
               </div>
-            </div>}
+            </div>
+          )}
           
-          {tradeHistory.length > 0 && <div className="mt-2">
+          {tradeHistory.length > 0 && (
+            <div className="mt-2">
               <h3 className="text-sm font-medium mb-2">Recent Trades</h3>
               <div className="space-y-2 max-h-[180px] overflow-y-auto pr-1">
-                {tradeHistory.slice(0, 3).map(trade => <div key={trade.id} className={cn("p-2 rounded-lg border text-xs", trade.isLeaps ? "border-emerald-500/30 bg-emerald-500/5" : "border-optionpulse-blue/30 bg-optionpulse-blue/5")}>
+                {tradeHistory.slice(0, 3).map(trade => (
+                  <div
+                    key={trade.id}
+                    className={cn(
+                      "p-2 rounded-lg border text-xs",
+                      trade.isLeaps ? "border-emerald-500/30 bg-emerald-500/5" : "border-optionpulse-blue/30 bg-optionpulse-blue/5"
+                    )}
+                  >
                     <div className="flex justify-between items-center">
                       <div className="flex items-center">
                         <span className="font-medium">{trade.ticker} ${trade.strike} {trade.type}</span>
-                        {trade.isLeaps && <Badge className="ml-2 h-4 text-[10px] bg-emerald-500/20 text-emerald-400 border-emerald-500/40">
+                        {trade.isLeaps && (
+                          <Badge className="ml-2 h-4 text-[10px] bg-emerald-500/20 text-emerald-400 border-emerald-500/40">
                             LEAPS
-                          </Badge>}
+                          </Badge>
+                        )}
                       </div>
                       <span className="text-muted-foreground">{trade.timestamp}</span>
                     </div>
@@ -618,11 +709,14 @@ const SimulatedTrading = () => {
                       <span>Qty: {trade.quantity}, Exp: {trade.expiry}</span>
                       <span>${trade.cost.toLocaleString()}</span>
                     </div>
-                  </div>)}
+                  </div>
+                ))}
               </div>
-            </div>}
+            </div>
+          )}
         </div>
       </CardContent>
-    </Card>;
+    </Card>
+  );
 };
 export default SimulatedTrading;
