@@ -2,18 +2,22 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { RefreshCw, FilterX } from 'lucide-react';
+import { RefreshCw, FilterX, Zap } from 'lucide-react';
 import { useAIAlerts } from '@/contexts/AIAlertsContext';
 import { getUniqueExpiryDates, getUniqueSymbols } from '@/data/mockAlertData';
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 const AIAlertsFilter = () => {
   const { 
     symbolFilter, 
     expiryFilter, 
     probabilityFilter,
+    showLeapsOnly,
     setSymbolFilter,
     setExpiryFilter,
     setProbabilityFilter,
+    setShowLeapsOnly,
     refreshAlerts
   } = useAIAlerts();
   
@@ -24,10 +28,11 @@ const AIAlertsFilter = () => {
     setSymbolFilter('all');
     setExpiryFilter('all');
     setProbabilityFilter(0);
+    setShowLeapsOnly(false);
   };
   
   return (
-    <div className="bg-card/30 backdrop-blur-sm rounded-lg border border-border/50 p-4 mb-6">
+    <div className="bg-optionpulse-navy rounded-lg border border-optionpulse-blue/20 p-4 mb-6">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-medium">Filter AI Predictions</h3>
         <Button
@@ -96,7 +101,20 @@ const AIAlertsFilter = () => {
           </Select>
         </div>
         
-        <div className="flex items-end">
+        <div className="flex flex-col justify-between">
+          <div className="flex items-center space-x-2 mb-2">
+            <Switch 
+              id="leaps-filter" 
+              checked={showLeapsOnly}
+              onCheckedChange={setShowLeapsOnly}
+              className="data-[state=checked]:bg-emerald-500"
+            />
+            <Label htmlFor="leaps-filter" className="flex items-center gap-1 cursor-pointer">
+              <Zap size={16} className="text-emerald-400" />
+              LEAPS Only
+            </Label>
+          </div>
+          
           <Button 
             className="w-full bg-optionpulse-blue hover:bg-optionpulse-blue-dark" 
             onClick={refreshAlerts}

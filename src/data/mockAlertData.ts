@@ -14,8 +14,10 @@ export interface AIAlert {
   impliedVolatility: number;
   timestamp: string;
   isNew?: boolean;
+  isLeaps?: boolean;
 }
 
+// Original AI alerts
 export const mockAIAlerts: AIAlert[] = [
   {
     id: '1',
@@ -154,18 +156,132 @@ export const mockAIAlerts: AIAlert[] = [
   }
 ];
 
+// LEAPS alerts (long-term options)
+export const mockLeapsAlerts: AIAlert[] = [
+  {
+    id: 'leaps-1',
+    symbol: 'AAPL',
+    type: 'call',
+    strikePrice: 280,
+    currentPrice: 245.32,
+    expiryDate: '1/15/2026',
+    itmProbability: 75,
+    sentiment: {
+      direction: 'bullish',
+      percentage: 82
+    },
+    impliedVolatility: 18.7,
+    timestamp: '10m ago',
+    isLeaps: true
+  },
+  {
+    id: 'leaps-2',
+    symbol: 'SPY',
+    type: 'call',
+    strikePrice: 600,
+    currentPrice: 435.64,
+    expiryDate: '1/21/2027',
+    itmProbability: 70,
+    sentiment: {
+      direction: 'bullish',
+      percentage: 80
+    },
+    impliedVolatility: 22.5,
+    timestamp: '15m ago',
+    isLeaps: true
+  },
+  {
+    id: 'leaps-3',
+    symbol: 'QQQ',
+    type: 'call',
+    strikePrice: 500,
+    currentPrice: 358.21,
+    expiryDate: '6/18/2026',
+    itmProbability: 65,
+    sentiment: {
+      direction: 'bullish',
+      percentage: 75
+    },
+    impliedVolatility: 24.3,
+    timestamp: '20m ago',
+    isLeaps: true
+  },
+  {
+    id: 'leaps-4',
+    symbol: 'AAPL',
+    type: 'put',
+    strikePrice: 200,
+    currentPrice: 245.32,
+    expiryDate: '1/15/2026',
+    itmProbability: 40,
+    sentiment: {
+      direction: 'bearish',
+      percentage: 65
+    },
+    impliedVolatility: 20.2,
+    timestamp: '25m ago',
+    isLeaps: true
+  },
+  {
+    id: 'leaps-5',
+    symbol: 'SPY',
+    type: 'put',
+    strikePrice: 400,
+    currentPrice: 435.64,
+    expiryDate: '1/21/2027',
+    itmProbability: 35,
+    sentiment: {
+      direction: 'bearish',
+      percentage: 60
+    },
+    impliedVolatility: 15.8,
+    timestamp: '30m ago',
+    isLeaps: true
+  },
+  {
+    id: 'leaps-6',
+    symbol: 'QQQ',
+    type: 'put',
+    strikePrice: 320,
+    currentPrice: 358.21,
+    expiryDate: '6/18/2026',
+    itmProbability: 45,
+    sentiment: {
+      direction: 'bearish',
+      percentage: 68
+    },
+    impliedVolatility: 17.5,
+    timestamp: '35m ago',
+    isLeaps: true
+  }
+];
+
+// Combine regular alerts with LEAPS alerts
+const combinedAlerts = [...mockAIAlerts, ...mockLeapsAlerts];
+
 // Get unique expiry dates for filters
 export const getUniqueExpiryDates = (): string[] => {
   const uniqueDates = new Set<string>();
-  mockAIAlerts.forEach(alert => uniqueDates.add(alert.expiryDate));
+  combinedAlerts.forEach(alert => uniqueDates.add(alert.expiryDate));
   return Array.from(uniqueDates).sort();
 };
 
 // Get unique symbols for filters
 export const getUniqueSymbols = (): string[] => {
   const uniqueSymbols = new Set<string>();
-  mockAIAlerts.forEach(alert => uniqueSymbols.add(alert.symbol));
+  combinedAlerts.forEach(alert => uniqueSymbols.add(alert.symbol));
   return Array.from(uniqueSymbols).sort();
+};
+
+// Helper function to check if an expiry date is LEAPS (>1 year out)
+export const isLeapsExpiry = (expiryDate: string): boolean => {
+  const [month, day, year] = expiryDate.split('/').map(Number);
+  const expiryDateObj = new Date(year, month - 1, day);
+  const currentDate = new Date();
+  const oneYearFromNow = new Date();
+  oneYearFromNow.setFullYear(currentDate.getFullYear() + 1);
+  
+  return expiryDateObj > oneYearFromNow;
 };
 
 // Generate random new alerts (to simulate refresh)

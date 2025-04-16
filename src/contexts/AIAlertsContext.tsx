@@ -1,17 +1,20 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { AIAlert, mockAIAlerts, generateNewAlerts } from '@/data/mockAlertData';
+import { AIAlert, mockAIAlerts, mockLeapsAlerts, generateNewAlerts, isLeapsExpiry } from '@/data/mockAlertData';
 
 interface AIAlertsContextType {
   alerts: AIAlert[];
   symbolFilter: string;
   expiryFilter: string;
   probabilityFilter: number;
+  showLeapsOnly: boolean;
   setSymbolFilter: (symbol: string) => void;
   setExpiryFilter: (expiry: string) => void;
   setProbabilityFilter: (probability: number) => void;
+  setShowLeapsOnly: (show: boolean) => void;
   refreshAlerts: () => void;
   filteredAlerts: AIAlert[];
+  dashboardLeapsAlerts: AIAlert[];
 }
 
 const AIAlertsContext = createContext<AIAlertsContextType | undefined>(undefined);
@@ -29,24 +32,32 @@ interface AIAlertsProviderProps {
 }
 
 export const AIAlertsProvider = ({ children }: AIAlertsProviderProps) => {
-  const [alerts, setAlerts] = useState<AIAlert[]>(mockAIAlerts);
+  const [alerts, setAlerts] = useState<AIAlert[]>([...mockAIAlerts, ...mockLeapsAlerts]);
   const [symbolFilter, setSymbolFilter] = useState<string>('all');
   const [expiryFilter, setExpiryFilter] = useState<string>('all');
   const [probabilityFilter, setProbabilityFilter] = useState<number>(0);
+  const [showLeapsOnly, setShowLeapsOnly] = useState<boolean>(false);
 
   // Filter alerts based on user selections
   const filteredAlerts = alerts.filter(alert => {
     const matchesSymbol = symbolFilter === 'all' || alert.symbol === symbolFilter;
     const matchesExpiry = expiryFilter === 'all' || alert.expiryDate === expiryFilter;
     const matchesProbability = alert.itmProbability >= probabilityFilter;
+    const matchesLeaps = showLeapsOnly ? alert.isLeaps === true : true;
     
-    return matchesSymbol && matchesExpiry && matchesProbability;
+    return matchesSymbol && matchesExpiry && matchesProbability && matchesLeaps;
   });
+
+  // Get only LEAPS alerts for the dashboard (limit to 2)
+  const dashboardLeapsAlerts = alerts
+    .filter(alert => alert.isLeaps === true)
+    .sort((a, b) => b.itmProbability - a.itmProbability)
+    .slice(0, 2);
 
   // Simulate refreshing data
   const refreshAlerts = () => {
     const newAlerts = generateNewAlerts();
-    // Add new alerts to the beginning and limit total to 15
+    // Add new alerts to the beginning and limit total to avoid too many
     setAlerts(prevAlerts => {
       const combinedAlerts = [...newAlerts, ...prevAlerts];
       // Remove the 'isNew' flag from previous alerts
@@ -56,7 +67,7 @@ export const AIAlertsProvider = ({ children }: AIAlertsProviderProps) => {
         }
         return alert;
       });
-      return updatedAlerts.slice(0, 15);
+      return updatedAlerts.slice(0, 20); // Increased to accommodate LEAPS
     });
   };
 
@@ -78,11 +89,14 @@ export const AIAlertsProvider = ({ children }: AIAlertsProviderProps) => {
         symbolFilter,
         expiryFilter,
         probabilityFilter,
+        showLeapsOnly,
         setSymbolFilter,
         setExpiryFilter,
         setProbabilityFilter,
+        setShowLeapsOnly,
         refreshAlerts,
-        filteredAlerts
+        filteredAlerts,
+        dashboardLeapsAlerts
       }}
     >
       {children}

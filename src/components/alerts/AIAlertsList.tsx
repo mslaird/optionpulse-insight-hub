@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { useAIAlerts } from '@/contexts/AIAlertsContext';
-import { TrendingUp, TrendingDown, AlertCircle } from 'lucide-react';
+import { TrendingUp, TrendingDown, AlertCircle, Zap } from 'lucide-react';
 import { Separator } from "@/components/ui/separator";
 import { cn } from '@/lib/utils';
 
@@ -27,21 +27,30 @@ const AIAlertsList = () => {
           <div 
             className={cn(
               "p-4 rounded-lg border flex items-start gap-4",
-              "bg-optionpulse-navy border-optionpulse-blue/30 transition-all duration-300",
-              alert.isNew && "bg-optionpulse-blue/10 animate-pulse-subtle"
+              alert.isLeaps 
+                ? "bg-optionpulse-navy border-emerald-500/30 transition-all duration-300" 
+                : "bg-optionpulse-navy border-optionpulse-blue/30 transition-all duration-300",
+              alert.isNew && "animate-pulse-subtle",
+              alert.isNew && (alert.isLeaps ? "bg-emerald-500/10" : "bg-optionpulse-blue/10")
             )}
           >
             <div 
               className={cn(
                 "w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0",
-                alert.sentiment.direction === 'bullish' 
-                  ? "bg-optionpulse-green/20 text-optionpulse-green" 
-                  : "bg-optionpulse-red/20 text-optionpulse-red"
+                alert.isLeaps 
+                  ? (alert.sentiment.direction === 'bullish' 
+                      ? "bg-emerald-500/20 text-emerald-400" 
+                      : "bg-optionpulse-red/20 text-optionpulse-red")
+                  : (alert.sentiment.direction === 'bullish' 
+                      ? "bg-optionpulse-green/20 text-optionpulse-green" 
+                      : "bg-optionpulse-red/20 text-optionpulse-red")
               )}
             >
-              {alert.sentiment.direction === 'bullish' 
-                ? <TrendingUp size={24} /> 
-                : <TrendingDown size={24} />
+              {alert.isLeaps 
+                ? <Zap size={24} /> 
+                : (alert.sentiment.direction === 'bullish' 
+                    ? <TrendingUp size={24} /> 
+                    : <TrendingDown size={24} />)
               }
             </div>
             
@@ -55,6 +64,9 @@ const AIAlertsList = () => {
                   )}>
                     {alert.type.toUpperCase()}
                   </span>
+                  {alert.isLeaps && (
+                    <span className="text-xs px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400">LEAPS</span>
+                  )}
                   {alert.isNew && (
                     <span className="text-xs px-2 py-0.5 rounded-full bg-optionpulse-blue/20 text-optionpulse-blue">NEW</span>
                   )}
@@ -75,7 +87,13 @@ const AIAlertsList = () => {
                 
                 <div>
                   <p className="text-sm text-muted-foreground">Expiry Date</p>
-                  <p className="font-medium">{alert.expiryDate}</p>
+                  <p className={cn(
+                    "font-medium",
+                    alert.isLeaps && "text-emerald-400"
+                  )}>
+                    {alert.expiryDate}
+                    {alert.isLeaps && " (LEAPS)"}
+                  </p>
                 </div>
                 
                 <div>
@@ -111,6 +129,7 @@ const AIAlertsList = () => {
                   {alert.symbol} {alert.type === 'call' ? 'call option' : 'put option'} at strike ${alert.strikePrice} 
                   has a {alert.itmProbability}% probability of being in-the-money by {alert.expiryDate}. 
                   Market sentiment is {alert.sentiment.percentage}% {alert.sentiment.direction}.
+                  {alert.isLeaps && " This is a long-term LEAPS option."}
                 </p>
               </div>
             </div>

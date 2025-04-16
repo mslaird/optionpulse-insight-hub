@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import MarketOverview from "@/components/dashboard/MarketOverview";
@@ -10,6 +9,7 @@ import SentimentNotification from "@/components/notifications/SentimentNotificat
 import SimulatedTrading from "@/components/trading/SimulatedTrading";
 import StaticAlertWidget from "@/components/dashboard/StaticAlertWidget";
 import AIAlertsWidget from "@/components/dashboard/AIAlertsWidget";
+import LeapsAlertsWidget from "@/components/dashboard/LeapsAlertsWidget";
 import ExplanationTooltip from "@/components/tooltips/ExplanationTooltip";
 import explanations from "@/data/explanations";
 import { AIAlertsProvider } from "@/contexts/AIAlertsContext";
@@ -17,7 +17,6 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Briefcase } from "lucide-react";
 
-// Create strategy explanations object
 const strategyExplanations = {
   nakedCall: {
     title: "Naked Call",
@@ -41,7 +40,6 @@ const Dashboard = () => {
   const [showVolatilityAlert, setShowVolatilityAlert] = useState(false);
   const [showSentimentAlert, setShowSentimentAlert] = useState(false);
 
-  // Show the alerts after short delays
   useEffect(() => {
     const volatilityTimer = setTimeout(() => {
       setShowVolatilityAlert(true);
@@ -108,6 +106,19 @@ const Dashboard = () => {
               </div>
             </div>
             <div className="relative">
+              <LeapsAlertsWidget />
+              <div className="absolute top-4 right-4">
+                <ExplanationTooltip 
+                  title="LEAPS Options"
+                  content="LEAPS (Long-term Equity Anticipation Securities) are options with expiration dates longer than one year, allowing traders to take long-term positions with less capital than owning the underlying asset."
+                  iconClass="text-emerald-400"
+                />
+              </div>
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="relative">
               <SimulatedTrading />
               <div className="absolute top-4 right-4 flex space-x-1">
                 <ExplanationTooltip 
@@ -117,24 +128,12 @@ const Dashboard = () => {
                 />
               </div>
             </div>
-          </div>
-          
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="relative">
               <VolatilityAlerts />
               <div className="absolute top-4 right-4">
                 <ExplanationTooltip 
                   title={explanations.volatility.title}
                   content={explanations.volatility.content}
-                />
-              </div>
-            </div>
-            <div className="relative">
-              <StaticAlertWidget />
-              <div className="absolute top-4 right-4">
-                <ExplanationTooltip 
-                  title={explanations.sentiment.title}
-                  content={explanations.sentiment.content}
                 />
               </div>
             </div>
