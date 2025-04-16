@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { MessageCircle, Heart, Share2, MessageSquarePlus, Users, Info } from "lucide-react";
+import { MessageCircle, Heart, Share2, MessageSquarePlus, Users, Info, Bookmark, BookmarkCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -13,6 +13,8 @@ import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import ExplanationTooltip from "@/components/tooltips/ExplanationTooltip";
 import { Link, useNavigate } from "react-router-dom";
+import SavedPostsList from "@/components/community/SavedPostsList";
+import { initialSavedPosts, SavedPost } from "@/data/savedPosts";
 
 // Strategy explanations
 const strategyExplanations = {
@@ -142,6 +144,7 @@ const initialPosts: Post[] = [
 
 const Community = () => {
   const [posts, setPosts] = useState<Post[]>(initialPosts);
+  const [savedPosts, setSavedPosts] = useState<SavedPost[]>(initialSavedPosts);
   const [newPost, setNewPost] = useState("");
   const [activeTab, setActiveTab] = useState("feed");
   const { toast } = useToast();
@@ -216,6 +219,36 @@ const Community = () => {
     }
   };
 
+  const handleSavePost = (post: Post) => {
+    const isAlreadySaved = savedPosts.some(savedPost => savedPost.id === post.id);
+    
+    if (isAlreadySaved) {
+      setSavedPosts(savedPosts.filter(savedPost => savedPost.id !== post.id));
+      toast({
+        title: "Post removed",
+        description: "This post has been removed from your saved posts.",
+      });
+    } else {
+      setSavedPosts([...savedPosts, post as SavedPost]);
+      toast({
+        title: "Post saved",
+        description: "This post has been added to your saved posts.",
+      });
+    }
+  };
+
+  const handleRemoveSavedPost = (postId: number) => {
+    setSavedPosts(savedPosts.filter(post => post.id !== postId));
+    toast({
+      title: "Post removed",
+      description: "This post has been removed from your saved posts.",
+    });
+  };
+
+  const isPostSaved = (postId: number) => {
+    return savedPosts.some(savedPost => savedPost.id === postId);
+  };
+
   return (
     <Layout>
       <div className="space-y-6">
@@ -233,6 +266,7 @@ const Community = () => {
           <TabsList className="glass-card w-full justify-start mb-6">
             <TabsTrigger value="feed">Feed</TabsTrigger>
             <TabsTrigger value="trending">Trending</TabsTrigger>
+            <TabsTrigger value="saved-posts">Saved Posts</TabsTrigger>
             <TabsTrigger value="my-activity">My Activity</TabsTrigger>
           </TabsList>
           
@@ -312,6 +346,8 @@ const Community = () => {
                   post={post} 
                   onLike={handleLike} 
                   onReaction={handleReaction} 
+                  onSave={handleSavePost}
+                  isSaved={isPostSaved(post.id)}
                 />
               ))}
             </div>
@@ -319,6 +355,13 @@ const Community = () => {
           
           <TabsContent value="trending" className="space-y-6">
             <ActivityFeed />
+          </TabsContent>
+          
+          <TabsContent value="saved-posts" className="space-y-6">
+            <SavedPostsList 
+              savedPosts={savedPosts}
+              onRemove={handleRemoveSavedPost}
+            />
           </TabsContent>
           
           <TabsContent value="my-activity" className="space-y-6">
@@ -341,9 +384,11 @@ interface CommunityPostProps {
   post: Post;
   onLike: (postId: number) => void;
   onReaction: (postId: number, emoji: string) => void;
+  onSave: (post: Post) => void;
+  isSaved: boolean;
 }
 
-const CommunityPost = ({ post, onLike, onReaction }: CommunityPostProps) => {
+const CommunityPost = ({ post, onLike, onReaction, onSave, isSaved }: CommunityPostProps) => {
   const [showReactions, setShowReactions] = useState(false);
   
   const reactionEmojis = ["👍", "❤️", "🔥", "🚀", "🧠", "💰", "🤔", "👏"];
@@ -440,6 +485,21 @@ const CommunityPost = ({ post, onLike, onReaction }: CommunityPostProps) => {
                     </div>
                   )}
                 </div>
+                
+                <button
+                  className={cn(
+                    "flex items-center text-sm gap-1",
+                    isSaved ? "text-optionpulse-green" : "text-muted-foreground"
+                  )}
+                  onClick={() => onSave(post)}
+                >
+                  {isSaved ? (
+                    <BookmarkCheck size={16} className="fill-current" />
+                  ) : (
+                    <Bookmark size={16} />
+                  )}
+                  <span>{isSaved ? "Saved" : "Save"}</span>
+                </button>
                 
                 <button
                   className="flex items-center text-sm gap-1 text-muted-foreground ml-auto"
