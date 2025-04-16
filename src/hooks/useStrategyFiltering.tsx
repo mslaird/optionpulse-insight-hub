@@ -1,119 +1,112 @@
 
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { OptionStrategy } from "@/types/options";
 
-interface UseStrategyFilteringProps {
+interface StrategyFilteringProps {
   strategies: OptionStrategy[];
   optionType: string;
   strategyFilter: string;
-  ivRange: [number, number];
-  itmProbabilityRange: [number, number];
+  ivRange?: [number, number];
+  itmProbabilityRange?: [number, number];
 }
 
 export const useStrategyFiltering = ({
   strategies,
   optionType,
   strategyFilter,
-  ivRange,
-  itmProbabilityRange
-}: UseStrategyFilteringProps) => {
+  ivRange = [0, 100],
+  itmProbabilityRange = [0, 100]
+}: StrategyFilteringProps) => {
   const [sortField, setSortField] = useState<string | null>(null);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
-  // Filter strategies based on selected filters
-  const filteredStrategies = useMemo(() => {
-    return strategies.filter((strategy) => {
-      // Filter by type
-      if (optionType !== "all") {
-        if (optionType === "calls" && !strategy.legs.some(leg => leg.type === "CALL")) {
-          return false;
-        }
-        if (optionType === "puts" && !strategy.legs.some(leg => leg.type === "PUT")) {
-          return false;
-        }
-      }
-      
-      // Filter by strategy type
-      if (strategyFilter !== "all" && !strategy.type.includes(strategyFilter)) {
-        return false;
-      }
-      
-      // Filter by IV range
-      const strategyIV = strategy.legs.reduce((sum, leg) => sum + leg.iv, 0) / strategy.legs.length;
-      if (strategyIV < ivRange[0] || strategyIV > ivRange[1]) {
-        return false;
-      }
-      
-      // Filter by ITM probability
-      if (strategy.itmProbability && (strategy.itmProbability < itmProbabilityRange[0] || 
-          strategy.itmProbability > itmProbabilityRange[1])) {
-        return false;
-      }
-      
-      // If all filters pass, include this strategy
-      return true;
-    });
-  }, [strategies, optionType, strategyFilter, ivRange, itmProbabilityRange]);
+  // Apply filters
+  let filteredStrategies = [...strategies];
   
-  // Sort strategies
-  const sortedStrategies = useMemo(() => {
-    return [...filteredStrategies].sort((a, b) => {
-      if (!sortField) return 0;
-      
-      let valA, valB;
-      
-      switch(sortField) {
-        case "name":
-          valA = a.name;
-          valB = b.name;
-          break;
-        case "netCreditDebit":
-          valA = a.isCredit ? a.netCreditDebit : -a.netCreditDebit;
-          valB = b.isCredit ? b.netCreditDebit : -b.netCreditDebit;
-          break;
-        case "maxProfit":
-          valA = typeof a.maxProfit === "string" ? Infinity : a.maxProfit;
-          valB = typeof b.maxProfit === "string" ? Infinity : b.maxProfit;
-          break;
-        case "maxLoss":
-          valA = a.maxLoss;
-          valB = b.maxLoss;
-          break;
-        case "itmProbability":
-          valA = a.itmProbability || 0;
-          valB = b.itmProbability || 0;
-          break;
-        case "delta":
-          valA = Math.abs(a.delta || 0);
-          valB = Math.abs(b.delta || 0);
-          break;
-        case "theta":
-          valA = a.theta || 0;
-          valB = b.theta || 0;
-          break;
-        case "vega":
-          valA = a.vega || 0;
-          valB = b.vega || 0;
-          break;
-        default:
-          return 0;
-      }
-      
+  // Filter by option type
+  if (optionType !== "all") {
+    const filterType = optionType === "calls" ? "CALL" : "PUT";
+    filteredStrategies = filteredStrategies.filter(strategy => 
+      // For multi-leg strategies, check if any leg matches the filter
+      strategy.legs.some(leg => leg.type === filterType)
+    );
+  }
+  
+  // Filter by strategy type
+  if (strategyFilter !== "all") {
+    filteredStrategies = filteredStrategies.filter(strategy => 
+      strategy.type.includes(strategyFilter)
+    );
+  }
+  
+  // Filter by IV range - use average IV of all legs
+  filteredStrategies = filteredStrategies.filter(strategy => {
+    const avgIV = strategy.legs.reduce((sum, leg) => sum + leg.iv, 0) / strategy.legs.length;
+    return avgIV >= ivRange[0] && avgIV <= ivRange[1];
+  });
+  
+  // Filter by ITM probability range
+  filteredStrategies = filteredStrategies.filter(strategy => 
+    strategy.itmProbability !== undefined && 
+    strategy.itmProbability >= itmProbabilityRange[0] && 
+    strategy.itmProbability <= itmProbabilityRange[1]
+  );
+  
+  // Apply sorting
+  const sortedStrategies = [...filteredStrategies].sort((a, b) => {
+    if (!sortField) return 0;
+    
+    if (sortField === "name") {
+      return sortDirection === "asc"
+        ? a.name.localeCompare(b.name)
+        : b.name.localeCompare(a.name);
+    }
+    
+    if (sortField === "netCreditDebit") {
+      const aValue = a.isCredit ? a.netCreditDebit : -a.netCreditDebit;
+      const bValue = b.isCredit ? b.netCreditDebit : -b.netCreditDebit;
+      return sortDirection === "asc" ? aValue - bValue : bValue - aValue;
+    }
+    
+    if (sortField === "maxProfit") {
+      const aValue = typeof a.maxProfit === "number" ? a.maxProfit : Infinity;
+      const bValue = typeof b.maxProfit === "number" ? b.maxProfit : Infinity;
+      return sortDirection === "asc" ? aValue - bValue : bValue - aValue;
+    }
+    
+    if (sortField === "maxLoss") {
       return sortDirection === "asc" 
-        ? (valA > valB ? 1 : -1)
-        : (valA < valB ? 1 : -1);
-    });
-  }, [filteredStrategies, sortField, sortDirection]);
+        ? a.maxLoss - b.maxLoss 
+        : b.maxLoss - a.maxLoss;
+    }
+    
+    if (sortField === "itmProbability" && a.itmProbability !== undefined && b.itmProbability !== undefined) {
+      return sortDirection === "asc" 
+        ? a.itmProbability - b.itmProbability 
+        : b.itmProbability - a.itmProbability;
+    }
+    
+    // Handle Greek values
+    if (["delta", "gamma", "theta", "vega"].includes(sortField) && 
+        a[sortField as keyof OptionStrategy] !== undefined && 
+        b[sortField as keyof OptionStrategy] !== undefined) {
+      const aValue = a[sortField as keyof OptionStrategy] as number;
+      const bValue = b[sortField as keyof OptionStrategy] as number;
+      return sortDirection === "asc" ? aValue - bValue : bValue - aValue;
+    }
+    
+    return 0;
+  });
   
   const handleSort = (field: string) => {
     if (sortField === field) {
-      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+      setSortDirection(prev => prev === "asc" ? "desc" : "asc");
     } else {
       setSortField(field);
       setSortDirection("asc");
     }
   };
-
+  
   return {
     sortedStrategies,
     sortField,

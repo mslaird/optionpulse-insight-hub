@@ -1,7 +1,6 @@
 
 import React from "react";
-import { TrendingUp, TrendingDown } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { ArrowUp, ArrowDown } from "lucide-react";
 
 interface StockPriceDisplayProps {
   stockPrice: number;
@@ -9,21 +8,24 @@ interface StockPriceDisplayProps {
   stockChangePercent: number;
 }
 
-const StockPriceDisplay: React.FC<StockPriceDisplayProps> = ({ 
-  stockPrice, 
-  stockChange, 
-  stockChangePercent 
+const StockPriceDisplay: React.FC<StockPriceDisplayProps> = ({
+  stockPrice,
+  stockChange,
+  stockChangePercent
 }) => {
+  const isPositive = stockChange >= 0;
+  
   return (
-    <div className="flex items-baseline gap-2">
-      <span className="text-2xl font-bold">${stockPrice.toFixed(2)}</span>
-      <span className={cn(
-        "flex items-center gap-1 text-sm",
-        stockChange > 0 ? "text-optionpulse-green" : "text-optionpulse-red"
-      )}>
-        {stockChange > 0 ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
-        {stockChange > 0 ? "+" : ""}{stockChange.toFixed(2)} ({stockChangePercent.toFixed(2)}%)
-      </span>
+    <div className="flex items-center gap-4">
+      <div>
+        <h3 className="text-lg font-bold">${stockPrice.toFixed(2)}</h3>
+        <div className={`flex items-center text-sm ${isPositive ? 'text-optionpulse-green' : 'text-optionpulse-red'}`}>
+          {isPositive ? <ArrowUp size={14} /> : <ArrowDown size={14} />}
+          <span className="ml-1">
+            {isPositive ? '+' : ''}{stockChange.toFixed(2)} ({isPositive ? '+' : ''}{stockChangePercent.toFixed(2)}%)
+          </span>
+        </div>
+      </div>
     </div>
   );
 };
