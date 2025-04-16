@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
@@ -63,14 +62,14 @@ const TradeDistribution: React.FC<TradeDistributionProps> = ({
           {/* Strategy chart */}
           <div className="flex flex-col space-y-3">
             <h3 className="text-sm font-medium text-center">Trades by Strategy</h3>
-            <div className="h-[220px] w-full">
+            <div className="h-[200px] w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
                     data={validStrategyData}
                     cx="50%"
                     cy="50%"
-                    outerRadius={70}
+                    outerRadius={60}
                     dataKey="count"
                     nameKey="strategy"
                     label={renderCustomizedLabel}
@@ -106,14 +105,14 @@ const TradeDistribution: React.FC<TradeDistributionProps> = ({
           {/* Profit chart */}
           <div className="flex flex-col space-y-3">
             <h3 className="text-sm font-medium text-center">Profit by Ticker</h3>
-            <div className="h-[220px] w-full">
+            <div className="h-[200px] w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
                     data={validProfitData}
                     cx="50%"
                     cy="50%"
-                    outerRadius={70}
+                    outerRadius={60}
                     // Use absoluteValue for sizing the segments
                     dataKey="absoluteValue"
                     nameKey="ticker"
