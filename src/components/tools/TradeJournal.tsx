@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import {
   Card,
@@ -386,11 +387,11 @@ const TradeJournal = () => {
                           fill="#8884d8"
                           dataKey="profit"
                           nameKey="ticker"
-                          label={false}
+                          isAnimationActive={true}
                         >
                           {profitByTicker.map((entry, index) => (
                             <Cell 
-                              key={`cell-${index}`} 
+                              key={`profit-cell-${index}`} 
                               fill={entry.profit >= 0 ? COLORS[0] : COLORS[2]} 
                             />
                           ))}
