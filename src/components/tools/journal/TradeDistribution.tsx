@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from "recharts";
 import { StrategyCount, ProfitByTicker } from "./types";
 
 interface TradeDistributionProps {
@@ -65,31 +65,33 @@ const TradeDistribution: React.FC<TradeDistributionProps> = ({
             </div>
           </div>
           
-          {/* Second chart - Profit by Ticker */}
+          {/* Second chart - completely reimplemented */}
           <div className="flex flex-col items-center">
-            <div className="h-[180px] w-full mb-2">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Tooltip formatter={(value: number) => [`${value > 0 ? '+' : ''}$${value.toFixed(2)}`]} />
-                  <Pie
-                    data={validTickerData}
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={60}
-                    dataKey="profit"
-                    nameKey="ticker"
-                    label={false}
-                    isAnimationActive={false}
-                  >
-                    {validTickerData.map((entry, index) => (
-                      <Cell 
-                        key={`profit-cell-${index}`} 
-                        fill={entry.profit >= 0 ? COLORS[0] : COLORS[2]} 
-                      />
-                    ))}
-                  </Pie>
-                </PieChart>
-              </ResponsiveContainer>
+            <div className="h-[180px] w-full mb-2" id="profit-chart-container">
+              {validTickerData.length > 0 && (
+                <div style={{ width: '100%', height: '100%', position: 'relative' }} id="profit-chart-wrapper">
+                  <PieChart width={300} height={180}>
+                    <Tooltip formatter={(value: number) => [`${value > 0 ? '+' : ''}$${value.toFixed(2)}`]} />
+                    <Pie
+                      data={validTickerData}
+                      cx={150}
+                      cy={90}
+                      outerRadius={60}
+                      dataKey="profit"
+                      nameKey="ticker"
+                      label={false}
+                      isAnimationActive={false}
+                    >
+                      {validTickerData.map((entry, index) => (
+                        <Cell 
+                          key={`profit-cell-${index}`} 
+                          fill={entry.profit >= 0 ? COLORS[0] : COLORS[2]} 
+                        />
+                      ))}
+                    </Pie>
+                  </PieChart>
+                </div>
+              )}
             </div>
             <div className="w-full overflow-x-auto">
               <div className="flex flex-wrap justify-center gap-2 min-w-min">
