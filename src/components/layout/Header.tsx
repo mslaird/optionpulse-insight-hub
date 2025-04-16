@@ -11,12 +11,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import SearchAutocomplete from "@/components/header/SearchAutocomplete";
 import Logo from "@/components/brand/Logo";
 
 const Header = () => {
   const [profileImage, setProfileImage] = useState<string | null>(null);
+  const navigate = useNavigate();
   
   // Load profile image from localStorage when component mounts
   useEffect(() => {
@@ -38,6 +39,10 @@ const Header = () => {
     };
   }, []);
 
+  const handleNotificationClick = () => {
+    navigate('/alerts');
+  };
+
   return (
     <header className="fixed top-0 right-0 left-0 z-30 md:left-64 h-16 bg-optionpulse-navy border-b border-border flex items-center px-4 md:px-6">
       <div className="flex items-center w-full">
@@ -58,7 +63,13 @@ const Header = () => {
         </div>
         
         <div className="flex items-center gap-2 ml-auto">
-          <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="text-muted-foreground hover:text-foreground transition-colors"
+            onClick={handleNotificationClick}
+            aria-label="View notifications"
+          >
             <Bell size={20} />
           </Button>
           
@@ -96,4 +107,3 @@ const Header = () => {
 };
 
 export default Header;
-
