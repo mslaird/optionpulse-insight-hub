@@ -45,7 +45,7 @@ const Header = () => {
           <SearchAutocomplete />
         </div>
         
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 ml-auto">
           <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
             <Bell size={20} />
           </Button>
@@ -84,3 +84,4 @@ const Header = () => {
 };
 
 export default Header;
+
