@@ -1,237 +1,186 @@
+export interface LeaderboardEntry {
+  id: string;
+  name: string;
+  points: number;
+  level: number;
+}
 
-export interface Challenge {
-  id: number;
+export type Challenge = {
+  id: string;
   title: string;
   description: string;
   category: string;
-  deadline: string;
-  participants: number;
-  pointsReward: number;
-  status: "active" | "completed" | "upcoming";
-  difficulty: "beginner" | "intermediate" | "advanced";
-  completionRate?: number;
-  isLeaps?: boolean;
-}
+  status: "active" | "upcoming" | "completed";
+  progress?: number;
+  pointsEarned?: number;
+  maxPoints: number;
+  completedDate?: string;
+  endDate?: string;
+  tier: 'Free' | 'Lite' | 'Pro'; // Add the tier property
+};
 
-export interface LeaderboardUser {
-  id: number;
-  name: string;
-  username: string;
-  avatar: string;
-  points: number;
-  rank: number;
-  badge: string;
-  completedChallenges: number;
-}
-
-export const challenges: Challenge[] = [
+export const leaderboard: LeaderboardEntry[] = [
   {
-    id: 1,
-    title: "Best Covered Call on SPY",
-    description: "Develop the most profitable covered call strategy on SPY with the highest risk-adjusted return.",
-    category: "options",
-    deadline: "Apr 28, 2025",
-    participants: 128,
-    pointsReward: 500,
-    status: "active",
-    difficulty: "intermediate",
-    completionRate: 0
+    id: "1",
+    name: "TraderPro88",
+    points: 2560,
+    level: 12
   },
   {
-    id: 2,
-    title: "March Volatility Crush",
-    description: "Predict which stock will experience the largest volatility crush after earnings in March.",
-    category: "volatility",
-    deadline: "Mar 31, 2025",
-    participants: 86,
-    pointsReward: 350,
-    status: "active",
-    difficulty: "advanced",
-    completionRate: 0
+    id: "2",
+    name: "OptionQueen",
+    points: 2420,
+    level: 11
   },
   {
-    id: 3,
-    title: "Weekly Options Alpha",
-    description: "Generate alpha using only weekly options in a simulated portfolio over 4 weeks.",
-    category: "options",
-    deadline: "May 15, 2025",
-    participants: 214,
-    pointsReward: 450,
-    status: "upcoming",
-    difficulty: "intermediate"
+    id: "3",
+    name: "MarketMaster2024",
+    points: 2300,
+    level: 11
   },
   {
-    id: 4,
-    title: "Iron Condor Challenge",
-    description: "Build the most effective iron condor strategy in a low volatility environment.",
-    category: "options",
-    deadline: "Apr 10, 2025",
-    participants: 92,
-    pointsReward: 400,
-    status: "active",
-    difficulty: "intermediate",
-    completionRate: 35
+    id: "4",
+    name: "VolatilityViking",
+    points: 2150,
+    level: 10
   },
   {
-    id: 5,
-    title: "Earnings Strangle Master",
-    description: "Create the most profitable earnings strangle strategy across tech stocks.",
-    category: "earnings",
-    deadline: "Apr 21, 2025",
-    participants: 156,
-    pointsReward: 600,
-    status: "active",
-    difficulty: "advanced",
-    completionRate: 22
+    id: "5",
+    name: "ThetaTitan",
+    points: 2050,
+    level: 10
   },
   {
-    id: 6,
-    title: "AAPL Bull Put Spread",
-    description: "Design the optimal bull put spread on AAPL that maximizes profit while managing risk effectively.",
-    category: "spreads",
-    deadline: "May 5, 2025",
-    participants: 174,
-    pointsReward: 500,
-    status: "upcoming",
-    difficulty: "intermediate"
+    id: "6",
+    name: "GammaGuru",
+    points: 1980,
+    level: 9
   },
   {
-    id: 7,
-    title: "SPY Iron Condor Builder",
-    description: "Build a SPY iron condor (sell $510 call, buy $515 call, sell $490 put, buy $485 put) with the best risk/reward ratio.",
-    category: "iron-condors",
-    deadline: "Apr 30, 2025",
-    participants: 143,
-    pointsReward: 550,
-    status: "active",
-    difficulty: "advanced",
-    completionRate: 18
+    id: "7",
+    name: "DeltaDominator",
+    points: 1890,
+    level: 9
   },
   {
-    id: 8,
-    title: "Straddle Volatility Play",
-    description: "Create a straddle strategy that best capitalizes on upcoming market volatility events.",
-    category: "straddles",
-    deadline: "May 12, 2025",
-    participants: 112,
-    pointsReward: 500,
-    status: "active",
-    difficulty: "intermediate",
-    completionRate: 10
+    id: "8",
+    name: "StonkSurfer",
+    points: 1750,
+    level: 8
   },
   {
-    id: 9,
-    title: "Credit Spread Master",
-    description: "Develop a portfolio of credit spreads across different sectors to maximize monthly income.",
-    category: "spreads",
-    deadline: "May 20, 2025",
-    participants: 98,
-    pointsReward: 450,
-    status: "upcoming",
-    difficulty: "intermediate"
-  },
-  // LEAPS Challenges
-  {
-    id: 10,
-    title: "AAPL LEAPS Call Optimizer",
-    description: "Build the optimal AAPL LEAPS call position expiring in Jan 2027 that balances capital efficiency and long-term growth potential.",
-    category: "leaps",
-    deadline: "Jun 15, 2025",
-    participants: 83,
-    pointsReward: 500,
-    status: "active",
-    difficulty: "intermediate",
-    completionRate: 5,
-    isLeaps: true
+    id: "9",
+    name: "BearBuster",
+    points: 1620,
+    level: 8
   },
   {
-    id: 11,
-    title: "LEAPS Call Diagonal Spread",
-    description: "Create the most efficient LEAPS call diagonal spread strategy to generate consistent income while maintaining long-term upside exposure.",
-    category: "leaps",
-    deadline: "Jun 30, 2025",
-    participants: 62,
-    pointsReward: 600,
-    status: "active",
-    difficulty: "advanced",
-    completionRate: 12,
-    isLeaps: true
-  },
-  {
-    id: 12,
-    title: "LEAPS Poor Man's Covered Call",
-    description: "Design a PMCC strategy using LEAPS options that outperforms traditional covered calls on a risk-adjusted basis over a 6-month period.",
-    category: "leaps",
-    deadline: "Jul 10, 2025",
-    participants: 121,
-    pointsReward: 550,
-    status: "upcoming",
-    difficulty: "intermediate",
-    isLeaps: true
-  },
-  {
-    id: 13,
-    title: "LEAPS vs. Shares Comparison",
-    description: "Develop a comprehensive analysis comparing LEAPS calls vs. share ownership across different market scenarios and prove which approach is superior.",
-    category: "leaps",
-    deadline: "Jul 25, 2025",
-    participants: 76,
-    pointsReward: 450,
-    status: "upcoming",
-    difficulty: "beginner",
-    isLeaps: true
+    id: "10",
+    name: "BullBlaster",
+    points: 1500,
+    level: 7
   }
 ];
 
-export const leaderboard: LeaderboardUser[] = [
+export const challenges: Challenge[] = [
   {
-    id: 1,
-    name: "Sarah Johnson",
-    username: "optionqueen",
-    avatar: "/placeholder.svg",
-    points: 1850,
-    rank: 1,
-    badge: "Diamond",
-    completedChallenges: 14
+    id: "1",
+    title: "Iron Condor Challenge",
+    description: "Build and execute an iron condor strategy using SPY options",
+    category: "iron-condors",
+    status: "active",
+    progress: 75,
+    pointsEarned: 150,
+    maxPoints: 200,
+    endDate: "05/01/2025",
+    tier: "Pro"
   },
   {
-    id: 2,
-    name: "John Smith",
-    username: "volatilityhunter",
-    avatar: "/placeholder.svg",
-    points: 1680,
-    rank: 2,
-    badge: "Platinum",
-    completedChallenges: 12
+    id: "2",
+    title: "Credit Spread Mastery",
+    description: "Execute 5 profitable credit spreads within the next 30 days",
+    category: "spreads",
+    status: "active",
+    progress: 40,
+    pointsEarned: 80,
+    maxPoints: 200,
+    endDate: "05/15/2025",
+    tier: "Lite"
   },
   {
-    id: 3,
-    name: "Alex Davis",
-    username: "thetagang",
-    avatar: "/placeholder.svg",
-    points: 1450,
-    rank: 3,
-    badge: "Platinum",
-    completedChallenges: 11
+    id: "3",
+    title: "Options Basics",
+    description: "Complete all beginner options tutorials and quiz",
+    category: "options",
+    status: "completed",
+    progress: 100,
+    pointsEarned: 100,
+    maxPoints: 100,
+    completedDate: "04/01/2025",
+    tier: "Free"
   },
   {
-    id: 4,
-    name: "Michael Wong",
-    username: "ironbutterfly",
-    avatar: "/placeholder.svg",
-    points: 1340,
-    rank: 4,
-    badge: "Gold",
-    completedChallenges: 9
+    id: "4",
+    title: "LEAPS Long-Term Strategy",
+    description: "Create a LEAPS portfolio and track its performance",
+    category: "leaps",
+    status: "upcoming",
+    maxPoints: 300,
+    endDate: "06/01/2025",
+    tier: "Pro"
   },
   {
-    id: 5,
-    name: "Priya Sharma",
-    username: "deltamaster",
-    avatar: "/placeholder.svg",
-    points: 1280,
-    rank: 5,
-    badge: "Gold",
-    completedChallenges: 8
+    id: "5",
+    title: "Straddle Volatility Challenge",
+    description: "Implement straddle strategies ahead of earnings announcements",
+    category: "straddles",
+    status: "upcoming",
+    maxPoints: 250,
+    endDate: "05/20/2025",
+    tier: "Pro"
+  },
+  {
+    id: "6",
+    title: "Call Options Fundamentals",
+    description: "Complete the beginner series on call options",
+    category: "options",
+    status: "active",
+    progress: 50,
+    pointsEarned: 50,
+    maxPoints: 100,
+    endDate: "04/30/2025",
+    tier: "Free"
+  },
+  {
+    id: "7",
+    title: "Put Options Fundamentals", 
+    description: "Complete the beginner series on put options",
+    category: "options",
+    status: "active",
+    progress: 25,
+    pointsEarned: 25,
+    maxPoints: 100,
+    endDate: "05/10/2025",
+    tier: "Free"
+  },
+  {
+    id: "8",
+    title: "LEAPS vs. Short-Term Options",
+    description: "Research and create a comparison report",
+    category: "leaps",
+    status: "upcoming",
+    maxPoints: 200,
+    endDate: "06/15/2025",
+    tier: "Lite"
+  },
+  {
+    id: "9",
+    title: "Vertical Spread Challenge",
+    description: "Master bull and bear vertical spreads",
+    category: "spreads",
+    status: "upcoming",
+    maxPoints: 200,
+    endDate: "05/25/2025",
+    tier: "Pro"
   }
 ];
