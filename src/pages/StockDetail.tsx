@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
@@ -6,13 +5,14 @@ import { stockDetailsData } from "@/data/stockDetails";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, Globe, TrendingUp, Star, BarChart4, BookOpen } from "lucide-react";
+import { ArrowLeft, Globe, TrendingUp, Star, BarChart4, BookOpen, MessageSquare } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import ChartTooltip from "@/components/tooltips/ChartTooltip"; // Changed from { ChartTooltip } to default import
+import ChartTooltip from "@/components/tooltips/ChartTooltip";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
+import StockComments from "@/components/stock/StockComments";
 
 const StockDetail = () => {
   const { ticker } = useParams<{ ticker: string }>();
@@ -282,6 +282,10 @@ const StockDetail = () => {
                   <BarChart4 size={16} />
                   <span>Fundamentals</span>
                 </TabsTrigger>
+                <TabsTrigger value="comments" className="flex items-center gap-1">
+                  <MessageSquare size={16} />
+                  <span>Comments</span>
+                </TabsTrigger>
               </TabsList>
             </Tabs>
           </CardHeader>
@@ -514,6 +518,10 @@ const StockDetail = () => {
                   </div>
                 </div>
               </div>
+            </TabsContent>
+
+            <TabsContent value="comments" className="mt-0">
+              <StockComments ticker={stockDetail.ticker} />
             </TabsContent>
           </CardContent>
         </Card>
