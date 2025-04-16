@@ -35,7 +35,7 @@ const TradeDistribution: React.FC<TradeDistributionProps> = ({
     if (percent < 0.15) return null;
     
     const RADIAN = Math.PI / 180;
-    const radius = outerRadius + 25; // Increased from 20 to 25
+    const radius = outerRadius + 25; // Keep the increased radius
     const x = cx + radius * Math.cos(-midAngle * RADIAN);
     const y = cy + radius * Math.sin(-midAngle * RADIAN);
 
@@ -46,7 +46,7 @@ const TradeDistribution: React.FC<TradeDistributionProps> = ({
         fill="currentColor" 
         textAnchor={x > cx ? 'start' : 'end'} 
         dominantBaseline="middle"
-        className="text-xs"
+        className="text-xs font-medium"
       >
         {`${(percent * 100).toFixed(0)}%`}
       </text>
@@ -63,14 +63,14 @@ const TradeDistribution: React.FC<TradeDistributionProps> = ({
           {/* Strategy chart */}
           <div className="flex flex-col space-y-3">
             <h3 className="text-sm font-medium text-center">Trades by Strategy</h3>
-            <div className="h-[240px] w-full">
+            <div className="h-[220px] w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
                     data={validStrategyData}
                     cx="50%"
                     cy="50%"
-                    outerRadius={80}
+                    outerRadius={70}
                     dataKey="count"
                     nameKey="strategy"
                     label={renderCustomizedLabel}
@@ -106,14 +106,14 @@ const TradeDistribution: React.FC<TradeDistributionProps> = ({
           {/* Profit chart */}
           <div className="flex flex-col space-y-3">
             <h3 className="text-sm font-medium text-center">Profit by Ticker</h3>
-            <div className="h-[240px] w-full">
+            <div className="h-[220px] w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
                     data={validProfitData}
                     cx="50%"
                     cy="50%"
-                    outerRadius={80}
+                    outerRadius={70}
                     // Use absoluteValue for sizing the segments
                     dataKey="absoluteValue"
                     nameKey="ticker"
