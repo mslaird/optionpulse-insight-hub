@@ -55,6 +55,7 @@ export interface PayoffChartProps {
     profit: number;
     [key: string]: any;
   }>;
+  showLeaps?: boolean;
 }
 
 export interface MetricsCardProps {

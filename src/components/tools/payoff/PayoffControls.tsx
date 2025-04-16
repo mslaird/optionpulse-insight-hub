@@ -20,6 +20,7 @@ interface PayoffControlsProps {
   setPremium: (value: number) => void;
   strategy: string;
   setStrategy: (value: string) => void;
+  showLeaps?: boolean;
   onGeneratePayoff: () => void;
 }
 
@@ -33,6 +34,7 @@ const PayoffControls: React.FC<PayoffControlsProps> = ({
   strategy,
   setStrategy,
   onGeneratePayoff,
+  showLeaps,
 }) => {
   return (
     <>

@@ -6,12 +6,14 @@ interface PayoffStatsProps {
   strategy: string;
   premium: number;
   strike: number;
+  showLeaps?: boolean;
 }
 
 const PayoffStats: React.FC<PayoffStatsProps> = ({ 
   strategy, 
   premium, 
-  strike 
+  strike,
+  showLeaps = false
 }) => {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
