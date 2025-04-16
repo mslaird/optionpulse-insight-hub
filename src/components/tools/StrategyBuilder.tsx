@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import {
   Card,
@@ -21,6 +22,10 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
 import ChartTooltip from "@/components/tooltips/ChartTooltip";
+
+interface StrategyBuilderProps {
+  showLeaps?: boolean;
+}
 
 interface OptionLeg {
   id: string;
@@ -87,7 +92,7 @@ const defaultStockPrices = {
   QQQ: 400
 };
 
-const StrategyBuilder = () => {
+const StrategyBuilder: React.FC<StrategyBuilderProps> = ({ showLeaps = false }) => {
   const { toast } = useToast();
   const [ticker, setTicker] = useState("AAPL");
   const [currentPrice, setCurrentPrice] = useState(defaultStockPrices.AAPL);
