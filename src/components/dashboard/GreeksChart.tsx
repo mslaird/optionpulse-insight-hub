@@ -54,7 +54,7 @@ const GreeksChart = () => {
           <CardTitle className="text-lg font-medium flex items-center gap-2">
             <div className="flex items-center space-x-2 my-[9px]">
               <AreaChart size={18} className="text-optionpulse-blue" />
-              <span className="mx-0 my-[6px]">Greeks Analysis (AAPL $180 Call)</span>
+              <span className="mx-0 my-[6px]"> Greeks Analysis(AAPL $180 Call)</span>
             </div>
           </CardTitle>
           <Dialog>
