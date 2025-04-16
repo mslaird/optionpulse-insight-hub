@@ -19,16 +19,20 @@ const TradeDistribution: React.FC<TradeDistributionProps> = ({
   const validStrategyData = tradesByStrategy?.length > 0 ? tradesByStrategy : [];
   const validTickerData = profitByTicker?.length > 0 ? profitByTicker : [];
 
+  // Force a minimal dataset if none exists
+  const fallbackTickerData = validTickerData.length === 0 ? [{ ticker: 'No Data', profit: 0 }] : validTickerData;
+
   return (
     <Card className="bg-card/30 backdrop-blur-sm border-border/50">
       <CardHeader className="pb-2">
         <CardTitle className="text-lg">Trade Distribution</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {/* First chart - Trades by Strategy */}
           <div className="flex flex-col items-center">
-            <div className="h-[180px] w-full mb-2" data-testid="strategy-chart">
+            <h4 className="text-sm font-medium mb-2">Trades by Strategy</h4>
+            <div className="h-[200px] w-full" data-testid="strategy-chart">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Tooltip formatter={(value: number) => [`${value} trades`]} />
@@ -36,7 +40,7 @@ const TradeDistribution: React.FC<TradeDistributionProps> = ({
                     data={validStrategyData}
                     cx="50%"
                     cy="50%"
-                    outerRadius={60}
+                    outerRadius={70}
                     dataKey="count"
                     nameKey="strategy"
                     label={false}
@@ -48,7 +52,7 @@ const TradeDistribution: React.FC<TradeDistributionProps> = ({
                 </PieChart>
               </ResponsiveContainer>
             </div>
-            <div className="w-full overflow-x-auto">
+            <div className="w-full overflow-x-auto mt-2">
               <div className="flex flex-wrap justify-center gap-2 min-w-min">
                 {validStrategyData.map((item, index) => (
                   <div key={index} className="flex items-center gap-1 min-w-max">
@@ -65,23 +69,24 @@ const TradeDistribution: React.FC<TradeDistributionProps> = ({
             </div>
           </div>
           
-          {/* Second chart - Profit by Ticker - Using same structure as first chart */}
+          {/* Second chart - Profit by Ticker */}
           <div className="flex flex-col items-center">
-            <div className="h-[180px] w-full mb-2" data-testid="profit-chart">
+            <h4 className="text-sm font-medium mb-2">Profit by Ticker</h4>
+            <div className="h-[200px] w-full" data-testid="profit-chart">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Tooltip formatter={(value: number) => [`${value > 0 ? '+' : ''}$${value.toFixed(2)}`]} />
                   <Pie
-                    data={validTickerData}
+                    data={fallbackTickerData}
                     cx="50%"
                     cy="50%"
-                    outerRadius={60}
+                    outerRadius={70}
                     dataKey="profit"
                     nameKey="ticker"
                     label={false}
                     isAnimationActive={false}
                   >
-                    {validTickerData.map((entry, index) => (
+                    {fallbackTickerData.map((entry, index) => (
                       <Cell 
                         key={`profit-cell-${index}`} 
                         fill={entry.profit >= 0 ? COLORS[0] : COLORS[2]} 
@@ -91,9 +96,9 @@ const TradeDistribution: React.FC<TradeDistributionProps> = ({
                 </PieChart>
               </ResponsiveContainer>
             </div>
-            <div className="w-full overflow-x-auto">
+            <div className="w-full overflow-x-auto mt-2">
               <div className="flex flex-wrap justify-center gap-2 min-w-min">
-                {validTickerData.map((item, index) => (
+                {fallbackTickerData.map((item, index) => (
                   <div key={index} className="flex items-center gap-1 min-w-max">
                     <div
                       className="h-2.5 w-2.5 shrink-0 rounded-sm"
