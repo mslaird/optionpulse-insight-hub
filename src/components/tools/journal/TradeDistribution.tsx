@@ -13,28 +13,43 @@ const TradeDistribution: React.FC<TradeDistributionProps> = ({
   tradesByStrategy,
   profitByTicker
 }) => {
-  const COLORS = ['#1EAEDB', '#34D399', '#F87171', '#8E9196', '#10B981'];
-
-  // Ensure we have non-empty data arrays with valid property values
-  const validStrategyData = tradesByStrategy?.length > 0 ? tradesByStrategy : [];
+  // Define colors for our charts
+  const STRATEGY_COLORS = ['#1EAEDB', '#34D399', '#F87171', '#8E9196', '#10B981'];
   
-  // Create a fallback dataset for the profit chart when empty
-  const fallbackProfitData = profitByTicker?.length > 0 
-    ? profitByTicker 
-    : [{ ticker: 'No Data', profit: 100 }]; // Using 100 to ensure it shows up visually
-
-  // Create simple chart configs
+  // Ensure we have valid data for the strategy chart
+  const validStrategyData = tradesByStrategy?.length > 0 
+    ? tradesByStrategy 
+    : [{ strategy: 'No Data', count: 1 }];
+  
+  // Ensure we have valid data for the profit chart - convert all profit values to absolute for sizing
+  const validProfitData = profitByTicker?.length > 0 
+    ? profitByTicker.map(item => ({
+        ...item,
+        // Store the absolute value for display sizing purposes
+        absoluteValue: Math.abs(item.profit)
+      }))
+    : [{ ticker: 'No Data', profit: 100, absoluteValue: 100 }];
+  
+  // Create simple chart label renderer
   const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }) => {
+    if (percent < 0.15) return null;
+    
     const RADIAN = Math.PI / 180;
     const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
     const x = cx + radius * Math.cos(-midAngle * RADIAN);
     const y = cy + radius * Math.sin(-midAngle * RADIAN);
 
-    return percent > 0.15 ? (
-      <text x={x} y={y} fill="white" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central">
+    return (
+      <text 
+        x={x} 
+        y={y} 
+        fill="white" 
+        textAnchor={x > cx ? 'start' : 'end'} 
+        dominantBaseline="central"
+      >
         {`${(percent * 100).toFixed(0)}%`}
       </text>
-    ) : null;
+    );
   };
 
   return (
@@ -43,13 +58,13 @@ const TradeDistribution: React.FC<TradeDistributionProps> = ({
         <CardTitle className="text-lg">Trade Distribution</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Strategy chart */}
-          <div className="flex flex-col space-y-2">
+          <div className="flex flex-col space-y-3">
             <h3 className="text-sm font-medium text-center">Trades by Strategy</h3>
-            <div className="h-[220px] w-full" id="strategy-chart">
+            <div className="h-[240px] w-full">
               <ResponsiveContainer width="100%" height="100%">
-                <PieChart margin={{ top: 10, right: 10, bottom: 10, left: 10 }}>
+                <PieChart>
                   <Pie
                     data={validStrategyData}
                     cx="50%"
@@ -57,23 +72,27 @@ const TradeDistribution: React.FC<TradeDistributionProps> = ({
                     outerRadius={80}
                     dataKey="count"
                     nameKey="strategy"
-                    fill="#8884d8"
                     label={renderCustomizedLabel}
                   >
                     {validStrategyData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      <Cell 
+                        key={`strategy-cell-${index}`} 
+                        fill={STRATEGY_COLORS[index % STRATEGY_COLORS.length]} 
+                      />
                     ))}
                   </Pie>
-                  <Tooltip formatter={(value) => [`${value} trades`]} />
+                  <Tooltip 
+                    formatter={(value) => [`${value} trades`]} 
+                  />
                 </PieChart>
               </ResponsiveContainer>
             </div>
-            <div className="flex flex-wrap justify-center gap-2">
+            <div className="flex flex-wrap justify-center gap-3">
               {validStrategyData.map((item, index) => (
-                <div key={index} className="flex items-center gap-1">
+                <div key={`strategy-legend-${index}`} className="flex items-center gap-1.5">
                   <div
                     className="h-3 w-3 rounded-full"
-                    style={{ backgroundColor: COLORS[index % COLORS.length] }}
+                    style={{ backgroundColor: STRATEGY_COLORS[index % STRATEGY_COLORS.length] }}
                   />
                   <span className="text-xs">
                     {item.strategy}: {item.count} trades
@@ -84,51 +103,47 @@ const TradeDistribution: React.FC<TradeDistributionProps> = ({
           </div>
 
           {/* Profit chart */}
-          <div className="flex flex-col space-y-2">
+          <div className="flex flex-col space-y-3">
             <h3 className="text-sm font-medium text-center">Profit by Ticker</h3>
-            <div className="h-[220px] w-full" id="profit-chart">
+            <div className="h-[240px] w-full">
               <ResponsiveContainer width="100%" height="100%">
-                <PieChart margin={{ top: 10, right: 10, bottom: 10, left: 10 }}>
+                <PieChart>
                   <Pie
-                    data={fallbackProfitData}
+                    data={validProfitData}
                     cx="50%"
                     cy="50%"
                     outerRadius={80}
-                    dataKey="profit"
+                    // Use absoluteValue for sizing the segments
+                    dataKey="absoluteValue"
                     nameKey="ticker"
-                    fill="#8884d8"
                     label={renderCustomizedLabel}
-                    isAnimationActive={false}
-                    // Ensure absolute values are used for sizing the pie segments
-                    // but colors still reflect profit/loss
-                    valueKey={(entry) => Math.abs(entry.profit)}
                   >
-                    {fallbackProfitData.map((entry, index) => (
+                    {validProfitData.map((entry, index) => (
                       <Cell 
-                        key={`cell-${index}`} 
+                        key={`profit-cell-${index}`} 
                         fill={entry.profit >= 0 ? '#1EAEDB' : '#F87171'} 
                       />
                     ))}
                   </Pie>
                   <Tooltip 
-                    formatter={(value) => {
-                      // Fix by ensuring value is treated as a number
-                      const numValue = typeof value === 'string' ? parseFloat(value) : Number(value);
-                      return [`${numValue >= 0 ? '+' : ''}$${Math.abs(numValue).toFixed(2)}`];
+                    formatter={(value, name, entry) => {
+                      // Use the original profit value for the tooltip, not the absolute value
+                      const profit = entry.payload.profit;
+                      return [`${profit >= 0 ? '+' : ''}$${Math.abs(profit).toFixed(2)}`];
                     }} 
                   />
                 </PieChart>
               </ResponsiveContainer>
             </div>
-            <div className="flex flex-wrap justify-center gap-2">
-              {fallbackProfitData.map((item, index) => (
-                <div key={index} className="flex items-center gap-1">
+            <div className="flex flex-wrap justify-center gap-3">
+              {validProfitData.map((item, index) => (
+                <div key={`profit-legend-${index}`} className="flex items-center gap-1.5">
                   <div
                     className="h-3 w-3 rounded-full"
                     style={{ backgroundColor: item.profit >= 0 ? '#1EAEDB' : '#F87171' }}
                   />
                   <span className="text-xs">
-                    {item.ticker}: ${item.profit.toFixed(2)}
+                    {item.ticker}: {item.profit >= 0 ? '+' : ''}${item.profit.toFixed(2)}
                   </span>
                 </div>
               ))}
