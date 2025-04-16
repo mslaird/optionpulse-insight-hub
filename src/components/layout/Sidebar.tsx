@@ -1,16 +1,30 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { MobileToggle } from "./sidebar/MobileToggle";
 import { DesktopSidebar } from "./sidebar/DesktopSidebar";
 import { MobileSidebar } from "./sidebar/MobileSidebar";
 
 interface SidebarProps {
-  isCollapsed?: boolean;
-  onToggle?: () => void;
+  onToggle?: (collapsed: boolean) => void;
 }
 
-export const Sidebar = ({ isCollapsed = false, onToggle }: SidebarProps) => {
-  // Use the prop for controlled state
+export const Sidebar = ({ onToggle }: SidebarProps) => {
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  
+  const toggleSidebar = () => {
+    const newCollapsedState = !isCollapsed;
+    setIsCollapsed(newCollapsedState);
+    
+    if (onToggle) {
+      onToggle(newCollapsedState);
+    }
+    
+    const event = new CustomEvent('sidebar-toggle', { 
+      detail: { collapsed: newCollapsedState } 
+    });
+    window.dispatchEvent(event);
+  };
   
   const toggleMobileSidebar = () => {
     setIsMobileOpen(!isMobileOpen);
@@ -18,9 +32,14 @@ export const Sidebar = ({ isCollapsed = false, onToggle }: SidebarProps) => {
 
   return (
     <>
+      <MobileToggle 
+        isMobileOpen={isMobileOpen} 
+        toggleMobileSidebar={toggleMobileSidebar} 
+      />
+      
       <DesktopSidebar 
         isCollapsed={isCollapsed} 
-        toggleSidebar={onToggle} 
+        toggleSidebar={toggleSidebar} 
       />
       
       <MobileSidebar 

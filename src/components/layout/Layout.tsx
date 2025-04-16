@@ -1,5 +1,5 @@
 
-import { ReactNode, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
@@ -10,20 +10,26 @@ interface LayoutProps {
 
 const Layout = ({ children }: LayoutProps) => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-  
-  // Simplify the toggle function
-  const toggleSidebar = () => {
-    setIsSidebarCollapsed((prevState) => {
-      const newState = !prevState;
-      console.log("Toggling sidebar, new state:", newState);
-      return newState;
-    });
-  };
+
+  // Listen for sidebar state changes
+  useEffect(() => {
+    const handleSidebarChange = (e: Event) => {
+      if (e instanceof CustomEvent) {
+        setIsSidebarCollapsed(e.detail.collapsed);
+      }
+    };
+
+    window.addEventListener('sidebar-toggle', handleSidebarChange as EventListener);
+    
+    return () => {
+      window.removeEventListener('sidebar-toggle', handleSidebarChange as EventListener);
+    };
+  }, []);
 
   return (
     <div className="min-h-screen bg-optionpulse-navy text-foreground">
-      <Sidebar isCollapsed={isSidebarCollapsed} onToggle={toggleSidebar} />
-      <Header toggleSidebar={toggleSidebar} />
+      <Sidebar onToggle={(collapsed) => setIsSidebarCollapsed(collapsed)} />
+      <Header />
       <main className={cn(
         "pt-16 min-h-screen transition-all duration-300",
         isSidebarCollapsed ? "md:pl-16" : "md:pl-64"
