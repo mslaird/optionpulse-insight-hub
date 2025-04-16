@@ -11,8 +11,8 @@ export const generatePayoffData = (strike: number, premium: number, strategy: st
   const range = 0.3; // 30% range around strike price
   const minPrice = strike * (1 - range);
   const maxPrice = strike * (1 + range);
-  // Reduce data points from 30 to 15 for cleaner visualization
-  const step = (maxPrice - minPrice) / 15; 
+  // Generate 20 data points for balanced visualization (between 30 and 15)
+  const step = (maxPrice - minPrice) / 20; 
   
   // Calculate breakeven point
   let breakEvenPoint = strike;

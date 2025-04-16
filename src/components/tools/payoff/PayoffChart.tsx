@@ -60,11 +60,13 @@ const PayoffChart: React.FC<PayoffChartProps> = ({
                   fontSize: '0.75rem' 
                 } 
               }}
-              // Reduce the number of ticks shown on the x-axis
+              // Balanced approach to ticks on the x-axis
               ticks={[
                 data[0]?.stockPrice,
+                Math.round((data[0]?.stockPrice + strike) / 2),
                 strike,
                 breakEvenPoint,
+                Math.round((breakEvenPoint + data[data.length - 1]?.stockPrice) / 2),
                 data[data.length - 1]?.stockPrice
               ].filter(Boolean)}
             />
