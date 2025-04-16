@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import {
   Card,
@@ -333,9 +334,9 @@ const TradeJournal = () => {
               <CardTitle className="text-lg">Trade Distribution</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 <div className="flex flex-col items-center">
-                  <div className="h-[200px] w-full mb-4">
+                  <div className="h-[180px] w-full mb-2">
                     <ResponsiveContainer width="100%" height="100%">
                       <RechartsPieChart>
                         <Tooltip formatter={(value: number) => [`${value} trades`]} />
@@ -357,11 +358,11 @@ const TradeJournal = () => {
                     </ResponsiveContainer>
                   </div>
                   <div className="w-full overflow-x-auto">
-                    <div className="flex flex-wrap justify-center gap-3 min-w-min">
+                    <div className="flex flex-wrap justify-center gap-2 min-w-min">
                       {tradesByStrategy.map((item, index) => (
-                        <div key={index} className="flex items-center gap-1.5 min-w-max">
+                        <div key={index} className="flex items-center gap-1 min-w-max">
                           <div
-                            className="h-3 w-3 shrink-0 rounded-sm"
+                            className="h-2.5 w-2.5 shrink-0 rounded-sm"
                             style={{ backgroundColor: COLORS[index % COLORS.length] }}
                           />
                           <span className="text-xs whitespace-nowrap">
@@ -374,7 +375,7 @@ const TradeJournal = () => {
                 </div>
                 
                 <div className="flex flex-col items-center">
-                  <div className="h-[200px] w-full mb-4">
+                  <div className="h-[180px] w-full mb-2">
                     <ResponsiveContainer width="100%" height="100%">
                       <RechartsPieChart>
                         <Tooltip formatter={(value: number) => [`${value > 0 ? '+' : ''}$${value.toFixed(2)}`]} />
@@ -399,11 +400,11 @@ const TradeJournal = () => {
                     </ResponsiveContainer>
                   </div>
                   <div className="w-full overflow-x-auto">
-                    <div className="flex flex-wrap justify-center gap-3 min-w-min">
+                    <div className="flex flex-wrap justify-center gap-2 min-w-min">
                       {profitByTicker.map((item, index) => (
-                        <div key={index} className="flex items-center gap-1.5 min-w-max">
+                        <div key={index} className="flex items-center gap-1 min-w-max">
                           <div
-                            className="h-3 w-3 shrink-0 rounded-sm"
+                            className="h-2.5 w-2.5 shrink-0 rounded-sm"
                             style={{ backgroundColor: item.profit >= 0 ? COLORS[0] : COLORS[2] }}
                           />
                           <span className="text-xs whitespace-nowrap">
