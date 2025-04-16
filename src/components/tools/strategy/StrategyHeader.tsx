@@ -1,10 +1,9 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Plus, Clock, Zap } from "lucide-react";
 import { StrategyHeaderProps } from "./types";
 import { Badge } from "@/components/ui/badge";
-import { Clock } from "lucide-react";
 
 const StrategyHeader: React.FC<StrategyHeaderProps> = ({ strategyName, onAddLeg, showLeaps = false }) => {
   return (
@@ -13,8 +12,8 @@ const StrategyHeader: React.FC<StrategyHeaderProps> = ({ strategyName, onAddLeg,
         <h3 className="text-lg font-medium flex items-center">
           Strategy: {strategyName}
           {showLeaps && (
-            <Badge className="ml-2 bg-purple-500/10 text-purple-400 border-purple-500/30">
-              <Clock size={14} className="mr-1" />LEAPS Mode
+            <Badge className="ml-2 bg-emerald-500/20 text-emerald-400 border-emerald-500/40">
+              <Zap size={14} className="mr-1" />LEAPS Mode
             </Badge>
           )}
         </h3>

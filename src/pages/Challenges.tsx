@@ -13,7 +13,10 @@ import {
   Flame,
   ChevronRight,
   Layers,
-  HelpCircle
+  HelpCircle,
+  Zap,
+  BookOpen,
+  Dumbbell
 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -37,6 +40,7 @@ interface Challenge {
   status: "active" | "completed" | "upcoming";
   difficulty: "beginner" | "intermediate" | "advanced";
   completionRate?: number;
+  isLeaps?: boolean;
 }
 
 interface LeaderboardUser {
@@ -155,6 +159,57 @@ const challenges: Challenge[] = [
     pointsReward: 450,
     status: "upcoming",
     difficulty: "intermediate"
+  },
+  // LEAPS Challenges
+  {
+    id: 10,
+    title: "AAPL LEAPS Call Optimizer",
+    description: "Build the optimal AAPL LEAPS call position expiring in Jan 2027 that balances capital efficiency and long-term growth potential.",
+    category: "leaps",
+    deadline: "Jun 15, 2025",
+    participants: 83,
+    pointsReward: 500,
+    status: "active",
+    difficulty: "intermediate",
+    completionRate: 5,
+    isLeaps: true
+  },
+  {
+    id: 11,
+    title: "LEAPS Call Diagonal Spread",
+    description: "Create the most efficient LEAPS call diagonal spread strategy to generate consistent income while maintaining long-term upside exposure.",
+    category: "leaps",
+    deadline: "Jun 30, 2025",
+    participants: 62,
+    pointsReward: 600,
+    status: "active",
+    difficulty: "advanced",
+    completionRate: 12,
+    isLeaps: true
+  },
+  {
+    id: 12,
+    title: "LEAPS Poor Man's Covered Call",
+    description: "Design a PMCC strategy using LEAPS options that outperforms traditional covered calls on a risk-adjusted basis over a 6-month period.",
+    category: "leaps",
+    deadline: "Jul 10, 2025",
+    participants: 121,
+    pointsReward: 550,
+    status: "upcoming",
+    difficulty: "intermediate",
+    isLeaps: true
+  },
+  {
+    id: 13,
+    title: "LEAPS vs. Shares Comparison",
+    description: "Develop a comprehensive analysis comparing LEAPS calls vs. share ownership across different market scenarios and prove which approach is superior.",
+    category: "leaps",
+    deadline: "Jul 25, 2025",
+    participants: 76,
+    pointsReward: 450,
+    status: "upcoming",
+    difficulty: "beginner",
+    isLeaps: true
   }
 ];
 
@@ -258,6 +313,8 @@ const getCategoryIcon = (category: string) => {
       return <TrendingUp size={14} className="text-blue-400" />;
     case "straddles":
       return <Layers size={14} className="text-green-400" />;
+    case "leaps":
+      return <Zap size={14} className="text-emerald-400" />;
     default:
       return <Calendar size={14} />;
   }
@@ -265,12 +322,22 @@ const getCategoryIcon = (category: string) => {
 
 const ChallengeCard = ({ challenge }: { challenge: Challenge }) => {
   return (
-    <Card className="bg-sidebar transition-all duration-200 hover:shadow-md hover:shadow-primary/5 hover:border-primary/30">
+    <Card className={cn(
+      "bg-sidebar transition-all duration-200 hover:shadow-md hover:shadow-primary/5 hover:border-primary/30",
+      challenge.isLeaps && "bg-gradient-to-br from-[#1A1F2C]/80 to-[#222]/95 border-emerald-500/20"
+    )}>
       <CardHeader className="pb-2">
         <div className="flex flex-col">
-          <Badge className={cn("self-start mb-2", getDifficultyColor(challenge.difficulty))}>
-            {challenge.difficulty}
-          </Badge>
+          <div className="flex items-center justify-between mb-2">
+            <Badge className={cn("self-start", getDifficultyColor(challenge.difficulty))}>
+              {challenge.difficulty}
+            </Badge>
+            {challenge.isLeaps && (
+              <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/40">
+                <Zap size={14} className="mr-1" />LEAPS
+              </Badge>
+            )}
+          </div>
           <div className="flex items-start justify-between">
             <CardTitle className="text-lg text-foreground">{challenge.title}</CardTitle>
             {challenge.title.includes("Covered Call") && (
@@ -303,8 +370,20 @@ const ChallengeCard = ({ challenge }: { challenge: Challenge }) => {
                 content="A credit spread involves selling one option and buying another with the same expiration but different strikes, resulting in a net credit. It limits risk while allowing you to profit from the premium received if the market moves as expected."
               />
             )}
+            {challenge.title.includes("LEAPS") && (
+              <ExplanationTooltip 
+                title="LEAPS Options"
+                content="LEAPS (Long-term Equity Anticipation Securities) are options with expiration dates longer than one year, often up to three years out. They provide exposure to long-term price movements with lower time decay in the near term compared to short-dated options."
+              />
+            )}
+            {challenge.title.includes("PMCC") || challenge.title.includes("Poor Man's Covered Call") && (
+              <ExplanationTooltip 
+                title="Poor Man's Covered Call"
+                content="A Poor Man's Covered Call (PMCC) is a strategy that uses a long-dated deep-in-the-money call option instead of owning 100 shares of stock as the underlying position, while selling shorter-term calls against it to generate income."
+              />
+            )}
           </div>
-          <CardDescription className="text-muted-foreground mt-1 w-full flex items-center">
+          <CardDescription className="text-muted-foreground mt-1 w-full flex items-center justify-center h-auto">
             {challenge.description}
           </CardDescription>
         </div>
@@ -334,14 +413,28 @@ const ChallengeCard = ({ challenge }: { challenge: Challenge }) => {
           <div className="mt-2">
             <div className="flex justify-between text-xs mb-1">
               <span className="text-muted-foreground">Completion</span>
-              <span className="text-primary">{challenge.completionRate}%</span>
+              <span className={cn("text-primary", challenge.isLeaps && "text-emerald-400")}>
+                {challenge.completionRate}%
+              </span>
             </div>
-            <Progress value={challenge.completionRate} className="h-1" />
+            <Progress 
+              value={challenge.completionRate} 
+              className={cn("h-1", challenge.isLeaps && "bg-emerald-950 [&>div]:bg-emerald-500")} 
+            />
           </div>
         )}
       </CardContent>
       <CardFooter className="pt-0">
-        <Button variant="outline" className="w-full">Join Challenge</Button>
+        <Button 
+          variant={challenge.isLeaps ? "outline" : "outline"} 
+          className={cn(
+            "w-full", 
+            challenge.isLeaps && "hover:bg-emerald-500/10 hover:text-emerald-400 border-emerald-500/40"
+          )}
+          asChild
+        >
+          <Link to="/tools?tab=strategy&leaps=true">Join Challenge</Link>
+        </Button>
       </CardFooter>
     </Card>
   );
@@ -364,9 +457,17 @@ const Challenges = () => {
             <p className="text-muted-foreground">Compete with the community and earn points</p>
           </div>
           <div className="flex gap-2">
-            <Button>
-              <TrendingUp size={16} className="mr-2" />
-              My Progress
+            <Button asChild>
+              <Link to="/tools?tab=strategy-trader">
+                <Dumbbell size={16} className="mr-2" />
+                Practice Trading
+              </Link>
+            </Button>
+            <Button variant="outline" asChild>
+              <Link to="/education">
+                <BookOpen size={16} className="mr-2" />
+                Education Hub
+              </Link>
             </Button>
           </div>
         </div>
@@ -446,6 +547,14 @@ const Challenges = () => {
                   onClick={() => setCategoryFilter("options")}
                 >
                   Options
+                </Badge>
+                <Badge 
+                  variant={categoryFilter === "leaps" ? "default" : "outline"} 
+                  className={cn("cursor-pointer", categoryFilter === "leaps" ? "bg-emerald-500 text-emerald-50" : "border-emerald-500/40 text-emerald-400")} 
+                  onClick={() => setCategoryFilter("leaps")}
+                >
+                  <Zap size={14} className="mr-1" />
+                  LEAPS
                 </Badge>
               </div>
             </div>
@@ -612,7 +721,7 @@ const Challenges = () => {
                 <CardHeader>
                   <CardTitle className="text-base flex items-center gap-2">
                     <Clock className="text-green-500" size={18} />
-                    Fastest Completions
+                    LEAPS Masters
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -620,14 +729,15 @@ const Challenges = () => {
                     <div className="flex items-center gap-3">
                       <Avatar className="h-8 w-8">
                         <AvatarImage src="/placeholder.svg" />
-                        <AvatarFallback>AD</AvatarFallback>
+                        <AvatarFallback>TD</AvatarFallback>
                       </Avatar>
                       <div className="flex-1">
-                        <div className="text-sm font-medium">Alex Davis</div>
-                        <div className="text-xs text-muted-foreground">Avg. 1.2 days per challenge</div>
+                        <div className="text-sm font-medium">Thomas Davies</div>
+                        <div className="text-xs text-muted-foreground">5 LEAPS challenges completed</div>
                       </div>
-                      <Badge variant="outline" className="bg-green-500/20 text-green-400">
-                        1.2d
+                      <Badge variant="outline" className="bg-emerald-500/20 text-emerald-400">
+                        <Zap size={12} className="mr-1" />
+                        5
                       </Badge>
                     </div>
                     <Separator />
@@ -638,10 +748,11 @@ const Challenges = () => {
                       </Avatar>
                       <div className="flex-1">
                         <div className="text-sm font-medium">Michael Wong</div>
-                        <div className="text-xs text-muted-foreground">Avg. 1.5 days per challenge</div>
+                        <div className="text-xs text-muted-foreground">4 LEAPS challenges completed</div>
                       </div>
-                      <Badge variant="outline" className="bg-green-500/20 text-green-400">
-                        1.5d
+                      <Badge variant="outline" className="bg-emerald-500/20 text-emerald-400">
+                        <Zap size={12} className="mr-1" />
+                        4
                       </Badge>
                     </div>
                   </div>
@@ -705,6 +816,21 @@ const Challenges = () => {
                     </div>
                     <Badge variant="outline" className="text-primary">100 pts</Badge>
                   </div>
+                  
+                  <Separator />
+                  
+                  <div className="flex justify-between items-center">
+                    <div className="flex items-center gap-3">
+                      <div className="bg-emerald-500/20 p-2 rounded-md">
+                        <Zap size={24} className="text-emerald-400" />
+                      </div>
+                      <div>
+                        <div className="font-medium">LEAPS Expert</div>
+                        <div className="text-sm text-muted-foreground">Complete 3+ LEAPS challenges</div>
+                      </div>
+                    </div>
+                    <Badge variant="outline" className="text-emerald-400">250 pts</Badge>
+                  </div>
                 </CardContent>
               </Card>
               
@@ -761,6 +887,18 @@ const Challenges = () => {
                   
                   <Separator />
                   
+                  <div className="flex justify-between items-center">
+                    <div className="flex items-center gap-3">
+                      <Link to="/achievements">
+                        <Badge className="cursor-pointer hover:opacity-80 bg-gradient-to-r from-emerald-400 to-green-300 text-black">LEAPS</Badge>
+                      </Link>
+                      <div>
+                        <div className="font-medium">LEAPS Visionary</div>
+                        <div className="text-sm text-muted-foreground">Complete all LEAPS challenges</div>
+                      </div>
+                    </div>
+                  </div>
+                  
                   <div className="flex items-center gap-3 mt-4">
                     <Link to="/achievements" className="w-full">
                       <Button variant="outline" className="w-full">
@@ -793,18 +931,18 @@ const Challenges = () => {
                   
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <Avatar className="h-8 w-8 bg-purple-500/20">
-                        <AvatarFallback className="text-purple-400">
-                          <Layers size={16} />
+                      <Avatar className="h-8 w-8 bg-emerald-500/20">
+                        <AvatarFallback className="text-emerald-400">
+                          <Zap size={16} />
                         </AvatarFallback>
                       </Avatar>
                       <div>
-                        <div className="text-sm font-medium">Layer 1 Starter</div>
-                        <div className="text-xs text-muted-foreground">Quiz passed</div>
+                        <div className="text-sm font-medium">LEAPS Master</div>
+                        <div className="text-xs text-muted-foreground">LEAPS specialist certification</div>
                       </div>
                     </div>
                     <Link to="/achievements">
-                      <Badge className="cursor-pointer hover:opacity-80 bg-gradient-to-r from-purple-400 to-indigo-300 text-white">
+                      <Badge className="cursor-pointer hover:opacity-80 bg-gradient-to-r from-emerald-400 to-green-300 text-black">
                         View
                       </Badge>
                     </Link>
