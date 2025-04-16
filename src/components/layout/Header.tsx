@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { Bell, User } from "lucide-react";
+import { Bell, User, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -41,8 +41,15 @@ const Header = () => {
   return (
     <header className="fixed top-0 right-0 left-0 z-30 md:left-64 h-16 bg-optionpulse-navy border-b border-border flex items-center px-4 md:px-6">
       <div className="flex items-center w-full">
-        {/* Logo for mobile view */}
-        <div className="md:hidden mr-auto">
+        {/* Logo and Menu icon for mobile view */}
+        <div className="md:hidden flex items-center gap-2">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="text-foreground"
+          >
+            <Menu size={20} />
+          </Button>
           <Logo />
         </div>
         
