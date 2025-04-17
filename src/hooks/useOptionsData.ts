@@ -24,7 +24,17 @@ export const useOptionsData = (symbol: string) => {
         throw new Error(`No option chain data found for ${symbol}`);
       }
 
-      return data.data as OptionsChainData;
+      // Handle the type conversion more safely
+      const jsonData = data.data;
+      
+      // Validate that the data has the expected shape
+      if (typeof jsonData === 'object' && jsonData !== null && 
+          'options' in jsonData && 'strategies' in jsonData) {
+        return jsonData as OptionsChainData;
+      }
+      
+      // If data doesn't match the expected format, throw an error
+      throw new Error(`Invalid options data format for ${symbol}`);
     },
     staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
     refetchInterval: 5 * 60 * 1000 // Refetch every 5 minutes
