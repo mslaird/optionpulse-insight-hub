@@ -54,7 +54,8 @@ const OptionsChain = () => {
     handleClosePaywall 
   } = useFeatureAccess();
   
-  const { data: optionsData, isLoading, error } = useOptionsData(selectedStock);
+  // Update to pass expirationDate to useOptionsData
+  const { data: optionsData, isLoading, error } = useOptionsData(selectedStock, expirationDate);
   
   // Use the current price from the options data if available
   const currentStockPrice = optionsData?.currentPrice || stockPrice;

@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart3, ArrowRight, Share2, DollarSign } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -12,7 +11,8 @@ import { useOptionsData } from "@/hooks/useOptionsData";
 const OptionsChainPreview = () => {
   const { toast } = useToast();
   const [isSharing, setIsSharing] = useState(false);
-  const { data: optionsData, isLoading, error } = useOptionsData('AAPL');
+  const upcomingExpiryDate = "2025-04-18"; // First expiry in our mock data
+  const { data: optionsData, isLoading, error } = useOptionsData('AAPL', upcomingExpiryDate);
 
   const handleShareToCommnunity = () => {
     setIsSharing(true);
@@ -41,7 +41,6 @@ const OptionsChainPreview = () => {
     );
   }
 
-  // Use optional chaining to safely access options property
   const optionContracts = optionsData?.options?.slice(0, 6) || [];
   const currentPrice = optionsData?.currentPrice || 0;
 
