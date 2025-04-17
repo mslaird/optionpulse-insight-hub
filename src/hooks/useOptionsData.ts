@@ -1,12 +1,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from "@/integrations/supabase/client";
-import { OptionContract, OptionStrategy } from "@/types/options";
-
-interface OptionsChainData {
-  options: OptionContract[];
-  strategies: OptionStrategy[];
-}
+import { OptionContract, OptionStrategy, OptionsChainData } from "@/types/options";
 
 export const useOptionsData = (symbol: string) => {
   return useQuery({
@@ -36,7 +31,8 @@ export const useOptionsData = (symbol: string) => {
           // Now we can safely cast to our interface
           return {
             options: typedData.options as OptionContract[],
-            strategies: typedData.strategies as OptionStrategy[]
+            strategies: typedData.strategies as OptionStrategy[],
+            currentPrice: typeof typedData.currentPrice === 'number' ? typedData.currentPrice : 180.75 // Default price if not available
           };
         }
       }

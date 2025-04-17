@@ -39,6 +39,12 @@ export interface OptionStrategy {
   rho?: number;
 }
 
+export interface OptionsChainData {
+  options: OptionContract[];
+  strategies: OptionStrategy[];
+  currentPrice?: number;
+}
+
 export interface OptionsChainState {
   isAdvancedView: boolean;
   isPro: boolean;

@@ -1,3 +1,4 @@
+
 import React from "react";
 import Layout from "@/components/layout/Layout";
 import { BarChart3, Sliders, Sparkles } from "lucide-react";
@@ -55,6 +56,9 @@ const OptionsChain = () => {
   
   const { data: optionsData, isLoading, error } = useOptionsData(selectedStock);
   
+  // Use the current price from the options data if available
+  const currentStockPrice = optionsData?.currentPrice || stockPrice;
+  
   const handleAdvancedView = () => {
     if (state.isAdvancedView || checkAccess('Pro', 'Advanced Options Chain')) {
       toggleAdvancedView();
@@ -90,7 +94,7 @@ const OptionsChain = () => {
         
         <div className="glass-card p-4 rounded-lg flex flex-col sm:flex-row items-center gap-3 justify-between">
           <StockPriceDisplay 
-            stockPrice={stockPrice} 
+            stockPrice={currentStockPrice} 
             stockChange={stockChange} 
             stockChangePercent={stockChangePercent} 
           />

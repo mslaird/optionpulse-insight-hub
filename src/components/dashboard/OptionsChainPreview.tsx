@@ -1,6 +1,6 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { BarChart3, ArrowRight, Share2 } from "lucide-react";
+import { BarChart3, ArrowRight, Share2, DollarSign } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -43,6 +43,7 @@ const OptionsChainPreview = () => {
 
   // Use optional chaining to safely access options property
   const optionContracts = optionsData?.options?.slice(0, 6) || [];
+  const currentPrice = optionsData?.currentPrice || 0;
 
   return (
     <Card className="bg-card/30 backdrop-blur-sm border-border/50 h-full flex flex-col transition-all duration-300">
@@ -80,6 +81,13 @@ const OptionsChainPreview = () => {
           </Link>
         </div>
       </CardHeader>
+      
+      <div className="px-6 pb-2">
+        <div className="flex items-center gap-2 text-lg font-semibold">
+          <DollarSign size={18} className="text-optionpulse-green" />
+          Current Price: ${currentPrice.toFixed(2)}
+        </div>
+      </div>
       
       <CardContent className="flex-1 overflow-hidden flex flex-col">
         <div className="overflow-auto flex-1">
