@@ -67,7 +67,9 @@ export const useOptionsData = (symbol: string, expirationDate?: string) => {
           const apiData = rawData as Record<string, unknown>;
           if (Array.isArray(apiData.puts) && Array.isArray(apiData.calls)) {
             // Transform the API data to our application format
-            return transformOptionsData(apiData, symbol, expirationDate);
+            const transformedData = transformOptionsData(apiData, symbol, expirationDate);
+            console.log(`Transformed data has ${transformedData.options.length} options`);
+            return transformedData;
           }
         }
         
@@ -76,7 +78,9 @@ export const useOptionsData = (symbol: string, expirationDate?: string) => {
         
       } catch (error) {
         console.error("Error in useOptionsData:", error);
-        return createMockOptionsData(symbol, expirationDate);
+        const mockData = createMockOptionsData(symbol, expirationDate);
+        console.log(`Created mock data with ${mockData.options.length} options`);
+        return mockData;
       }
     },
     staleTime: 5 * 60 * 1000,
