@@ -62,9 +62,9 @@ async function getLastUpdated(ticker: string) {
       .from('option_chains')
       .select('fetched_at')
       .eq('ticker', ticker)
-      .single();
+      .maybeSingle();
       
-    if (error) {
+    if (error || !data) {
       console.log(`No previous data found for ${ticker}`);
       return null;
     }
@@ -80,40 +80,15 @@ async function shouldUpdate(ticker: string) {
   // Check when the ticker was last updated
   const lastUpdated = await getLastUpdated(ticker);
   
-  // If never updated or updated more than 6 hours ago, update it
+  // If never updated or updated more than 4 hours ago, update it
   if (!lastUpdated) return true;
   
   const now = new Date();
   const hoursSinceUpdate = (now.getTime() - lastUpdated.getTime()) / (1000 * 60 * 60);
   
-  // Alpha Vantage has a limit of 25 calls per day (~1 per hour)
-  // With 3 tickers, we can safely update each one every 3-6 hours
-  return hoursSinceUpdate >= 6;
-}
-
-async function updateAllTickers(force = false) {
-  const allowedTickers = ['AAPL', 'SPY', 'QQQ'];
-  const results = {};
-  
-  for (const ticker of allowedTickers) {
-    // Check if we should update this ticker
-    if (force || await shouldUpdate(ticker)) {
-      console.log(`Updating ${ticker} option chain data...`);
-      const data = await fetchOptionChain(ticker);
-      
-      if (data) {
-        await updateOptionsCache(ticker, data);
-        results[ticker] = 'updated';
-      } else {
-        results[ticker] = 'failed';
-      }
-    } else {
-      console.log(`Skipping ${ticker} update - recently updated`);
-      results[ticker] = 'skipped';
-    }
-  }
-  
-  return results;
+  // With external scheduler, we can be more conservative 
+  // Only fetch if data is more than 4 hours old
+  return hoursSinceUpdate >= 4;
 }
 
 serve(async (req) => {
@@ -124,31 +99,27 @@ serve(async (req) => {
 
   try {
     const url = new URL(req.url);
+    let ticker: string | null = null;
     
-    // Handle scheduled updates (can be triggered by a simple HTTP scheduler)
-    if (url.pathname.endsWith('/scheduled-update')) {
-      console.log('Running scheduled update of option chains');
-      const results = await updateAllTickers();
-      
-      return new Response(
-        JSON.stringify({ success: true, results }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+    // Process the request based on the endpoint or body content
+    if (req.method === 'POST') {
+      try {
+        const body = await req.json();
+        ticker = body.ticker || null;
+      } catch (e) {
+        console.error("Error parsing request body:", e);
+      }
     }
     
-    // Handle force update (admin only)
-    if (url.pathname.endsWith('/force-update')) {
-      console.log('Running forced update of all option chains');
-      const results = await updateAllTickers(true);
-      
-      return new Response(
-        JSON.stringify({ success: true, results }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+    if (!ticker) {
+      if (url.searchParams.has('ticker')) {
+        ticker = url.searchParams.get('ticker');
+      } else {
+        // Default to AAPL if no ticker specified (for backward compatibility)
+        ticker = 'AAPL';
+      }
     }
-
-    // Handle regular requests for specific tickers
-    const { ticker } = await req.json();
+    
     const allowedTickers = ['AAPL', 'SPY', 'QQQ'];
     
     if (!allowedTickers.includes(ticker)) {
@@ -158,67 +129,72 @@ serve(async (req) => {
       );
     }
 
-    // Try to get from cache first
-    const { data: cachedData, error: cacheError } = await supabaseAdmin
-      .from('option_chains')
-      .select('data, fetched_at')
-      .eq('ticker', ticker)
-      .single();
+    // Check if we need to update the data
+    const needsUpdate = await shouldUpdate(ticker);
+    
+    if (needsUpdate) {
+      console.log(`Updating data for ${ticker} (scheduled from Cron-Job.org)...`);
+      const data = await fetchOptionChain(ticker);
       
-    // If we have cached data that's not too old, return it
-    if (cachedData && !cacheError) {
-      const cachedAt = new Date(cachedData.fetched_at);
-      const now = new Date();
-      const hoursSinceUpdate = (now.getTime() - cachedAt.getTime()) / (1000 * 60 * 60);
-      
-      if (hoursSinceUpdate < 24) {  // Cache valid for 24 hours
-        console.log(`Returning cached data for ${ticker} (${hoursSinceUpdate.toFixed(1)} hours old)`);
+      if (data) {
+        // Update cache with new data
+        await updateOptionsCache(ticker, data);
+        
         return new Response(
           JSON.stringify({ 
-            data: cachedData.data,
+            status: 'success', 
+            message: `${ticker} option chain data updated successfully`,
+            cached: false
+          }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      } else {
+        return new Response(
+          JSON.stringify({ 
+            status: 'error', 
+            message: `Failed to fetch ${ticker} option chain data from Alpha Vantage`
+          }),
+          { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+    } else {
+      console.log(`Skipping update for ${ticker} - data is still fresh`);
+      
+      // Get data from cache for the frontend
+      const { data: cachedData, error: cacheError } = await supabaseAdmin
+        .from('option_chains')
+        .select('data, fetched_at')
+        .eq('ticker', ticker)
+        .maybeSingle();
+        
+      if (cachedData && !cacheError) {
+        return new Response(
+          JSON.stringify({ 
+            status: 'success',
+            message: `Using cached data for ${ticker}`,
+            data: cachedData.data, 
             cached: true,
             cachedAt: cachedData.fetched_at
           }),
           { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
-      }
-    }
-
-    // If no valid cache, fetch fresh data
-    console.log(`No valid cache for ${ticker}, fetching fresh data`);
-    const data = await fetchOptionChain(ticker);
-    
-    if (data) {
-      // Update cache in background
-      EdgeRuntime.waitUntil(updateOptionsCache(ticker, data));
-      
-      return new Response(
-        JSON.stringify({ data, cached: false }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    } else {
-      // If API call fails but we have old cached data, return that with a warning
-      if (cachedData && !cacheError) {
+      } else {
         return new Response(
           JSON.stringify({ 
-            data: cachedData.data, 
-            cached: true,
-            cachedAt: cachedData.fetched_at,
-            warning: 'Fresh data fetch failed. Returning outdated cached data.'
+            status: 'error', 
+            message: `No cached data found for ${ticker}`
           }),
-          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
-      
-      return new Response(
-        JSON.stringify({ error: 'Failed to fetch option chain data' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
     }
   } catch (error) {
     console.error('Error in option-chain function:', error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ 
+        status: 'error',
+        message: error.message
+      }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
