@@ -1,82 +1,28 @@
 
-import React, { useState, useEffect } from "react";
+import React from "react";
 import Layout from "@/components/layout/Layout";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { useLocation } from "react-router-dom";
-import PayoffDiagramGenerator from "@/components/tools/PayoffDiagramGenerator";
-import GreeksCalculator from "@/components/tools/GreeksCalculator";
-import RiskRewardAnalyzer from "@/components/tools/RiskRewardAnalyzer";
-import VolatilityScanner from "@/components/tools/VolatilityScanner";
-import StrategyBuilder from "@/components/tools/StrategyBuilder";
-import TradeJournal from "@/components/tools/TradeJournal";
-import OptionStrategyTrader from "@/components/trading/OptionStrategyTrader";
-import { Calculator, LineChart, BarChart3, TrendingUp, Maximize2, BookMarked, DollarSign, Zap, Lock } from "lucide-react";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { useFeatureAccess } from "@/hooks/useFeatureAccess";
+import { Zap } from "lucide-react";
+import ToolsTabList from "@/components/tools/ToolsTabList";
+import ToolsTabContent from "@/components/tools/ToolsTabContent";
 import PaywallModal from "@/components/modals/PaywallModal";
+import { useToolsPage } from "@/hooks/useToolsPage";
 
 const Tools = () => {
-  const [showLeaps, setShowLeaps] = useState(false);
-  const location = useLocation();
-  const [activeTab, setActiveTab] = useState("strategy-trader");
-  
-  const { 
+  const {
+    showLeaps,
+    activeTab,
     canAccessLite,
     canAccessPro,
-    checkAccess, 
-    showPaywallModal, 
-    requiredTier, 
-    featureName, 
-    handleStartTrial, 
-    handleClosePaywall 
-  } = useFeatureAccess();
-  
-  useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const tabParam = params.get('tab');
-    
-    if (tabParam) {
-      switch (tabParam) {
-        case 'journal':
-          setActiveTab('journal');
-          break;
-        case 'strategy':
-          // Check if user can access strategy builder
-          if (canAccessPro) {
-            setActiveTab('strategy');
-          } else {
-            checkAccess('Pro', 'Strategy Builder');
-          }
-          break;
-        default:
-          break;
-      }
-    }
-  }, [location, canAccessPro]);
-  
-  const handleTabChange = (value: string) => {
-    // Check access based on the tab
-    let canAccess = true;
-    
-    switch (value) {
-      case 'payoff':
-      case 'greeks':
-      case 'risk':
-        // These features require at least Lite subscription
-        canAccess = checkAccess('Lite', value === 'payoff' ? 'Payoff Diagram' : 
-                               value === 'greeks' ? 'Greeks Calculator' : 'Risk/Reward Analyzer');
-        break;
-      case 'strategy':
-        // Strategy builder requires Pro
-        canAccess = checkAccess('Pro', 'Strategy Builder');
-        break;
-    }
-    
-    if (canAccess) {
-      setActiveTab(value);
-    }
-  };
+    showPaywallModal,
+    requiredTier,
+    featureName,
+    handleTabChange,
+    toggleLeapsMode,
+    handleStartTrial,
+    handleClosePaywall
+  } = useToolsPage();
   
   return (
     <Layout>
@@ -97,152 +43,20 @@ const Tools = () => {
         </div>
 
         <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-          <TabsList className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-7 mb-6">
-            <TabsTrigger value="strategy-trader" className="flex items-center gap-2">
-              <DollarSign size={16} />
-              <span className="hidden md:inline">Strategy Trader</span>
-              <span className="md:hidden">Trader</span>
-            </TabsTrigger>
-            <TabsTrigger value="payoff" className="flex items-center gap-2">
-              <LineChart size={16} />
-              <span className="hidden md:inline">Payoff Diagram</span>
-              <span className="md:hidden">Payoff</span>
-              {!canAccessLite && <Lock size={12} className="ml-1" />}
-            </TabsTrigger>
-            <TabsTrigger value="greeks" className="flex items-center gap-2">
-              <Calculator size={16} />
-              <span>Greeks</span>
-              {!canAccessLite && <Lock size={12} className="ml-1" />}
-            </TabsTrigger>
-            <TabsTrigger value="risk" className="flex items-center gap-2">
-              <TrendingUp size={16} />
-              <span className="hidden md:inline">Risk/Reward</span>
-              <span className="md:hidden">Risk</span>
-              {!canAccessLite && <Lock size={12} className="ml-1" />}
-            </TabsTrigger>
-            <TabsTrigger value="volatility" className="flex items-center gap-2">
-              <BarChart3 size={16} />
-              <span className="hidden md:inline">Volatility Scanner</span>
-              <span className="md:hidden">Volatility</span>
-            </TabsTrigger>
-            <TabsTrigger value="strategy" className="flex items-center gap-2">
-              <Maximize2 size={16} />
-              <span className="hidden md:inline">Strategy Builder</span>
-              <span className="md:hidden">Strategy</span>
-              {!canAccessPro && <Lock size={12} className="ml-1" />}
-            </TabsTrigger>
-            <TabsTrigger value="journal" className="flex items-center gap-2">
-              <BookMarked size={16} />
-              <span className="hidden md:inline">Trade Journal</span>
-              <span className="md:hidden">Journal</span>
-            </TabsTrigger>
-          </TabsList>
+          <ToolsTabList 
+            activeTab={activeTab}
+            showLeaps={showLeaps}
+            canAccessLite={canAccessLite}
+            canAccessPro={canAccessPro}
+            onTabChange={handleTabChange}
+            onLeapsToggle={toggleLeapsMode}
+          />
 
-          <TabsContent value="strategy-trader" className="space-y-4">
-            <Card className="bg-card/30 backdrop-blur-sm border-border/50">
-              <CardHeader>
-                <CardTitle>Options Strategy Trader</CardTitle>
-                <CardDescription>
-                  Simulate multi-leg option strategies with virtual funds to practice advanced trading techniques
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <OptionStrategyTrader />
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="payoff" className="space-y-4">
-            <Card className="bg-card/30 backdrop-blur-sm border-border/50">
-              <CardHeader>
-                <CardTitle>Payoff Diagram Generator</CardTitle>
-                <CardDescription>
-                  Create visual representations of potential profits and losses for option strategies
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <PayoffDiagramGenerator />
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="greeks" className="space-y-4">
-            <Card className="bg-card/30 backdrop-blur-sm border-border/50">
-              <CardHeader>
-                <CardTitle>Greeks Calculator</CardTitle>
-                <CardDescription>
-                  Calculate option Greeks (Delta, Gamma, Theta, Vega) for any option contract
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <GreeksCalculator />
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="risk" className="space-y-4">
-            <Card className="bg-card/30 backdrop-blur-sm border-border/50">
-              <CardHeader>
-                <CardTitle>Risk/Reward Analyzer</CardTitle>
-                <CardDescription>
-                  Analyze the potential risk and reward for your option strategies
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <RiskRewardAnalyzer />
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="volatility" className="space-y-4">
-            <Card className="bg-card/30 backdrop-blur-sm border-border/50">
-              <CardHeader>
-                <CardTitle>Volatility Scanner</CardTitle>
-                <CardDescription>
-                  Find options with high implied volatility across different tickers and expirations
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <VolatilityScanner />
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="strategy" className="space-y-4">
-            <Card className="bg-card/30 backdrop-blur-sm border-border/50">
-              <CardHeader className="flex flex-row items-center justify-between">
-                <div>
-                  <CardTitle>Strategy Builder</CardTitle>
-                  <CardDescription>
-                    Build custom option strategies and see the potential outcomes
-                  </CardDescription>
-                </div>
-                <Badge 
-                  className="cursor-pointer bg-emerald-500/20 text-emerald-400 border-emerald-500/40 hover:bg-emerald-500/30"
-                  onClick={() => setShowLeaps(!showLeaps)}
-                >
-                  <Zap size={14} className="mr-1" />
-                  {showLeaps ? "LEAPS Mode: ON" : "LEAPS Mode: OFF"}
-                </Badge>
-              </CardHeader>
-              <CardContent>
-                <StrategyBuilder showLeaps={showLeaps} />
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="journal" className="space-y-4">
-            <Card className="bg-card/30 backdrop-blur-sm border-border/50">
-              <CardHeader>
-                <CardTitle>Trade Journal</CardTitle>
-                <CardDescription>
-                  Log and track your options trades to improve your strategies over time
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <TradeJournal />
-              </CardContent>
-            </Card>
+          <TabsContent value={activeTab} className="mt-2">
+            <ToolsTabContent 
+              activeTab={activeTab}
+              showLeaps={showLeaps}
+            />
           </TabsContent>
         </Tabs>
       </div>
