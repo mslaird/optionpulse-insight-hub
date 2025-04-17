@@ -28,9 +28,17 @@ export const useOptionsData = (symbol: string) => {
       const jsonData = data.data;
       
       // Validate that the data has the expected shape
-      if (typeof jsonData === 'object' && jsonData !== null && 
-          'options' in jsonData && 'strategies' in jsonData) {
-        return jsonData as OptionsChainData;
+      if (typeof jsonData === 'object' && jsonData !== null) {
+        // More explicit type checking for the properties
+        const typedData = jsonData as Record<string, unknown>;
+        
+        if (Array.isArray(typedData.options) && Array.isArray(typedData.strategies)) {
+          // Now we can safely cast to our interface
+          return {
+            options: typedData.options as OptionContract[],
+            strategies: typedData.strategies as OptionStrategy[]
+          };
+        }
       }
       
       // If data doesn't match the expected format, throw an error
