@@ -6,9 +6,9 @@ import {
   generatePayoffData, 
   calculateStrategyMetrics, 
   calculateDefaultPremium, 
-  defaultStockPrices 
+  defaultStockPrices,
+  isLeapsExpiry 
 } from "./strategyUtils";
-import { isLeapsExpiry } from "@/data/mockAlertData";
 
 export const useStrategyBuilder = (showLeaps = false) => {
   const { toast } = useToast();
