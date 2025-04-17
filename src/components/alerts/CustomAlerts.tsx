@@ -16,7 +16,7 @@ interface CustomAlert {
   strikePrice: number;
   expiryDate: string;
   itmProbability: number;
-  sentimentDirection: "bullish" | "bearish";
+  sentimentDirection: "bullish" | "bearish" | "neutral";
   sentimentScore: number;
   timestamp: string;
 }
