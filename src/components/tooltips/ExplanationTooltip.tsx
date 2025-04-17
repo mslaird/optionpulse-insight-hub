@@ -12,12 +12,14 @@ interface ExplanationTooltipProps {
   title: string;
   content: string;
   iconSize?: number;
+  iconClass?: string; // Add this prop to handle custom icon styling
 }
 
 const ExplanationTooltip: React.FC<ExplanationTooltipProps> = ({
   title,
   content,
-  iconSize = 16
+  iconSize = 16,
+  iconClass
 }) => {
   return (
     <TooltipProvider>
@@ -25,7 +27,7 @@ const ExplanationTooltip: React.FC<ExplanationTooltipProps> = ({
         <TooltipTrigger asChild>
           <HelpCircle
             size={iconSize}
-            className="text-muted-foreground cursor-help transition-colors hover:text-foreground"
+            className={`text-muted-foreground cursor-help transition-colors hover:text-foreground ${iconClass || ""}`}
           />
         </TooltipTrigger>
         <TooltipContent className="max-w-sm">
