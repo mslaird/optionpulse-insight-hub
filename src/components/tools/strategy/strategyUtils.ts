@@ -1,6 +1,9 @@
 
 import { OptionLeg } from "./types";
-import { isLeapsExpiry } from "@/data/mockAlertData";
+import { isLeapsExpiry as isLeapsExpiryFromData } from "@/data/mockAlertData";
+
+// Re-export the isLeapsExpiry function to consolidate imports
+export const isLeapsExpiry = isLeapsExpiryFromData;
 
 export const generatePayoffData = (legs: OptionLeg[], ticker: string, currentPrice: number, showLeaps = false) => {
   const data = [];
