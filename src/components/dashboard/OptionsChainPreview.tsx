@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart3, ArrowRight, Share2 } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -40,6 +41,7 @@ const OptionsChainPreview = () => {
     );
   }
 
+  // Use optional chaining to safely access options property
   const optionContracts = optionsData?.options?.slice(0, 6) || [];
 
   return (

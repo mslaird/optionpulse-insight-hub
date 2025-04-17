@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
@@ -51,6 +52,19 @@ const AdvancedOptionsTable: React.FC<AdvancedOptionsTableProps> = ({
     ivRange,
     itmProbabilityRange
   });
+
+  const handleShareToCommnunity = () => {
+    setIsSharing(true);
+    
+    // Mock API call
+    setTimeout(() => {
+      setIsSharing(false);
+      toast({
+        title: "Strategy shared",
+        description: `Your ${stock} options strategies have been shared to the community feed.`,
+      });
+    }, 800);
+  };
 
   if (isLoading) {
     return (

@@ -3,6 +3,11 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from "@/integrations/supabase/client";
 import { OptionContract, OptionStrategy } from "@/types/options";
 
+interface OptionsChainData {
+  options: OptionContract[];
+  strategies: OptionStrategy[];
+}
+
 export const useOptionsData = (symbol: string) => {
   return useQuery({
     queryKey: ['options', symbol],
@@ -19,7 +24,7 @@ export const useOptionsData = (symbol: string) => {
         throw new Error(`No option chain data found for ${symbol}`);
       }
 
-      return data.data;
+      return data.data as OptionsChainData;
     },
     staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
     refetchInterval: 5 * 60 * 1000 // Refetch every 5 minutes
