@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { OptionsChainState } from "@/types/options";
 import { useToast } from "@/hooks/use-toast";
 
@@ -22,6 +22,33 @@ export const useOptionsChainState = () => {
   const [expiryFilter, setExpiryFilter] = useState("all");
   const [ivRange, setIvRange] = useState<[number, number]>([10, 50]);
   const [itmProbabilityRange, setItmProbabilityRange] = useState<[number, number]>([0, 100]);
+
+  // Validate IV range and ITM probability range
+  useEffect(() => {
+    // Ensure IV is within 10%-50% range
+    if (ivRange[0] < 10) {
+      setIvRange([10, ivRange[1]]);
+      toast({
+        title: "IV Range Adjusted",
+        description: "Minimum IV has been set to 10%",
+      });
+    }
+    if (ivRange[1] > 50) {
+      setIvRange([ivRange[0], 50]);
+      toast({
+        title: "IV Range Adjusted",
+        description: "Maximum IV has been set to 50%",
+      });
+    }
+    
+    // Validate ITM probability (50%-90% for meaningful results)
+    if (itmProbabilityRange[0] < 0) {
+      setItmProbabilityRange([0, itmProbabilityRange[1]]);
+    }
+    if (itmProbabilityRange[1] > 100) {
+      setItmProbabilityRange([itmProbabilityRange[0], 100]);
+    }
+  }, [ivRange, itmProbabilityRange, toast]);
 
   // Mock data for stock price and change
   const stockPrice = 178.39;

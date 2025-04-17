@@ -1,12 +1,13 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { BarChart3, ArrowRight } from "lucide-react";
+import { BarChart3, ArrowRight, Share2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
-// Reduced mock data to match Greeks chart height
 const optionsData = [
   {
     type: "CALL",
@@ -65,6 +66,22 @@ const optionsData = [
 ];
 
 const OptionsChainPreview = () => {
+  const { toast } = useToast();
+  const [isSharing, setIsSharing] = useState(false);
+
+  const handleShareToCommnunity = () => {
+    setIsSharing(true);
+    
+    // Simulate API call to share
+    setTimeout(() => {
+      setIsSharing(false);
+      toast({
+        title: "Shared to community",
+        description: "Your options chain analysis has been shared to the community feed.",
+      });
+    }, 800);
+  };
+
   return (
     <Card className="bg-card/30 backdrop-blur-sm border-border/50 h-full flex flex-col">
       <CardHeader className="pb-2 flex flex-row items-center justify-between">
@@ -72,13 +89,36 @@ const OptionsChainPreview = () => {
           <BarChart3 size={18} className="text-optionpulse-blue" />
           AAPL Options Chain
         </CardTitle>
-        <Link to="/options-chain">
-          <Button variant="ghost" size="sm" className="text-optionpulse-blue hover:text-optionpulse-blue-light">
-            View Full Chain
-            <ArrowRight size={16} className="ml-1" />
-          </Button>
-        </Link>
+        <div className="flex items-center gap-2">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="text-optionpulse-blue hover:text-optionpulse-blue-light"
+                  onClick={handleShareToCommnunity}
+                  disabled={isSharing}
+                >
+                  <Share2 size={16} className="mr-1" />
+                  {isSharing ? "Sharing..." : "Share"}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Share this options chain to the community</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+          
+          <Link to="/options-chain">
+            <Button variant="ghost" size="sm" className="text-optionpulse-blue hover:text-optionpulse-blue-light">
+              View Full Chain
+              <ArrowRight size={16} className="ml-1" />
+            </Button>
+          </Link>
+        </div>
       </CardHeader>
+      
       <CardContent className="flex-1 overflow-hidden flex flex-col">
         <div className="overflow-auto flex-1">
           <table className="w-full text-sm">

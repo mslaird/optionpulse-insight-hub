@@ -1,4 +1,3 @@
-
 import { OptionContract, OptionStrategy } from "@/types/options";
 
 // Mock data for single leg options

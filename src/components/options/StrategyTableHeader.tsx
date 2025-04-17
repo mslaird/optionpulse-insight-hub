@@ -1,6 +1,8 @@
 
 import React from "react";
 import { TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { HelpCircle } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface StrategyTableHeaderProps {
   sortField: string | null;
@@ -56,21 +58,79 @@ const StrategyTableHeader: React.FC<StrategyTableHeaderProps> = ({
           className="cursor-pointer hover:text-optionpulse-blue"
           onClick={() => onSort("delta")}
         >
-          Delta {getSortIcon("delta")}
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="flex items-center">
+                  Delta {getSortIcon("delta")}
+                  <HelpCircle size={12} className="ml-1 text-muted-foreground/70" />
+                </span>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p className="text-xs max-w-[180px]">Rate of change in option price for every $1 move in the underlying stock</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </TableHead>
+        <TableHead 
+          className="cursor-pointer hover:text-optionpulse-blue"
+          onClick={() => onSort("gamma")}
+        >
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="flex items-center">
+                  Gamma {getSortIcon("gamma")}
+                  <HelpCircle size={12} className="ml-1 text-muted-foreground/70" />
+                </span>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p className="text-xs max-w-[180px]">Rate of change in delta for every $1 move in the underlying stock</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </TableHead>
         <TableHead 
           className="cursor-pointer hover:text-optionpulse-blue"
           onClick={() => onSort("theta")}
         >
-          Theta {getSortIcon("theta")}
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="flex items-center">
+                  Theta {getSortIcon("theta")}
+                  <HelpCircle size={12} className="ml-1 text-muted-foreground/70" />
+                </span>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p className="text-xs max-w-[180px]">Rate of time decay - how much value is lost each day</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </TableHead>
         <TableHead 
           className="cursor-pointer hover:text-optionpulse-blue"
           onClick={() => onSort("vega")}
         >
-          Vega {getSortIcon("vega")}
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="flex items-center">
+                  Vega {getSortIcon("vega")}
+                  <HelpCircle size={12} className="ml-1 text-muted-foreground/70" />
+                </span>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p className="text-xs max-w-[180px]">Sensitivity to changes in implied volatility</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </TableHead>
-        <TableHead>Actions</TableHead>
+        <TableHead>
+          <span className="flex items-center">
+            Actions
+          </span>
+        </TableHead>
       </TableRow>
     </TableHeader>
   );
