@@ -100,7 +100,7 @@ const PerformanceMetrics: React.FC<PerformanceMetricsProps> = ({
         </div>
         
         {/* P/L Chart */}
-        <div className="mt-4 h-[180px] w-full">
+        <div className="mt-4 h-auto max-w-full" style={{ height: "180px" }}>
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart
               data={tradeHistoryData}
@@ -132,6 +132,7 @@ const PerformanceMetrics: React.FC<PerformanceMetricsProps> = ({
                   const date = new Date(label);
                   return date.toLocaleDateString();
                 }}
+                contentStyle={{ backgroundColor: 'rgba(20, 24, 33, 0.9)', borderColor: 'rgba(255, 255, 255, 0.1)' }}
               />
               <Area 
                 type="monotone" 
