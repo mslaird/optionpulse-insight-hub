@@ -1,4 +1,3 @@
-
 import React from "react";
 import Layout from "@/components/layout/Layout";
 import { BarChart3, Sliders, Sparkles } from "lucide-react";
@@ -14,6 +13,7 @@ import PaywallModal from "@/components/modals/PaywallModal";
 import StockPriceDisplay from "@/components/options/StockPriceDisplay";
 import { useOptionsChainState } from "@/hooks/useOptionsChainState";
 import { useFeatureAccess } from "@/hooks/useFeatureAccess";
+import { useOptionsData } from "@/hooks/useOptionsData";
 
 const OptionsChain = () => {
   const {
@@ -52,6 +52,8 @@ const OptionsChain = () => {
     handleStartTrial, 
     handleClosePaywall 
   } = useFeatureAccess();
+  
+  const { data: optionsData, isLoading, error } = useOptionsData(selectedStock);
   
   const handleAdvancedView = () => {
     if (state.isAdvancedView || checkAccess('Pro', 'Advanced Options Chain')) {
@@ -132,6 +134,9 @@ const OptionsChain = () => {
             optionType={optionType}
             showOpportunities={showOpportunities}
             strategyFilter={strategyFilter}
+            data={optionsData}
+            isLoading={isLoading}
+            error={error}
           />
         ) : (
           <AdvancedOptionsTable 
@@ -141,6 +146,9 @@ const OptionsChain = () => {
             strategyFilter={strategyFilter}
             ivRange={ivRange}
             itmProbabilityRange={itmProbabilityRange}
+            data={optionsData}
+            isLoading={isLoading}
+            error={error}
           />
         )}
       </div>

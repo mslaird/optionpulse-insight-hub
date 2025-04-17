@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
@@ -21,6 +20,9 @@ interface AdvancedOptionsTableProps {
   strategyFilter: string;
   ivRange: [number, number];
   itmProbabilityRange: [number, number];
+  data: any;
+  isLoading: boolean;
+  error: any;
 }
 
 const AdvancedOptionsTable: React.FC<AdvancedOptionsTableProps> = ({
@@ -30,6 +32,9 @@ const AdvancedOptionsTable: React.FC<AdvancedOptionsTableProps> = ({
   strategyFilter,
   ivRange,
   itmProbabilityRange,
+  data,
+  isLoading,
+  error
 }) => {
   const { toast } = useToast();
   const [isSharing, setIsSharing] = useState(false);
@@ -40,25 +45,32 @@ const AdvancedOptionsTable: React.FC<AdvancedOptionsTableProps> = ({
     sortDirection,
     handleSort
   } = useStrategyFiltering({
-    strategies: optionStrategies,
+    strategies: data?.strategies || [],
     optionType,
     strategyFilter,
     ivRange,
     itmProbabilityRange
   });
-  
-  const handleShareToCommnunity = () => {
-    setIsSharing(true);
-    
-    // Simulate API call to share
-    setTimeout(() => {
-      setIsSharing(false);
-      toast({
-        title: "Shared to community",
-        description: `Your ${stock} options analysis for ${expirationDate} has been shared to the community feed.`,
-      });
-    }, 800);
-  };
+
+  if (isLoading) {
+    return (
+      <Card className="bg-card/30 backdrop-blur-sm border-border/50">
+        <CardContent className="p-6">
+          <div className="animate-pulse">Loading options data...</div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (error) {
+    return (
+      <Card className="bg-card/30 backdrop-blur-sm border-border/50">
+        <CardContent className="p-6">
+          <div className="text-destructive">Error loading options data</div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="bg-card/30 backdrop-blur-sm border-border/50">

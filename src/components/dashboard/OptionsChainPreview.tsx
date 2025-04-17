@@ -2,77 +2,19 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart3, ArrowRight, Share2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-
-const optionsData = [
-  {
-    type: "CALL",
-    strike: 170,
-    expiry: "2025-05-16",
-    bid: 5.85,
-    ask: 6.10,
-    iv: 32.5,
-    opportunity: true
-  },
-  {
-    type: "PUT",
-    strike: 170,
-    expiry: "2025-05-16",
-    bid: 4.25,
-    ask: 4.50,
-    iv: 34.2,
-    opportunity: false
-  },
-  {
-    type: "CALL",
-    strike: 175,
-    expiry: "2025-05-16",
-    bid: 4.95,
-    ask: 5.20,
-    iv: 31.7,
-    opportunity: false
-  },
-  {
-    type: "PUT",
-    strike: 175,
-    expiry: "2025-05-16",
-    bid: 5.60,
-    ask: 5.85,
-    iv: 33.4,
-    opportunity: false
-  },
-  {
-    type: "CALL",
-    strike: 180,
-    expiry: "2025-05-16",
-    bid: 3.75,
-    ask: 4.00,
-    iv: 30.8,
-    opportunity: false
-  },
-  {
-    type: "PUT",
-    strike: 180,
-    expiry: "2025-05-16",
-    bid: 6.90,
-    ask: 7.15,
-    iv: 35.3,
-    opportunity: true
-  }
-];
+import { useOptionsData } from "@/hooks/useOptionsData";
 
 const OptionsChainPreview = () => {
   const { toast } = useToast();
   const [isSharing, setIsSharing] = useState(false);
+  const { data: optionsData, isLoading, error } = useOptionsData('AAPL');
 
   const handleShareToCommnunity = () => {
     setIsSharing(true);
-    
-    // Simulate API call to share
     setTimeout(() => {
       setIsSharing(false);
       toast({
@@ -82,8 +24,26 @@ const OptionsChainPreview = () => {
     }, 800);
   };
 
+  if (isLoading) {
+    return (
+      <Card className="bg-card/30 backdrop-blur-sm border-border/50 h-full flex flex-col animate-pulse">
+        <div className="p-6">Loading options data...</div>
+      </Card>
+    );
+  }
+
+  if (error) {
+    return (
+      <Card className="bg-card/30 backdrop-blur-sm border-border/50 h-full flex flex-col">
+        <div className="p-6 text-destructive">Error loading options data</div>
+      </Card>
+    );
+  }
+
+  const optionContracts = optionsData?.options?.slice(0, 6) || [];
+
   return (
-    <Card className="bg-card/30 backdrop-blur-sm border-border/50 h-full flex flex-col">
+    <Card className="bg-card/30 backdrop-blur-sm border-border/50 h-full flex flex-col transition-all duration-300">
       <CardHeader className="pb-2 flex flex-row items-center justify-between">
         <CardTitle className="text-lg font-medium flex items-center gap-2">
           <BarChart3 size={18} className="text-optionpulse-blue" />
@@ -126,7 +86,6 @@ const OptionsChainPreview = () => {
               <tr className="border-b border-border/50">
                 <th className="text-left py-2 px-3 text-muted-foreground font-medium">Type</th>
                 <th className="text-left py-2 px-3 text-muted-foreground font-medium">Strike</th>
-                <th className="text-left py-2 px-3 text-muted-foreground font-medium">Expiry</th>
                 <th className="text-left py-2 px-3 text-muted-foreground font-medium">Bid</th>
                 <th className="text-left py-2 px-3 text-muted-foreground font-medium">Ask</th>
                 <th className="text-left py-2 px-3 text-muted-foreground font-medium">IV</th>
@@ -134,28 +93,30 @@ const OptionsChainPreview = () => {
               </tr>
             </thead>
             <tbody>
-              {optionsData.map((option, index) => (
+              {optionContracts.map((option, index) => (
                 <tr 
-                  key={index} 
-                  className={cn(
-                    "border-b border-border/30 hover:bg-muted/10",
-                    option.opportunity && "bg-optionpulse-blue/5"
-                  )}
+                  key={`${option.type}-${option.strike}-${index}`}
+                  className="border-b border-border/30 hover:bg-muted/10 transition-all duration-300"
                 >
                   <td className="py-2 px-3">
-                    <Badge variant={option.type === "CALL" ? "default" : "outline"} className={option.type === "CALL" ? "bg-optionpulse-blue text-white" : "border-optionpulse-red text-optionpulse-red"}>
+                    <Badge 
+                      variant={option.type === "CALL" ? "default" : "outline"}
+                      className={option.type === "CALL" ? "bg-optionpulse-blue text-white" : "border-optionpulse-red text-optionpulse-red"}
+                    >
                       {option.type}
                     </Badge>
                   </td>
                   <td className="py-2 px-3">${option.strike}</td>
-                  <td className="py-2 px-3">{option.expiry}</td>
-                  <td className="py-2 px-3">${option.bid.toFixed(2)}</td>
-                  <td className="py-2 px-3">${option.ask.toFixed(2)}</td>
+                  <td className="py-2 px-3">${option.bid}</td>
+                  <td className="py-2 px-3">${option.ask}</td>
                   <td className="py-2 px-3">{option.iv}%</td>
                   <td className="py-2 px-3">
                     {option.opportunity && (
-                      <Badge variant="outline" className="border-optionpulse-green text-optionpulse-green">
-                        Opportunity
+                      <Badge 
+                        variant="outline" 
+                        className="border-optionpulse-green text-optionpulse-green"
+                      >
+                        {option.opportunity}
                       </Badge>
                     )}
                   </td>
