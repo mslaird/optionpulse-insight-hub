@@ -9,7 +9,183 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      alerts: {
+        Row: {
+          created_at: string
+          expires_at: string | null
+          id: string
+          itm: boolean | null
+          message: string | null
+          strategy: string | null
+          ticker: string
+          triggered: boolean | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          itm?: boolean | null
+          message?: string | null
+          strategy?: string | null
+          ticker: string
+          triggered?: boolean | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          itm?: boolean | null
+          message?: string | null
+          strategy?: string | null
+          ticker?: string
+          triggered?: boolean | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "alerts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      option_chains: {
+        Row: {
+          data: Json
+          fetched_at: string
+          id: string
+          ticker: string
+        }
+        Insert: {
+          data: Json
+          fetched_at?: string
+          id?: string
+          ticker: string
+        }
+        Update: {
+          data?: Json
+          fetched_at?: string
+          id?: string
+          ticker?: string
+        }
+        Relationships: []
+      }
+      posts: {
+        Row: {
+          comments: number | null
+          content: string
+          created_at: string
+          id: string
+          likes: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          comments?: number | null
+          content: string
+          created_at?: string
+          id?: string
+          likes?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          comments?: number | null
+          content?: string
+          created_at?: string
+          id?: string
+          likes?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "posts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          tier: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id: string
+          tier?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          tier?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      trades: {
+        Row: {
+          created_at: string
+          entry_date: string
+          exit_date: string | null
+          id: string
+          notes: string | null
+          profit: number | null
+          strategy: string
+          ticker: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          entry_date?: string
+          exit_date?: string | null
+          id?: string
+          notes?: string | null
+          profit?: number | null
+          strategy: string
+          ticker: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          entry_date?: string
+          exit_date?: string | null
+          id?: string
+          notes?: string | null
+          profit?: number | null
+          strategy?: string
+          ticker?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trades_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
