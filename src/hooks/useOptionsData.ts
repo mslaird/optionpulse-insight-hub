@@ -28,7 +28,7 @@ export const useOptionsData = (symbol: string, expirationDate?: string) => {
           throw new Error(`No option chain data found for ${symbol}`);
         }
 
-        const jsonData = data.data;
+        const jsonData = data.data as OptionsChainData;
         console.log("Received data:", jsonData);
         
         if (!validateOptionsData(jsonData)) {
@@ -50,10 +50,10 @@ export const useOptionsData = (symbol: string, expirationDate?: string) => {
           );
           
           return {
-            ...jsonData,
+            currentPrice: jsonData.currentPrice,
             options: filteredOptions,
             strategies: filteredStrategies
-          };
+          } as OptionsChainData;
         }
         
         return jsonData;
