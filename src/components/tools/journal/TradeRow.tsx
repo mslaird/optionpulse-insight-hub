@@ -1,9 +1,10 @@
 
 import React from "react";
 import { TableCell, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, Trash2, Calendar } from "lucide-react";
+import { ChevronDown, ChevronUp, Trash2 } from "lucide-react";
+import { formatDateString } from "./utils/formatUtils";
+import { cn } from "@/lib/utils";
 import { Trade } from "./types";
 import TradeDetails from "./TradeDetails";
 
@@ -12,74 +13,97 @@ interface TradeRowProps {
   isExpanded: boolean;
   onToggleDetails: (id: string) => void;
   onDeleteTrade: (id: string) => void;
+  isNew?: boolean;
 }
 
 const TradeRow: React.FC<TradeRowProps> = ({
   trade,
   isExpanded,
   onToggleDetails,
-  onDeleteTrade
+  onDeleteTrade,
+  isNew = false,
 }) => {
+  const isProfit = trade.result === 'profit';
+  const isLoss = trade.result === 'loss';
+  const isOpen = trade.result === 'open';
+  
   return (
-    <React.Fragment>
+    <>
       <TableRow 
-        className="cursor-pointer hover:bg-muted/20"
+        className={cn(
+          "transition-colors hover:bg-muted/60 cursor-pointer",
+          isExpanded && "bg-muted/40",
+          isNew && "animate-pulse",
+          isOpen && "border-l-2 border-emerald-500"
+        )}
         onClick={() => onToggleDetails(trade.id)}
       >
-        <TableCell className="p-0 pl-2 w-10">
-          <ChevronDown size={16} className={`transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
-        </TableCell>
-        <TableCell>
-          <div className="flex items-center">
-            <Calendar size={14} className="mr-2 text-muted-foreground" />
-            {new Date(trade.date).toLocaleDateString()}
-          </div>
-        </TableCell>
-        <TableCell className="font-medium">{trade.ticker}</TableCell>
+        <TableCell className="font-medium">{formatDateString(trade.date)}</TableCell>
+        <TableCell>{trade.ticker}</TableCell>
         <TableCell>{trade.strategy}</TableCell>
+        <TableCell className="capitalize">{trade.action}</TableCell>
+        <TableCell>{trade.quantity}</TableCell>
+        <TableCell>${trade.strike}</TableCell>
+        <TableCell>${trade.premium}</TableCell>
+        <TableCell>{formatDateString(trade.expiryDate)}</TableCell>
         <TableCell>
-          <Badge variant={trade.action === 'buy' ? 'default' : 'outline'}>
-            {trade.action === 'buy' ? 'Long' : 'Short'} ${trade.strike}
-          </Badge>
-        </TableCell>
-        <TableCell>{trade.expiryDate}</TableCell>
-        <TableCell>
-          {trade.result === 'profit' ? (
-            <Badge variant="default" className="bg-optionpulse-green">Profit</Badge>
-          ) : trade.result === 'loss' ? (
-            <Badge variant="default" className="bg-optionpulse-red">Loss</Badge>
-          ) : (
-            <Badge variant="outline">Open</Badge>
-          )}
-        </TableCell>
-        <TableCell className="text-right">
-          <span className={`font-medium ${trade.profitLoss > 0 ? 'text-optionpulse-green' : trade.profitLoss < 0 ? 'text-optionpulse-red' : ''}`}>
-            {trade.profitLoss > 0 ? '+' : ''}{trade.profitLoss.toFixed(2)}
+          <span
+            className={cn(
+              "px-2 py-1 rounded-full text-xs font-medium",
+              isProfit && "bg-green-500/20 text-green-400",
+              isLoss && "bg-red-500/20 text-red-400", 
+              isOpen && "bg-blue-500/20 text-blue-400"
+            )}
+          >
+            {trade.result}
           </span>
         </TableCell>
-        <TableCell className="p-0 pr-2 w-10">
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            onClick={(e) => {
-              e.stopPropagation();
-              onDeleteTrade(trade.id);
-            }}
-            className="text-muted-foreground hover:text-destructive"
-          >
-            <Trash2 size={14} />
-          </Button>
+        <TableCell className={cn(
+          isProfit && "text-green-400",
+          isLoss && "text-red-400",
+          isOpen && "text-blue-400"
+        )}>
+          {isProfit && "+"}${Math.abs(trade.profitLoss).toFixed(2)}
+        </TableCell>
+        <TableCell className="text-right">
+          <div className="flex items-center justify-end space-x-2" onClick={(e) => e.stopPropagation()}>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8"
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleDetails(trade.id);
+              }}
+            >
+              {isExpanded ? (
+                <ChevronUp className="h-4 w-4" />
+              ) : (
+                <ChevronDown className="h-4 w-4" />
+              )}
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 text-destructive hover:text-destructive/90 hover:bg-destructive/10"
+              onClick={(e) => {
+                e.stopPropagation();
+                onDeleteTrade(trade.id);
+              }}
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          </div>
         </TableCell>
       </TableRow>
-      
       {isExpanded && (
-        <TableRow>
-          <TableCell colSpan={9} className="p-0">
+        <TableRow className="bg-muted/20 hover:bg-muted/30">
+          <TableCell colSpan={11} className="p-0">
             <TradeDetails trade={trade} />
           </TableCell>
         </TableRow>
       )}
-    </React.Fragment>
+    </>
   );
 };
 

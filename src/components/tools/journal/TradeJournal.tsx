@@ -8,9 +8,11 @@ import AlertSuggestions from "./alerts/AlertSuggestions";
 import AddTradeForm from "./AddTradeForm";
 import TradesTable from "./TradesTable";
 import { NewTradeFormData } from "./types";
+import { Card } from "@/components/ui/card";
 
 const TradeJournal = () => {
   const {
+    trades,
     filteredTrades,
     filters,
     newTrade,
@@ -27,17 +29,18 @@ const TradeJournal = () => {
   };
 
   return (
-    <div className="flex flex-col space-y-6">
+    <div className="flex flex-col gap-6 w-full h-auto overflow-auto">
       <JournalFilters
         filters={filters}
         showStats={showStats}
+        trades={trades}
         onFilterChange={actions.updateFilters}
         onToggleStats={() => actions.setShowStats(!showStats)}
         onAddTrade={() => actions.setShowAddForm(true)}
       />
       
       {showStats && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
           <PerformanceMetrics
             totalProfitLoss={statistics.totalProfitLoss}
             winRate={statistics.winRate}
@@ -56,12 +59,14 @@ const TradeJournal = () => {
       <AlertSuggestions onCreateTradeFromAlert={handleCreateTradeFromAlert} />
       
       {showAddForm && (
-        <AddTradeForm
-          newTrade={newTrade}
-          onTradeChange={actions.setNewTrade}
-          onSubmit={actions.handleAddTrade}
-          onCancel={() => actions.setShowAddForm(false)}
-        />
+        <Card className="p-4 border border-emerald-500/30 bg-card/30 backdrop-blur-sm animate-pulse">
+          <AddTradeForm
+            newTrade={newTrade}
+            onTradeChange={actions.setNewTrade}
+            onSubmit={actions.handleAddTrade}
+            onCancel={() => actions.setShowAddForm(false)}
+          />
+        </Card>
       )}
       
       <TradesTable

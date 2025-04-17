@@ -1,7 +1,10 @@
+
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import { StrategyCount, ProfitByTicker } from "./types";
+import ExplanationTooltip from "@/components/tooltips/ExplanationTooltip";
+import { getStrategyDescription } from "@/utils/strategyDescriptions";
 
 interface TradeDistributionProps {
   tradesByStrategy: StrategyCount[];
@@ -75,15 +78,31 @@ const TradeDistribution: React.FC<TradeDistributionProps> = ({
     );
   };
 
+  const getSimpleStrategyName = (strategy: string) => {
+    // Convert strategy names like "credit-spread" to "Credit Spread"
+    if (strategy.includes('-')) {
+      return strategy.split('-').map(word => 
+        word.charAt(0).toUpperCase() + word.slice(1)
+      ).join(' ');
+    }
+    return strategy;
+  };
+
   return (
-    <Card className="bg-card/30 backdrop-blur-sm border-border/50">
+    <Card className="bg-card/30 backdrop-blur-sm border-border/50 w-full h-auto min-h-[400px] overflow-auto relative">
       <CardHeader className="pb-2">
-        <CardTitle className="text-lg">Trade Distribution</CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-lg">Trade Distribution</CardTitle>
+          <ExplanationTooltip 
+            title="Trade Distribution" 
+            content="Visual breakdown of your trades by strategy and profit/loss by ticker."
+          />
+        </div>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
           {/* Strategy chart */}
-          <div className="flex flex-col space-y-3">
+          <div className="flex flex-col space-y-3 w-full">
             <h3 className="text-sm font-medium text-center">Trades by Strategy</h3>
             <div className="h-[200px] w-full">
               <ResponsiveContainer width="100%" height="100%">
@@ -105,7 +124,18 @@ const TradeDistribution: React.FC<TradeDistributionProps> = ({
                     ))}
                   </Pie>
                   <Tooltip 
-                    formatter={(value: number) => [`${value} trades`]} 
+                    formatter={(value: number, name: string) => {
+                      // Get the strategy description
+                      const description = getStrategyDescription(name.toLowerCase().replace(' ', '-'));
+                      return [
+                        `${value} trades`, 
+                        <>
+                          <strong>{getSimpleStrategyName(name)}</strong>
+                          <div className="text-xs mt-1 max-w-[200px]">{description}</div>
+                        </>
+                      ];
+                    }}
+                    wrapperStyle={{ maxWidth: '250px' }}
                   />
                 </PieChart>
               </ResponsiveContainer>
@@ -126,7 +156,7 @@ const TradeDistribution: React.FC<TradeDistributionProps> = ({
           </div>
 
           {/* Profit chart */}
-          <div className="flex flex-col space-y-3">
+          <div className="flex flex-col space-y-3 w-full">
             <h3 className="text-sm font-medium text-center">Profit by Ticker</h3>
             <div className="h-[200px] w-full">
               <ResponsiveContainer width="100%" height="100%">

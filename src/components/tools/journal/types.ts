@@ -18,6 +18,7 @@ export interface Trade {
 export interface TradeFilterOptions {
   ticker: string;
   result: string;
+  strategy?: string;
 }
 
 export interface NewTradeFormData extends Omit<Trade, 'id'> {}

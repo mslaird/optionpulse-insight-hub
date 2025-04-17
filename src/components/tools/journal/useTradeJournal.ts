@@ -11,7 +11,8 @@ export const useTradeJournal = () => {
   const [trades, setTrades] = useState<Trade[]>(initialTrades);
   const [filters, setFilters] = useState<TradeFilterOptions>({
     ticker: "all",
-    result: "all"
+    result: "all",
+    strategy: "all"
   });
   const [showAddForm, setShowAddForm] = useState(false);
   const [showStats, setShowStats] = useState(true);
@@ -51,7 +52,8 @@ export const useTradeJournal = () => {
   const filteredTrades = trades.filter(trade => {
     const matchesTicker = filters.ticker === 'all' || trade.ticker === filters.ticker;
     const matchesResult = filters.result === 'all' || trade.result === filters.result;
-    return matchesTicker && matchesResult;
+    const matchesStrategy = filters.strategy === 'all' || trade.strategy === filters.strategy;
+    return matchesTicker && matchesResult && matchesStrategy;
   });
 
   // Get statistics
