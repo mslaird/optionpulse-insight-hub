@@ -1,5 +1,6 @@
 
 import { mockLeapsAlerts } from "@/data/mockAlertData";
+import { leapsExpiryDates } from "@/components/trading/simulated/mockOptionsData";
 
 export const useLeapsTrading = (
   selectedTicker: string, 
@@ -16,7 +17,7 @@ export const useLeapsTrading = (
 
   // Test an alert by setting form values to match the alert
   const handleTestAlert = (alert) => {
-    setSelectedTicker(alert.symbol);
+    // Instead of setting the ticker, we'll just use the form setter functions to update other values
     setOptionType(alert.type);
     setStrikePrice(alert.strikePrice.toString());
     // Find closest expiry date in the available options
@@ -30,5 +31,3 @@ export const useLeapsTrading = (
   };
 };
 
-// Import from mockOptionsData to make them available to components
-import { leapsExpiryDates } from "@/components/trading/simulated/mockOptionsData";
