@@ -6,6 +6,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import CustomAlertsForm from "./CustomAlertsForm";
 import CustomAlertsList from "./CustomAlertsList";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 
 // Define the CustomAlert type
 interface CustomAlert {
@@ -43,6 +44,17 @@ const initialAlerts: CustomAlert[] = [
     sentimentDirection: "bearish",
     sentimentScore: 70,
     timestamp: "4/16/2025, 9:45 AM"
+  },
+  {
+    id: "alert-3",
+    ticker: "QQQ",
+    strategy: "iron_condor",
+    strikePrice: 380,
+    expiryDate: "2025-12-19",
+    itmProbability: 70,
+    sentimentDirection: "neutral",
+    sentimentScore: 60,
+    timestamp: "4/17/2025, 8:15 AM"
   }
 ];
 
@@ -51,15 +63,24 @@ interface CustomAlertsProps {
 }
 
 const CustomAlerts = ({ checkAccess }: CustomAlertsProps) => {
+  const { toast } = useToast();
   const [alerts, setAlerts] = useState<CustomAlert[]>(initialAlerts);
   const [isOpen, setIsOpen] = useState(true);
 
   const handleAddAlert = (alert: CustomAlert) => {
     setAlerts((prev) => [alert, ...prev]);
+    toast({
+      title: "Alert Created",
+      description: `New alert for ${alert.ticker} $${alert.strikePrice} created successfully.`,
+    });
   };
 
   const handleDeleteAlert = (id: string) => {
     setAlerts((prev) => prev.filter((alert) => alert.id !== id));
+    toast({
+      title: "Alert Deleted",
+      description: "The alert has been removed from your list.",
+    });
   };
   
   const handleCustomAlertsClick = () => {
@@ -99,10 +120,12 @@ const CustomAlerts = ({ checkAccess }: CustomAlertsProps) => {
               
               <div className="mt-6">
                 <h3 className="text-lg font-medium mb-4">Active Custom Alerts</h3>
-                <CustomAlertsList 
-                  alerts={alerts} 
-                  onDeleteAlert={handleDeleteAlert} 
-                />
+                <div className="w-full h-auto max-h-[400px] overflow-auto pr-2">
+                  <CustomAlertsList 
+                    alerts={alerts} 
+                    onDeleteAlert={handleDeleteAlert} 
+                  />
+                </div>
               </div>
             </div>
           </CardContent>

@@ -2,6 +2,7 @@
 import { Trash2, BellRing, Calendar, CheckCircle, TrendingUp, ArrowUp, ArrowDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { formatDateString } from "../tools/journal/utils/formatUtils";
 
 interface CustomAlert {
   id: string;
@@ -10,7 +11,7 @@ interface CustomAlert {
   strikePrice: number;
   expiryDate: string;
   itmProbability: number;
-  sentimentDirection: "bullish" | "bearish";
+  sentimentDirection: "bullish" | "bearish" | "neutral";
   sentimentScore: number;
   timestamp: string;
 }
@@ -29,16 +30,6 @@ const CustomAlertsList = ({ alerts, onDeleteAlert }: CustomAlertsListProps) => {
       .join(" ");
   };
 
-  // Format the expiry date for display
-  const formatExpiryDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      month: "numeric",
-      day: "numeric",
-      year: "numeric",
-    });
-  };
-
   if (alerts.length === 0) {
     return (
       <div className="text-center py-8 text-muted-foreground">
@@ -49,15 +40,17 @@ const CustomAlertsList = ({ alerts, onDeleteAlert }: CustomAlertsListProps) => {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 w-full">
       {alerts.map((alert) => (
         <div
           key={alert.id}
           className={cn(
-            "p-4 rounded-lg border flex items-start",
+            "p-4 rounded-lg border flex items-start transition-all hover:shadow-md",
             alert.sentimentDirection === "bullish"
               ? "bg-optionpulse-blue/10 border-optionpulse-blue/30"
-              : "bg-optionpulse-red/10 border-optionpulse-red/30"
+              : alert.sentimentDirection === "bearish"
+              ? "bg-optionpulse-red/10 border-optionpulse-red/30"
+              : "bg-optionpulse-neutral/10 border-optionpulse-neutral/30"
           )}
         >
           <div
@@ -65,11 +58,15 @@ const CustomAlertsList = ({ alerts, onDeleteAlert }: CustomAlertsListProps) => {
               "w-10 h-10 rounded-full flex items-center justify-center mr-4 flex-shrink-0",
               alert.sentimentDirection === "bullish"
                 ? "bg-optionpulse-blue/20 text-optionpulse-blue"
-                : "bg-optionpulse-red/20 text-optionpulse-red"
+                : alert.sentimentDirection === "bearish"
+                ? "bg-optionpulse-red/20 text-optionpulse-red"
+                : "bg-optionpulse-neutral/20 text-optionpulse-neutral"
             )}
           >
             {alert.strategy.includes("leaps") ? (
               <Calendar size={20} />
+            ) : alert.strategy.includes("iron_condor") ? (
+              <TrendingUp size={20} />
             ) : (
               <BellRing size={20} />
             )}
@@ -92,7 +89,7 @@ const CustomAlertsList = ({ alerts, onDeleteAlert }: CustomAlertsListProps) => {
               </p>
               <p className="text-sm">
                 <span className="font-medium">Expiry:</span>{" "}
-                {formatExpiryDate(alert.expiryDate)}
+                {formatDateString(alert.expiryDate)}
               </p>
               <div className="flex flex-wrap gap-2 mt-2">
                 <div className="text-xs px-2 py-1 rounded-full bg-optionpulse-neutral/20 text-optionpulse-neutral flex items-center">
@@ -104,13 +101,17 @@ const CustomAlertsList = ({ alerts, onDeleteAlert }: CustomAlertsListProps) => {
                     "text-xs px-2 py-1 rounded-full flex items-center",
                     alert.sentimentDirection === "bullish"
                       ? "bg-optionpulse-green/20 text-optionpulse-green"
-                      : "bg-optionpulse-red/20 text-optionpulse-red"
+                      : alert.sentimentDirection === "bearish"
+                      ? "bg-optionpulse-red/20 text-optionpulse-red"
+                      : "bg-optionpulse-neutral/20 text-optionpulse-neutral"
                   )}
                 >
                   {alert.sentimentDirection === "bullish" ? (
                     <ArrowUp size={12} className="mr-1" />
-                  ) : (
+                  ) : alert.sentimentDirection === "bearish" ? (
                     <ArrowDown size={12} className="mr-1" />
+                  ) : (
+                    <TrendingUp size={12} className="mr-1" />
                   )}
                   {alert.sentimentScore}% {alert.sentimentDirection}
                 </div>

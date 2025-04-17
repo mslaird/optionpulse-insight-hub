@@ -40,7 +40,7 @@ const formSchema = z.object({
     { message: "Expiry date must be in the future" }
   ),
   itmProbability: z.number().min(50).max(90),
-  sentimentDirection: z.enum(["bullish", "bearish"]),
+  sentimentDirection: z.enum(["bullish", "bearish", "neutral"]),
   sentimentScore: z.number().min(60).max(90),
 });
 
@@ -58,6 +58,10 @@ interface CustomAlertsFormProps {
 const CustomAlertsForm = ({ onAddAlert }: CustomAlertsFormProps) => {
   const [itmValue, setItmValue] = useState<number>(70);
   const [sentimentValue, setSentimentValue] = useState<number>(75);
+
+  // Get current date for the datepicker min value
+  const today = new Date().toISOString().split('T')[0];
+  const maxDate = "2027-12-31";
 
   // Initialize form with default values
   const form = useForm<FormValues>({
@@ -111,6 +115,8 @@ const CustomAlertsForm = ({ onAddAlert }: CustomAlertsFormProps) => {
                     <SelectItem value="AAPL">AAPL</SelectItem>
                     <SelectItem value="SPY">SPY</SelectItem>
                     <SelectItem value="QQQ">QQQ</SelectItem>
+                    <SelectItem value="NVDA">NVDA</SelectItem>
+                    <SelectItem value="TSLA">TSLA</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -139,6 +145,7 @@ const CustomAlertsForm = ({ onAddAlert }: CustomAlertsFormProps) => {
                     <SelectItem value="credit_spread">Credit Spread</SelectItem>
                     <SelectItem value="iron_condor">Iron Condor</SelectItem>
                     <SelectItem value="straddle">Straddle</SelectItem>
+                    <SelectItem value="strangle">Strangle</SelectItem>
                     <SelectItem value="leaps_call">LEAPS Call</SelectItem>
                     <SelectItem value="leaps_put">LEAPS Put</SelectItem>
                   </SelectContent>
@@ -175,7 +182,7 @@ const CustomAlertsForm = ({ onAddAlert }: CustomAlertsFormProps) => {
               <FormItem>
                 <FormLabel>Expiry Date</FormLabel>
                 <FormControl>
-                  <Input type="date" min="2025-01-01" max="2027-12-31" {...field} />
+                  <Input type="date" min={today} max={maxDate} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -235,6 +242,7 @@ const CustomAlertsForm = ({ onAddAlert }: CustomAlertsFormProps) => {
                     <SelectContent>
                       <SelectItem value="bullish">Bullish</SelectItem>
                       <SelectItem value="bearish">Bearish</SelectItem>
+                      <SelectItem value="neutral">Neutral</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
