@@ -28,13 +28,17 @@ export const useOptionsData = (symbol: string, expirationDate?: string) => {
           throw new Error(`No option chain data found for ${symbol}`);
         }
 
-        const jsonData = data.data as OptionsChainData;
-        console.log("Received data:", jsonData);
+        // First cast to unknown, then to OptionsChainData for type safety
+        const rawData = data.data as unknown;
+        console.log("Received data:", rawData);
         
-        if (!validateOptionsData(jsonData)) {
+        if (!validateOptionsData(rawData)) {
           console.warn(`Creating fallback data for ${symbol}`);
           return createMockOptionsData(symbol, expirationDate);
         }
+        
+        // Now we can safely cast it since validation passed
+        const jsonData = rawData as OptionsChainData;
         
         // If an expiration date is provided, filter the options
         if (expirationDate) {
@@ -49,11 +53,14 @@ export const useOptionsData = (symbol: string, expirationDate?: string) => {
             strategy.legs.some(leg => leg.expiryDate === expirationDate)
           );
           
-          return {
+          // Create a new object instead of using spread to ensure type safety
+          const filteredData: OptionsChainData = {
             currentPrice: jsonData.currentPrice,
             options: filteredOptions,
             strategies: filteredStrategies
-          } as OptionsChainData;
+          };
+          
+          return filteredData;
         }
         
         return jsonData;
