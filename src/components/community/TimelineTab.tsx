@@ -24,6 +24,7 @@ interface TimelineTabProps {
 interface EnhancedTimelinePost extends TimelinePost {
   hasLiked: boolean;
   comments: number;
+  interactionScore?: number;
   commentThreads?: Array<{
     name: string;
     username: string;
