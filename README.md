@@ -17,4 +17,3 @@ Secured **early interest**, then paused after validation when two structural wal
 
 **What it demonstrates:** I ship real software (not just decks), put it in front of users, read the signal honestly, and make disciplined kill/continue decisions the exact judgment startups want in an early PM or solutions engineer.
 
-*Repo: github.com/mslaird/optionpulse-insight-hub*
