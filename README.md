@@ -41,12 +41,21 @@ hand-authorship.
 Stated plainly, because the repo is small enough that you would find all of it anyway:
 
 - **No tests. No CI.** Neither exists.
-- **Nothing deployed.** No live URL. The Supabase project behind it is not running.
+- **Nothing running today.** No live URL. The Supabase project behind it is switched off. It was
+  up in 2025, which is when people saw it.
 - **No migrations directory.** The schema was created through the Supabase UI, so it is not
   reproducible from this repo.
-- **The "AI signal modeling" is thin.** There is an analytics and signal layer in the UI; it is not a
-  trained model, and I would not describe it as one in an interview.
+- **The "AI alerts" are mock data.** `AIAlertsContext` loads `mockAIAlerts` and `mockLeapsAlerts`
+  from a 335-line static file. There is no model, no inference, and no LLM call anywhere in this
+  repository. The alerts UI, the filters and the ITM-probability slider are all real and all
+  operating on fixtures. Describing that as an AI signal layer is an overstatement; my
+  resume and site said it and have been corrected.
+- **Auth is mock too.** `src/utils/auth.ts` is a Zustand store with three hardcoded users and an
+  `autoLoginAsTier` dev backdoor. Supabase Auth was never wired up.
 - **One provider, one function.** Alpha Vantage only, and the free tier is why the cache exists.
+- **Two hooks touch the database; the rest of the app reads fixtures.** `useOptionsData` reads the
+  `option_chains` table the edge function fills, and `useUserAlerts` reads `alerts`. Eleven other
+  modules import from `src/data/`. Worth knowing before you assume a screen is live.
 
 ## Why it is paused
 
