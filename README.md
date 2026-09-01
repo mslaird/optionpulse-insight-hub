@@ -8,8 +8,10 @@ are the interesting part.
 
 ## What is actually here
 
-Sixteen routes: dashboard, options chain, watchlist, alerts, journal, education, stock detail,
-community, challenges, achievements, tools, pricing, settings. Auth and the data layer work.
+`src/App.tsx` registers sixteen routes, but that count flatters it: one is a 404 catch-all and two
+are redirects, so **thirteen are real screens** — dashboard, options chain, watchlist, alerts,
+journal, education, stock detail, community, challenges, achievements, tools, pricing, settings.
+They render. What is behind them is mostly fixtures, and auth is not real; both are detailed below.
 
 The piece worth opening is the one edge function,
 [`supabase/functions/option-chain/index.ts`](supabase/functions/option-chain/index.ts). Options
@@ -25,8 +27,11 @@ was never going to work. It does three things instead:
   rate-limited vendor key is a way to get that key throttled by the first person who finds the
   endpoint.
 
-None of that is clever. It is the ordinary work of putting a paid, rate-limited, slow upstream behind
-something a UI can call, which is most of what integration work actually is.
+None of that is clever. It is the ordinary work of putting a paid, rate-limited, slow upstream
+behind something a product can read, which is most of what integration work actually is. Note the
+shape: the app never invokes the function. An external cron calls it, it writes `option_chains`,
+and the client reads that table. That is the right split for a scheduled refresh, and it means the
+function is not on the request path at all.
 
 ## How it was built, and what the commit log shows
 
@@ -40,7 +45,11 @@ hand-authorship.
 
 Stated plainly, because the repo is small enough that you would find all of it anyway:
 
-- **No tests. No CI.** Neither exists.
+- **No tests. No CI.** Neither exists, and `npm run build` is bare `vite build`, which strips types
+  without checking them. Both tsconfigs disable `strict`, `noImplicitAny` and `strictNullChecks`,
+  so "React + TypeScript" here means TypeScript with its guarantees turned off and nothing
+  verifying it. The bot commits from 2025-04-17 show four separate type errors being patched one at
+  a time rather than the setting being turned back on.
 - **Nothing running today.** No live URL. The Supabase project behind it is switched off. It was
   up in 2025, which is when people saw it.
 - **No migrations directory.** The schema was created through the Supabase UI, so it is not
@@ -50,12 +59,25 @@ Stated plainly, because the repo is small enough that you would find all of it a
   repository. The alerts UI, the filters and the ITM-probability slider are all real and all
   operating on fixtures. Describing that as an AI signal layer is an overstatement; my
   resume and site said it and have been corrected.
-- **Auth is mock too.** `src/utils/auth.ts` is a Zustand store with three hardcoded users and an
-  `autoLoginAsTier` dev backdoor. Supabase Auth was never wired up.
+- **Auth is mock, and not only in development.** `src/utils/auth.ts` is a Zustand store with three
+  hardcoded users. `App.tsx:32-35` calls `autoLoginAsTier('Free')` in an unguarded `useEffect`, so
+  it ran in production too — I described it as a dev backdoor, and the code has no dev guard.
+  Supabase Auth was never wired up, and because tier gating reads this store, the paywall is
+  bypassable from the console.
 - **One provider, one function.** Alpha Vantage only, and the free tier is why the cache exists.
-- **Two hooks touch the database; the rest of the app reads fixtures.** `useOptionsData` reads the
-  `option_chains` table the edge function fills, and `useUserAlerts` reads `alerts`. Eleven other
-  modules import from `src/data/`. Worth knowing before you assume a screen is live.
+- **The app fabricates option prices for six of the nine tickers it offers, silently.** This is the
+  defect I would lead with, not the licensing story below. `StockSelector.tsx` offers AAPL, MSFT,
+  GOOGL, AMZN, TSLA, META, NVDA, SPY and QQQ. The edge function only ever populates three — AAPL,
+  SPY and QQQ. For the other six the `.single()` query throws, `useOptionsData` catches it, and
+  returns `createMockOptionsData()`, which hands back strikes of 175 and 180 with a fixed price, IV
+  and Greeks. So selecting **NVDA** renders Apple's strikes labelled NVDA. Nothing in the UI says
+  so; the only trace is a `console.warn`. For a securities product that is not a rough edge, it is
+  the disqualifying bug, and I would rather name it than have it found.
+- **One hook touches the database; the rest of the app reads fixtures.** `useOptionsData` reads the
+  `option_chains` table the edge function fills. There is a second, `useUserAlerts`, which queries
+  `alerts` and is **dead code** — nothing in the repo imports it. Meanwhile **24 modules** import
+  from `src/data/`. I previously wrote eleven here; I counted wrong, and the true number is worse
+  for me, so it is the one that belongs in a section about what this repo is not.
 
 ## Why it is paused
 
