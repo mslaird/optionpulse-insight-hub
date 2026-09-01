@@ -1,6 +1,6 @@
 # OptionPulse
 
-A predictive options-analytics MVP for retail traders. React + TypeScript on Supabase, with an
+A predictive options-analytics prototype for retail traders. React + TypeScript on Supabase, with an
 Alpha Vantage-backed options-chain service behind a staleness-aware cache.
 
 Built and put in front of real users in 2025. **Paused** — the reasons are at the bottom, and they
